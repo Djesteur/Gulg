@@ -7,15 +7,13 @@
 
 namespace Gg {
 
-class Component {
+struct Component {
 
 	public:
 
 		Component() {}
 
-		virtual std::shared_ptr<Component> clone() const = 0;
-
-	private:                      
+		virtual std::shared_ptr<Component> clone() const = 0;                   
 };
 
 }

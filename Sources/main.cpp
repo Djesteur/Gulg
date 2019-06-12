@@ -11,6 +11,9 @@
 #include "Graphics/GraphicSystem.hpp"
 #include "Graphics/SpriteComponent.hpp"
 
+#include "Game/GameSystem.hpp"
+#include "Game/TimerComponent.hpp"
+
 int main() {
 
 	sf::RenderWindow window{sf::VideoMode{800, 800}, "Gulg v0.1"};
@@ -30,8 +33,8 @@ int main() {
 		componentKeeper.addEntity(firstEntity);
 		std::shared_ptr<Gg::SpriteComponent> firstComponent{std::make_shared<Gg::SpriteComponent>()};
 
-		firstComponent->spriteAcces().setTexture(texture);
-		firstComponent->spriteAcces().setPosition(128, 128);
+		firstComponent->sprite.setTexture(texture);
+		firstComponent->sprite.setPosition(128, 128);
 
 		componentKeeper.addComponent(firstEntity, std::string{"MainSprite"}, std::static_pointer_cast<Gg::Component>(firstComponent));
 
@@ -40,13 +43,22 @@ int main() {
 
 		graphicSystem.addEntity(firstEntity);
 
-		 while(window.isOpen()) {
+		Gg::GameSystem gameSystem{entitySignatureKeeper, loader, componentKeeper};
+
+		std::shared_ptr<Gg::TimerComponent> firstTimerComponent{std::make_shared<Gg::TimerComponent>(1'750'000)};
+		componentKeeper.addComponent(firstEntity, std::string{"SpawnTimer"}, std::static_pointer_cast<Gg::Component>(firstTimerComponent));
+		entitySignatureKeeper.addToSignature(firstEntity, loader.getSignature("SpawnTimer"));
+		gameSystem.addEntity(firstEntity);
+
+		while(window.isOpen()) {
 
 	        sf::Event event;
 	        while(window.pollEvent(event)) {
 
 	            if(event.type == sf::Event::Closed) { window.close(); }
 	        }
+
+	        gameSystem.applyAlgorithms();
 
 	        window.clear(sf::Color::Black);
 

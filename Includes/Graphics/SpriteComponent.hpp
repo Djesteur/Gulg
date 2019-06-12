@@ -7,20 +7,16 @@
 
 namespace Gg {
 
-class SpriteComponent: public Component {
+struct SpriteComponent: public Component {
 
 	public:
 
-		SpriteComponent();
-		SpriteComponent(const SpriteComponent &spriteComponent);
+		SpriteComponent() {}
+		SpriteComponent(const SpriteComponent &spriteComponent): sprite{spriteComponent.sprite} {}
 
-		sf::Sprite& spriteAcces();
+		virtual std::shared_ptr<Component> clone() const { return std::static_pointer_cast<Component>(std::make_shared<SpriteComponent>(*this)); }
 
-		virtual std::shared_ptr<Component> clone() const;
-
-	private:
-
-		sf::Sprite m_sprite;             
+		sf::Sprite sprite;             
 };
 
 }

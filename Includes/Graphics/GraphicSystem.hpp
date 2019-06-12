@@ -14,6 +14,7 @@ class GraphicSystem: public System {
 
 		GraphicSystem(sf::RenderTarget &renderTarget, EntitySignatureKeeper &entitySignatureKeeper, SignatureLoader &signatureLoader, 
 					  ComponentKeeper &componentKeeper);
+		
 		virtual ~GraphicSystem(); 
 
 	protected:

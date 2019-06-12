@@ -13,15 +13,13 @@ SpriteAlgorithm::~SpriteAlgorithm() {}
 
 void SpriteAlgorithm::apply() {
 
-	//std::cout << "nbEntity:" <<  m_entitiesToApply.size() << std::endl;
-
 	for(Entity currentEntity: m_entitiesToApply) {
 
 		std::shared_ptr<SpriteComponent> currentSpriteComponent{ 
 			std::static_pointer_cast<SpriteComponent>(m_componentKeeper.getComponent(currentEntity, "MainSprite"))
 		};
 
-		m_renderTarget.draw(currentSpriteComponent->spriteAcces());
+		m_renderTarget.draw(currentSpriteComponent->sprite);
 	}
 }
 
