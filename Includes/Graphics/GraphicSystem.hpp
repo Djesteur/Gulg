@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "System.hpp"
-#include "Graphics/SpriteAlgorithm.hpp"
+#include "Graphics/DrawSpriteAlgorithm.hpp"
 
 namespace Gg {
 

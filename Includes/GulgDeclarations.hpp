@@ -8,9 +8,6 @@ namespace Gg {
 	using Entity = unsigned int;
 
 
-	//struct SpriteComponent { sf::Sprite };
-
-
 
 
 

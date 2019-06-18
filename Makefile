@@ -48,7 +48,7 @@ $(EXENAME): $(OBJ)
 
 $(OBJFILE)/%.o: $(SRCFILE)/%.cpp
 	@mkdir -p $(DIRECTORIES)
-	@printf "%-75b %s" "$(LGREENCOLOR)| Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)"
+	@printf "%-85b %s" "$(LGREENCOLOR)| Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)"
 	@-$(CXX) $(CXXFLAGS) -c $< -o $@ -I $(INCFILE)
 	@printf "%-20b" "$(LGREENCOLOR)[SUCCES]  |$(ENDCOLOR)\\n"
 

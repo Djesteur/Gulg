@@ -5,65 +5,105 @@
 
 #include "EntityCreator.hpp"
 #include "EntitySignatureKeeper.hpp"
+#include "SignatureLoader.hpp"
 #include "ComponentKeeper.hpp"
 #include "Component.hpp"
 
-#include "Graphics/GraphicSystem.hpp"
-#include "Graphics/SpriteComponent.hpp"
+#include "Graphics/TileDrawSystem.hpp"
 
-#include "Game/GameSystem.hpp"
-#include "Game/TimerComponent.hpp"
+#include "MapConstruction.hpp"
 
 int main() {
 
-	sf::RenderWindow window{sf::VideoMode{800, 800}, "Gulg v0.1"};
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = 8;
+
+	sf::RenderWindow window{sf::VideoMode{1280, 720}, "Gulg v0.1", sf::Style::Default, settings};
 
 	Gg::SignatureLoader loader;
-	sf::Texture texture; 
-	if(loader.loadFile("TestSignatures") && texture.loadFromFile("Datas/Ocean.png") ) {
+	if(loader.loadFile("TestSignatures")) {
 
 		Gg::EntityCreator entityCreator;
 		Gg::EntitySignatureKeeper entitySignatureKeeper{loader.getNumberOfSignatures()};
 		Gg::ComponentKeeper componentKeeper;
 
-		Gg::GraphicSystem graphicSystem{window, entitySignatureKeeper, loader, componentKeeper};
+		Gg::TileDrawSystem tileDraw{window, entitySignatureKeeper, loader, componentKeeper};
 
-		Gg::Entity firstEntity{entityCreator.createEntity()};
+		for(unsigned int x{0}; x < 21; x++) {
+			for(unsigned int y{0}; y < 19; y++) {
 
-		componentKeeper.addEntity(firstEntity);
-		std::shared_ptr<Gg::SpriteComponent> firstComponent{std::make_shared<Gg::SpriteComponent>()};
+				tileDraw.addEntity(constructHexaTile(256, x, y, entityCreator, entitySignatureKeeper, componentKeeper, loader));
+			}
+		}
 
-		firstComponent->sprite.setTexture(texture);
-		firstComponent->sprite.setPosition(128, 128);
 
-		componentKeeper.addComponent(firstEntity, std::string{"MainSprite"}, std::static_pointer_cast<Gg::Component>(firstComponent));
+		sf::View currentView{sf::Vector2f{0, 0}, sf::Vector2f{1280, 720}};
 
-		entitySignatureKeeper.addEntity(firstEntity);
-		entitySignatureKeeper.addToSignature(firstEntity, loader.getSignature("MainSprite"));
+		bool movingMouseMap{false};
+		float moveView{1.f};
 
-		graphicSystem.addEntity(firstEntity);
-
-		Gg::GameSystem gameSystem{entitySignatureKeeper, loader, componentKeeper};
-
-		std::shared_ptr<Gg::TimerComponent> firstTimerComponent{std::make_shared<Gg::TimerComponent>(1'750'000)};
-		componentKeeper.addComponent(firstEntity, std::string{"SpawnTimer"}, std::static_pointer_cast<Gg::Component>(firstTimerComponent));
-		entitySignatureKeeper.addToSignature(firstEntity, loader.getSignature("SpawnTimer"));
-		gameSystem.addEntity(firstEntity);
+		const unsigned int minZoom{1}, maxZoom{15};
+		unsigned int currentZoom{15};
+		sf::Vector2i oldMousePosition, newMousePosition;
 
 		while(window.isOpen()) {
+
+			//Event
 
 	        sf::Event event;
 	        while(window.pollEvent(event)) {
 
 	            if(event.type == sf::Event::Closed) { window.close(); }
-	        }
 
-	        gameSystem.applyAlgorithms();
+		        if(event.type == sf::Event::MouseWheelScrolled) {
+
+					if(event.mouseWheelScroll.delta > 0) { 
+
+						if(currentZoom < maxZoom) {
+
+							currentView.zoom(0.8f); 
+							moveView *= 0.8f; 
+							currentZoom++;
+						}
+					}
+
+					if(event.mouseWheelScroll.delta < 0) { 
+
+						if(currentZoom > minZoom) {
+
+							currentView.zoom(1.25f); 
+							moveView *= 1.25f; 
+							currentZoom--;
+						}
+					}
+				}
+
+				if(event.type == sf::Event::MouseButtonPressed) {
+
+					if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = true; oldMousePosition = sf::Mouse::getPosition(); } 
+				}
+
+				if(event.type == sf::Event::MouseButtonReleased) {
+
+					if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = false; } 
+				}
+			}
+
+			//Update
+
+			if(movingMouseMap) {
+
+				newMousePosition = sf::Mouse::getPosition();
+				currentView.move((oldMousePosition.x - newMousePosition.x)*moveView, (oldMousePosition.y - newMousePosition.y)*moveView);
+				oldMousePosition = newMousePosition;
+			}
+
+			//Draw
 
 	        window.clear(sf::Color::Black);
-
-	        graphicSystem.applyAlgorithms();
-
+	        window.setView(currentView);
+	        tileDraw.applyAlgorithms();
+	        window.setView(window.getDefaultView());
 	        window.display();
 	    }
 	}
