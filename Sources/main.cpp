@@ -3,15 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "EntityCreator.hpp"
-#include "EntitySignatureKeeper.hpp"
-#include "SignatureLoader.hpp"
-#include "ComponentKeeper.hpp"
-#include "Component.hpp"
+#include "GulgEngine/GulgEngine.hpp"
 
-#include "Graphics/TileDrawSystem.hpp"
+#include "Systems/Graphics/TileDrawSystem.hpp"
 
-#include "MapConstruction.hpp"
+#include "Game/MapConstruction.hpp"
 
 int main() {
 
@@ -20,19 +16,16 @@ int main() {
 
 	sf::RenderWindow window{sf::VideoMode{1280, 720}, "Gulg v0.1", sf::Style::Default, settings};
 
-	Gg::SignatureLoader loader;
-	if(loader.loadFile("TestSignatures")) {
+	Gg::GulgEngine engine;
 
-		Gg::EntityCreator entityCreator;
-		Gg::EntitySignatureKeeper entitySignatureKeeper{loader.getNumberOfSignatures()};
-		Gg::ComponentKeeper componentKeeper;
+	if(engine.loadSignatures("GameSignatures")) {
 
-		Gg::TileDrawSystem tileDraw{window, entitySignatureKeeper, loader, componentKeeper};
+		Gg::TileDrawSystem tileDraw{window, engine};
 
 		for(unsigned int x{0}; x < 21; x++) {
 			for(unsigned int y{0}; y < 19; y++) {
 
-				tileDraw.addEntity(constructHexaTile(256, x, y, entityCreator, entitySignatureKeeper, componentKeeper, loader));
+				tileDraw.addEntity(constructHexaTile(256, x, y, engine));
 			}
 		}
 

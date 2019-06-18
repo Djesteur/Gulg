@@ -1,0 +1,36 @@
+#ifndef ALGORITHM_HPP
+#define ALGORITHM_HPP
+
+#include <vector>
+#include <algorithm>
+
+#include "GulgEngine/GulgEngine.hpp"
+#include "GulgEngine/GulgDeclarations.hpp"
+
+namespace Gg {
+
+class Algorithm {
+
+	public:
+
+		Algorithm(GulgEngine &gulgEngine);
+		virtual ~Algorithm(); 
+
+		void addEntity(const Entity newEntity);
+		void deleteEntity(const Entity entity);
+
+		Signature getSignature() const;
+
+		virtual void apply() = 0; 
+
+	protected:
+
+		GulgEngine &m_gulgEngine;
+		std::vector<Entity> m_entitiesToApply;
+
+		Signature m_signature;
+};
+
+}
+
+#endif

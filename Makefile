@@ -10,8 +10,7 @@ EXEFILE = .
 DIRECTORIES = $(subst $(SRCFILE),$(OBJFILE),$(shell find $(SRCFILE) -type d))
 
 EXENAME = test
-SRC     = $(wildcard $(SRCFILE)/*.cpp) $(wildcard $(SRCFILE)/**/*.cpp)
-INC     = $(wildcard $(SRCFILE)/*.hpp) $(wildcard $(SRCFILE)/**/*.hpp)
+SRC     = $(wildcard $(SRCFILE)/*.cpp) $(wildcard $(SRCFILE)/**/*.cpp) $(wildcard $(SRCFILE)/**/**/*.cpp)
 OBJ     = $(SRC:$(SRCFILE)/%.cpp=$(OBJFILE)/%.o)
 
 ENDCOLOR    = \033[m
@@ -48,7 +47,7 @@ $(EXENAME): $(OBJ)
 
 $(OBJFILE)/%.o: $(SRCFILE)/%.cpp
 	@mkdir -p $(DIRECTORIES)
-	@printf "%-85b %s" "$(LGREENCOLOR)| Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)"
+	@printf "%-100b %s" "$(LGREENCOLOR)| Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)"
 	@-$(CXX) $(CXXFLAGS) -c $< -o $@ -I $(INCFILE)
 	@printf "%-20b" "$(LGREENCOLOR)[SUCCES]  |$(ENDCOLOR)\\n"
 
