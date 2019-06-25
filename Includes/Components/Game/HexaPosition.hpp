@@ -22,12 +22,18 @@ struct HexaPosition: public Component {
 		y{inY},
 		z{inZ} {}
 
-	HexaPosition(const TimerComponent &component):
+	HexaPosition(const HexaPosition &component):
 		x{component.x},
 		y{component.y},
 		z{component.z} {}
 
 	virtual std::shared_ptr<Component> clone() const { return std::static_pointer_cast<Component>(std::make_shared<HexaPosition>(*this)); }
+
+	bool operator==(const HexaPosition &second) {
+
+		if(x == second.x && y == second.y) { return true; }
+		return false;
+	}
 
 	void setPosition(const unsigned int inX, const unsigned int inY) {
 
@@ -43,7 +49,7 @@ struct HexaPosition: public Component {
 		z = - (x + y);
 	}
 
-	unsigned int distanceTo(const HexaPosition &otherPosition) { return (abs(otherPosition.x - x) + abs(otherPosition.y - y) abs(otherPosition.y - y))/2; }
+	unsigned int distanceTo(const HexaPosition &otherPosition) { return (abs(otherPosition.x - x) + abs(otherPosition.y - y) + abs(otherPosition.y - y))/2; }
 
 	unsigned int x, y, z;         
 };

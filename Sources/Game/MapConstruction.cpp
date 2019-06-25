@@ -31,11 +31,13 @@ void constructHexaCenter(std::shared_ptr<Gg::VertexArrayComponent> component,
 void constructHexaBorders(std::shared_ptr<Gg::VertexArrayComponent> component,
 						 const unsigned int hexaPixelSize,
 						 const unsigned int positionX,
-						 const unsigned int positionY) {
+						 const unsigned int positionY,
+						 const int outerLimit,
+						 const int innerLimit) {
 
 	sf::VertexArray tempVertex{sf::LineStrip, 14};
 
-	tempVertex[0].position = sf::Vector2f{0.f, -static_cast<float>(hexaPixelSize + 3)};
+	tempVertex[0].position = sf::Vector2f{0.f, -static_cast<float>(hexaPixelSize + outerLimit)};
 	tempVertex[6].position = tempVertex[0].position;
 
 	const float angle{60.f*PI/180.f};
@@ -48,7 +50,7 @@ void constructHexaBorders(std::shared_ptr<Gg::VertexArrayComponent> component,
 		currentAngle += angle;
 	}
 
-	tempVertex[7].position = sf::Vector2f{0.f, -static_cast<float>(hexaPixelSize - 10)};
+	tempVertex[7].position = sf::Vector2f{0.f, -static_cast<float>(hexaPixelSize + innerLimit)};
 	tempVertex[13].position = tempVertex[7].position;
 
 	currentAngle = angle;
@@ -99,13 +101,11 @@ void constructHexaBorders(std::shared_ptr<Gg::VertexArrayComponent> component,
 
 }
 
-Gg::Entity constructHexaTile(const unsigned int hexaPixelSize,
+void constructGraphicTile(Gg::Entity tile,
+							 const unsigned int hexaPixelSize,
 						 	 const unsigned int positionX,
 						 	 const unsigned int positionY,
 						 	 Gg::GulgEngine &engine) {
-
-	Gg::Entity newEntity{engine.getNewEntity()};
-
 
 	std::shared_ptr<Gg::VertexArrayComponent> centerArray{std::make_shared<Gg::VertexArrayComponent>()};
 
@@ -118,14 +118,58 @@ Gg::Entity constructHexaTile(const unsigned int hexaPixelSize,
 
 	for(size_t i{0}; i < centerArray->vertexArray.getVertexCount(); i++) {  centerArray->vertexArray[i].color = sf::Color::White; }
 
-	engine.addComponentToEntity(newEntity, std::string{"TileCenterVertex"}, std::static_pointer_cast<Gg::Component>(centerArray));
+	engine.addComponentToEntity(tile, std::string{"TileCenterVertex"}, std::static_pointer_cast<Gg::Component>(centerArray));
 
 	std::shared_ptr<Gg::VertexArrayComponent> borderArray{std::make_shared<Gg::VertexArrayComponent>()};
 
-	constructHexaBorders(borderArray, hexaPixelSize, xBegin + positionX*xDistance, positionY*yDistance);
+	constructHexaBorders(borderArray, hexaPixelSize, xBegin + positionX*xDistance, positionY*yDistance, 1, -9);
 	for(size_t i{0}; i < borderArray->vertexArray.getVertexCount(); i++) {  borderArray->vertexArray[i].color = sf::Color{48, 162, 190}; }
 
-	engine.addComponentToEntity(newEntity, std::string{"TileBorderVertex"}, std::static_pointer_cast<Gg::Component>(borderArray));
+	engine.addComponentToEntity(tile, std::string{"TileBorderVertex"}, std::static_pointer_cast<Gg::Component>(borderArray));
 
-	return newEntity;
+	
+	std::shared_ptr<Gg::VertexArrayComponent> selectedBorderArray{std::make_shared<Gg::VertexArrayComponent>()};
+
+	constructHexaBorders(selectedBorderArray, hexaPixelSize, xBegin + positionX*xDistance, positionY*yDistance, 1, -29);
+	for(size_t i{0}; i < selectedBorderArray->vertexArray.getVertexCount(); i++) {  selectedBorderArray->vertexArray[i].color = sf::Color{76, 187, 23}; }
+
+	engine.addComponentToEntity(tile, std::string{"TileSelectedBorderVertex"}, std::static_pointer_cast<Gg::Component>(selectedBorderArray));
+
+
+	std::shared_ptr<Gg::BooleanComponent> isSelectedBorderArray{std::make_shared<Gg::BooleanComponent>()};
+	isSelectedBorderArray->value = false;
+	engine.addComponentToEntity(tile, std::string{"IsTileSelectedBorderVertex"}, std::static_pointer_cast<Gg::Component>(isSelectedBorderArray));
+}
+
+void constructPositionTile(Gg::Entity tile, 
+						   const unsigned int x, 
+						   const unsigned int y, 
+						   Gg::GulgEngine &engine) {
+
+	std::shared_ptr<Gg::HexaPosition> hexaPos{std::make_shared<Gg::HexaPosition>(x, y)};
+	engine.addComponentToEntity(tile, std::string{"TileHexaPosition"}, std::static_pointer_cast<Gg::Component>(hexaPos));
+}
+
+std::vector<Gg::Entity> constructMap(const unsigned int hexaPixelSize,
+						 	 		 const unsigned int sizeX,
+							 		 const unsigned int sizeY,
+						 	 		 Gg::GulgEngine &engine) {
+
+	std::vector<Gg::Entity> map;
+	map.reserve(sizeX*sizeY);
+
+	Gg::Entity newTile;
+
+	for(unsigned int x{0}; x < sizeX; x++) {
+		for(unsigned int y{0}; y < sizeY; y++) {
+
+			newTile = engine.getNewEntity();
+			map.emplace_back(newTile);
+
+			constructGraphicTile(newTile, hexaPixelSize, x, y, engine);
+			constructPositionTile(newTile, x, y, engine);
+		}
+	}
+
+	return map;
 }

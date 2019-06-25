@@ -7,12 +7,14 @@
 #include "GulgEngine/GulgEngine.hpp"
 
 #include "Components/Graphics/VertexArrayComponent.hpp"
+#include "Components/Game/HexaPosition.hpp"
+#include "Components/BasicComponents.hpp"
 
 #define PI 3.141592
 
-Gg::Entity constructHexaTile(const unsigned int hexaPixelSize,
-						 	 const unsigned int positionX,
-							 const unsigned int positionY,
-						 	 Gg::GulgEngine &engine);
+std::vector<Gg::Entity> constructMap(const unsigned int hexaPixelSize,
+						 	 		 const unsigned int sizeX,
+							 		 const unsigned int sizeY,
+						 	 		 Gg::GulgEngine &engine);
 
 #endif

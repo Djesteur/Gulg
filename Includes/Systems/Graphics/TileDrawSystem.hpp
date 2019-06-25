@@ -7,14 +7,13 @@
 
 #include "Algorithms/Graphics/DrawSpriteAlgorithm.hpp"
 #include "Algorithms/Graphics/DrawVertexArrayAlgorithm.hpp"
+#include "Algorithms/Graphics/DrawSelectedTileBorderAlgorithm.hpp"
 
-namespace Gg {
-
-class TileDrawSystem: public System {
+class TileDrawSystem: public Gg::System {
 
 	public:
 
-		TileDrawSystem(sf::RenderTarget &renderTarget, GulgEngine &gulgEngine);
+		TileDrawSystem(sf::RenderTarget &renderTarget, Gg::GulgEngine &gulgEngine);
 		
 		virtual ~TileDrawSystem(); 
 
@@ -22,6 +21,5 @@ class TileDrawSystem: public System {
 
 };
 
-}
 
 #endif

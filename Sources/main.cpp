@@ -9,6 +9,47 @@
 
 #include "Game/MapConstruction.hpp"
 
+#include "Game/Camera.hpp"
+
+bool isLeftTurn(const sf::Vector2f p1, const sf::Vector2f p2, const sf::Vector2f p3) {
+
+	sf::Vector2f v1{p2.x - p1.x, p2.y - p1.y};
+	sf::Vector2f v2{p3.x - p2.x, p3.y - p2.y};
+
+	if(v1.x*v2.y-v2.x*v1.y > 0) { return false; }
+	else { return true; }
+}
+
+Gg::Entity findSelection(const std::vector<Gg::Entity> map, 
+						 const sf::Vector2f mouseWorldPostion,
+						 Gg::GulgEngine &engine) {
+
+	bool allRightTurn{true};
+
+	for(Gg::Entity currentEntity: map) {
+
+		std::shared_ptr<Gg::VertexArrayComponent> currentArray{
+			std::static_pointer_cast<Gg::VertexArrayComponent>(engine.getComponent(currentEntity, "TileCenterVertex"))
+		};
+		allRightTurn = true;
+
+		for(size_t i{1}; i < 7; i++) {
+
+			if(!isLeftTurn(currentArray->vertexArray[i].position,
+						   currentArray->vertexArray[i+1].position,
+						   sf::Vector2f{mouseWorldPostion.x, mouseWorldPostion.y})) { 
+
+				allRightTurn = false;
+			}
+
+		}
+
+		if(allRightTurn) { return currentEntity; }
+	}
+
+	return 0;
+}
+
 int main() {
 
 	sf::ContextSettings settings;
@@ -20,24 +61,16 @@ int main() {
 
 	if(engine.loadSignatures("GameSignatures")) {
 
-		Gg::TileDrawSystem tileDraw{window, engine};
+		TileDrawSystem tileDraw{window, engine};
 
-		for(unsigned int x{0}; x < 21; x++) {
-			for(unsigned int y{0}; y < 19; y++) {
+		std::vector<Gg::Entity> map{constructMap(256, 21, 19, engine)};
 
-				tileDraw.addEntity(constructHexaTile(256, x, y, engine));
-			}
-		}
+		for(Gg::Entity currentTile: map) { tileDraw.addEntity(currentTile); }
 
 
-		sf::View currentView{sf::Vector2f{0, 0}, sf::Vector2f{1280, 720}};
+		Camera currentView;
 
-		bool movingMouseMap{false};
-		float moveView{1.f};
-
-		const unsigned int minZoom{1}, maxZoom{15};
-		unsigned int currentZoom{15};
-		sf::Vector2i oldMousePosition, newMousePosition;
+		
 
 		while(window.isOpen()) {
 
@@ -48,48 +81,30 @@ int main() {
 
 	            if(event.type == sf::Event::Closed) { window.close(); }
 
-		        if(event.type == sf::Event::MouseWheelScrolled) {
-
-					if(event.mouseWheelScroll.delta > 0) { 
-
-						if(currentZoom < maxZoom) {
-
-							currentView.zoom(0.8f); 
-							moveView *= 0.8f; 
-							currentZoom++;
-						}
-					}
-
-					if(event.mouseWheelScroll.delta < 0) { 
-
-						if(currentZoom > minZoom) {
-
-							currentView.zoom(1.25f); 
-							moveView *= 1.25f; 
-							currentZoom--;
-						}
-					}
-				}
-
-				if(event.type == sf::Event::MouseButtonPressed) {
-
-					if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = true; oldMousePosition = sf::Mouse::getPosition(); } 
-				}
+				currentView.applyEvents(event);
 
 				if(event.type == sf::Event::MouseButtonReleased) {
+					if(event.mouseButton.button == sf::Mouse::Left) { 
 
-					if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = false; } 
+						Gg::Entity selectedEntity{findSelection(map, window.mapPixelToCoords(sf::Mouse::getPosition(window), currentView), engine)};
+						if(selectedEntity != 0) {
+
+							for(Gg::Entity currentEntity: map) {
+
+								std::shared_ptr<Gg::BooleanComponent> isSelectedBorderArray{
+									std::static_pointer_cast<Gg::BooleanComponent>(engine.getComponent(currentEntity, "IsTileSelectedBorderVertex"))
+								};
+
+								if(currentEntity == selectedEntity) { isSelectedBorderArray->value = true; }
+								else { isSelectedBorderArray->value = false; }
+								
+							}
+						} 
+					} 
 				}
 			}
 
 			//Update
-
-			if(movingMouseMap) {
-
-				newMousePosition = sf::Mouse::getPosition();
-				currentView.move((oldMousePosition.x - newMousePosition.x)*moveView, (oldMousePosition.y - newMousePosition.y)*moveView);
-				oldMousePosition = newMousePosition;
-			}
 
 			//Draw
 
