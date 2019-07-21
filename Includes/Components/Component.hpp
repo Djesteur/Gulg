@@ -7,13 +7,13 @@
 
 namespace Gg {
 
-struct Component {
+struct AbstractComponent {
 
 	public:
 
-		Component() {}
+		AbstractComponent() {}
 
-		virtual std::shared_ptr<Component> clone() const = 0;                   
+		virtual std::shared_ptr<AbstractComponent> clone() const = 0;                   
 };
 
 }

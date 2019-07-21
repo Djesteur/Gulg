@@ -17,7 +17,7 @@ class ComponentKeeper {
 		ComponentKeeper();
 
 		void addEntity(const Entity entity);
-		void addComponent(const Entity entity, const std::string name, std::shared_ptr<Component> newComponent);
+		void addComponent(const Entity entity, const std::string name, std::shared_ptr<AbstractComponent> newComponent);
 
 		void deleteEntity(const Entity entity);
 		void deleteComponent(const Entity entity, const std::string name);
@@ -28,11 +28,11 @@ class ComponentKeeper {
 		void cloneEntity(const Entity entityToClone, const Entity clone);
 		
 
-		std::shared_ptr<Component> getComponent(const Entity entity, const std::string name) const;
+		std::shared_ptr<AbstractComponent> getComponent(const Entity entity, const std::string name) const;
 
 	private:
 
-		std::map<Entity, std::map<std::string, std::shared_ptr<Component>>> m_components;
+		std::map<Entity, std::map<std::string, std::shared_ptr<AbstractComponent>>> m_components;
                               
 };
 

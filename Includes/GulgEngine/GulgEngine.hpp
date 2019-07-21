@@ -5,6 +5,7 @@
 #include "GulgEngine/EntitySignatureKeeper.hpp"
 #include "GulgEngine/SignatureLoader.hpp"
 #include "GulgEngine/ComponentKeeper.hpp"
+#include "GulgEngine/TextureKeeper.hpp"
 #include "GulgEngine/GulgDeclarations.hpp"
 
 #include "Components/Component.hpp"
@@ -24,13 +25,20 @@ class GulgEngine {
 		Entity getNewEntity();
 		void deleteEntity(const Entity entity);
 
-		void addComponentToEntity(const Entity entity, const std::string name, std::shared_ptr<Component> component);
+		void addComponentToEntity(const Entity entity, const std::string name, std::shared_ptr<AbstractComponent> component);
 		void deleteComponentToEntity(const Entity entity, const std::string name);
+		bool entityHasComponent(const Entity entity, const std::string name);
 
 		Signature getEntitySignature(const Entity entity) const;
 
-		std::shared_ptr<Component> getComponent(const Entity entity, const std::string name) const;
+		std::shared_ptr<AbstractComponent> getComponent(const Entity entity, const std::string name) const;
 		Signature getComponentSignature(const std::string name) const;
+
+		bool loadTexture(const std::string name, const std::string path);
+		bool isLoadedTexture(const std::string name);
+		sf::Texture *getTexture(const std::string name);
+
+		Entity cloneEntity(const Entity entityToClone);
 
 	private:
 
@@ -40,6 +48,7 @@ class GulgEngine {
 		EntitySignatureKeeper m_entitySignatureKeeper;
 		ComponentKeeper m_componentKeeper;
 		SignatureLoader m_signatureLoader;
+		TextureKeeper m_textureKeeper;
 
 		bool m_signaturesAreLoaded;
                               

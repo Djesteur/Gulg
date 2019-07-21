@@ -9,12 +9,12 @@
 
 namespace Gg {
 
-class Algorithm {
+class AbstractAlgorithm {
 
 	public:
 
-		Algorithm(GulgEngine &gulgEngine);
-		virtual ~Algorithm(); 
+		AbstractAlgorithm(GulgEngine &gulgEngine);
+		virtual ~AbstractAlgorithm(); 
 
 		void addEntity(const Entity newEntity);
 		void deleteEntity(const Entity entity);

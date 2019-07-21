@@ -3,8 +3,8 @@
 namespace Gg {
 
 	
-EntityCreator::EntityCreator(): m_nbMaximalEntity{0} {}
-EntityCreator::EntityCreator(const unsigned int entityReserveSize): m_nbMaximalEntity{0} { addToReserve(entityReserveSize); }
+EntityCreator::EntityCreator(): m_nbMaximalEntity{1} {}
+EntityCreator::EntityCreator(const unsigned int entityReserveSize): m_nbMaximalEntity{1} { addToReserve(entityReserveSize); }
 
 void EntityCreator::addToReserve(const unsigned int entityReserveSize) {
 

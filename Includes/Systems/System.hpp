@@ -25,7 +25,7 @@ class System {
 
 	protected:
 
-		std::vector<std::unique_ptr<Algorithm>> m_algorithms;
+		std::vector<std::unique_ptr<AbstractAlgorithm>> m_algorithms;
 		GulgEngine &m_gulgEngine;      
 };
 

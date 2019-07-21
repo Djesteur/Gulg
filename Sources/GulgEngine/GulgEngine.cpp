@@ -37,7 +37,7 @@ void GulgEngine::deleteEntity(const Entity entity) {
 	m_componentKeeper.deleteEntity(entity);
 }
 
-void GulgEngine::addComponentToEntity(const Entity entity, const std::string name, std::shared_ptr<Component> component) {
+void GulgEngine::addComponentToEntity(const Entity entity, const std::string name, std::shared_ptr<AbstractComponent> component) {
 
 	checkSignatureLoad();
 
@@ -53,13 +53,18 @@ void GulgEngine::deleteComponentToEntity(const Entity entity, const std::string 
 	m_entitySignatureKeeper.deleteToSignature(entity, m_signatureLoader.getSignature(name));
 }
 
+bool GulgEngine::entityHasComponent(const Entity entity, const std::string name) {
+
+	return m_componentKeeper.entityHasComponent(entity, name);
+}
+
 Signature GulgEngine::getEntitySignature(const Entity entity) const {
 
 	checkSignatureLoad();
 	return m_entitySignatureKeeper.getSignature(entity);
 }
 
-std::shared_ptr<Component> GulgEngine::getComponent(const Entity entity, const std::string name) const {
+std::shared_ptr<AbstractComponent> GulgEngine::getComponent(const Entity entity, const std::string name) const {
 
 	checkSignatureLoad();
 	return m_componentKeeper.getComponent(entity, name);
@@ -77,6 +82,19 @@ void GulgEngine::checkSignatureLoad() const {
 
 		throw std::runtime_error("GulgEngine error: signature file isn't loaded.");
 	}
+}
+
+bool GulgEngine::loadTexture(const std::string name, const std::string path) { return m_textureKeeper.loadTexture(name, path); }
+bool GulgEngine::isLoadedTexture(const std::string name) { return m_textureKeeper.isLoadedTexture(name); }
+sf::Texture *GulgEngine::getTexture(const std::string name) { return m_textureKeeper.getTexture(name); }
+
+Entity GulgEngine::cloneEntity(const Entity entityToClone) {
+
+	Entity newEntity{getNewEntity()};
+	m_entitySignatureKeeper.addToSignature(newEntity, m_entitySignatureKeeper.getSignature(entityToClone));
+	m_componentKeeper.cloneEntity(entityToClone, newEntity);
+
+	return newEntity;
 }
 
 }

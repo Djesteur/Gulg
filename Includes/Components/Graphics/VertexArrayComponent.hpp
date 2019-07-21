@@ -7,7 +7,7 @@
 
 namespace Gg {
 
-struct VertexArrayComponent: public Component {
+struct VertexArrayComponent: public AbstractComponent {
 
 	public:
 
@@ -16,7 +16,7 @@ struct VertexArrayComponent: public Component {
 			vertexArray{component.vertexArray},
 			texture{component.texture} {}
 
-		virtual std::shared_ptr<Component> clone() const { return std::static_pointer_cast<Component>(std::make_shared<VertexArrayComponent>(*this)); }
+		virtual std::shared_ptr<AbstractComponent> clone() const { return std::static_pointer_cast<AbstractComponent>(std::make_shared<VertexArrayComponent>(*this)); }
 
 		sf::VertexArray vertexArray;
 		sf::Texture *texture;           

@@ -8,7 +8,7 @@ System::~System() {}
 
 void System::addEntity(const Entity newEntity) {
 
-	for(std::unique_ptr<Algorithm> &currentAlgo: m_algorithms) {
+	for(std::unique_ptr<AbstractAlgorithm> &currentAlgo: m_algorithms) {
 
 		if((m_gulgEngine.getEntitySignature(newEntity) & currentAlgo->getSignature()) == currentAlgo->getSignature()) {
 
@@ -19,12 +19,12 @@ void System::addEntity(const Entity newEntity) {
 
 void System::deleteEntity(const Entity newEntity) {
 
-	for(std::unique_ptr<Algorithm> &currentAlgo: m_algorithms) { currentAlgo->deleteEntity(newEntity); }
+	for(std::unique_ptr<AbstractAlgorithm> &currentAlgo: m_algorithms) { currentAlgo->deleteEntity(newEntity); }
 }
 
 void System::applyAlgorithms() {
 
-	for(std::unique_ptr<Algorithm> &currentAlgo: m_algorithms) { currentAlgo->apply(); }
+	for(std::unique_ptr<AbstractAlgorithm> &currentAlgo: m_algorithms) { currentAlgo->apply(); }
 }
 
 }
