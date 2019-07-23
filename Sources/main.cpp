@@ -14,14 +14,14 @@
 
 int main() {
 
-	sf::ContextSettings settings;
-	settings.antialiasingLevel = 8;
+	//sf::ContextSettings settings;
+	//settings.antialiasingLevel = 8;
 
-	sf::RenderWindow window{sf::VideoMode{1280, 720}, "Gulg v0.1", sf::Style::Default, settings};
+	sf::RenderWindow window{sf::VideoMode{1280, 720}, "Gulg v0.1", sf::Style::Default};
 
 	Gg::GulgEngine engine;
 
-	if(engine.loadSignatures("Datas/GameSignatures") && engine.loadTexture("charSprite", "Datas/Char.png")) {
+	if(engine.loadSignatures("Datas/GameSignatures")) {
 
 		Camera currentView;
 
