@@ -7,6 +7,8 @@
 
 namespace Gg {
 
+namespace Algorithm {
+
 class SpecializedAlgorithm: public AbstractAlgorithm {
 
 	public:
@@ -21,6 +23,6 @@ class SpecializedAlgorithm: public AbstractAlgorithm {
 		const std::vector<std::string> m_componentsToApply;
 };
 
-}
+}}
 
 #endif

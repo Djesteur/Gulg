@@ -9,6 +9,8 @@
 
 namespace Gg {
 
+namespace Algorithm {
+
 class AbstractAlgorithm {
 
 	public:
@@ -31,6 +33,6 @@ class AbstractAlgorithm {
 		Signature m_signature;
 };
 
-}
+}}
 
 #endif

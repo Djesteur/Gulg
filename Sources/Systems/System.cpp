@@ -1,14 +1,16 @@
-#include "Systems/System.hpp"
+#include "Systems/AbstractSystem.hpp"
 
 namespace Gg {
 
-System::System(GulgEngine &gulgEngine): m_gulgEngine{gulgEngine} {}
+namespace Systems {
 
-System::~System() {}
+AbstractSystem::AbstractSystem(GulgEngine &gulgEngine): m_gulgEngine{gulgEngine} {}
 
-void System::addEntity(const Entity newEntity) {
+AbstractSystem::~AbstractSystem() {}
 
-	for(std::unique_ptr<AbstractAlgorithm> &currentAlgo: m_algorithms) {
+void AbstractSystem::addEntity(const Entity newEntity) {
+
+	for(std::unique_ptr<Algorithm::AbstractAlgorithm> &currentAlgo: m_algorithms) {
 
 		if((m_gulgEngine.getEntitySignature(newEntity) & currentAlgo->getSignature()) == currentAlgo->getSignature()) {
 
@@ -17,14 +19,14 @@ void System::addEntity(const Entity newEntity) {
 	}
 }
 
-void System::deleteEntity(const Entity newEntity) {
+void AbstractSystem::deleteEntity(const Entity newEntity) {
 
-	for(std::unique_ptr<AbstractAlgorithm> &currentAlgo: m_algorithms) { currentAlgo->deleteEntity(newEntity); }
+	for(std::unique_ptr<Algorithm::AbstractAlgorithm> &currentAlgo: m_algorithms) { currentAlgo->deleteEntity(newEntity); }
 }
 
-void System::applyAlgorithms() {
+void AbstractSystem::applyAlgorithms() {
 
-	for(std::unique_ptr<AbstractAlgorithm> &currentAlgo: m_algorithms) { currentAlgo->apply(); }
+	for(std::unique_ptr<Algorithm::AbstractAlgorithm> &currentAlgo: m_algorithms) { currentAlgo->apply(); }
 }
 
-}
+}}

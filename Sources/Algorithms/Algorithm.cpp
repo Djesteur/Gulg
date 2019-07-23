@@ -2,6 +2,8 @@
 
 namespace Gg {
 
+namespace Algorithm {
+
 AbstractAlgorithm::AbstractAlgorithm(GulgEngine &gulgEngine): m_gulgEngine{gulgEngine} {}
 
 AbstractAlgorithm::~AbstractAlgorithm() {}
@@ -20,4 +22,4 @@ void AbstractAlgorithm::deleteEntity(const Entity entity) {
 
 Signature AbstractAlgorithm::getSignature() const { return m_signature; }
 
-}
+}}

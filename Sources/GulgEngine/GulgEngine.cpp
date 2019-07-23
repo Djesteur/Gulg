@@ -37,7 +37,7 @@ void GulgEngine::deleteEntity(const Entity entity) {
 	m_componentKeeper.deleteEntity(entity);
 }
 
-void GulgEngine::addComponentToEntity(const Entity entity, const std::string name, std::shared_ptr<AbstractComponent> component) {
+void GulgEngine::addComponentToEntity(const Entity entity, const std::string name, std::shared_ptr<Component::AbstractComponent> component) {
 
 	checkSignatureLoad();
 
@@ -64,7 +64,7 @@ Signature GulgEngine::getEntitySignature(const Entity entity) const {
 	return m_entitySignatureKeeper.getSignature(entity);
 }
 
-std::shared_ptr<AbstractComponent> GulgEngine::getComponent(const Entity entity, const std::string name) const {
+std::shared_ptr<Component::AbstractComponent> GulgEngine::getComponent(const Entity entity, const std::string name) const {
 
 	checkSignatureLoad();
 	return m_componentKeeper.getComponent(entity, name);

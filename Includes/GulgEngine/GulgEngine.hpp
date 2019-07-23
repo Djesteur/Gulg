@@ -25,13 +25,13 @@ class GulgEngine {
 		Entity getNewEntity();
 		void deleteEntity(const Entity entity);
 
-		void addComponentToEntity(const Entity entity, const std::string name, std::shared_ptr<AbstractComponent> component);
+		void addComponentToEntity(const Entity entity, const std::string name, std::shared_ptr<Component::AbstractComponent> component);
 		void deleteComponentToEntity(const Entity entity, const std::string name);
 		bool entityHasComponent(const Entity entity, const std::string name);
 
 		Signature getEntitySignature(const Entity entity) const;
 
-		std::shared_ptr<AbstractComponent> getComponent(const Entity entity, const std::string name) const;
+		std::shared_ptr<Component::AbstractComponent> getComponent(const Entity entity, const std::string name) const;
 		Signature getComponentSignature(const std::string name) const;
 
 		bool loadTexture(const std::string name, const std::string path);

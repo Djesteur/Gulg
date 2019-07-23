@@ -7,13 +7,15 @@
 
 namespace Gg {
 
-struct BooleanComponent: public AbstractComponent {
+namespace Component {
 
-	BooleanComponent(): value{false} {}
+struct Boolean: public AbstractComponent {
 
-	BooleanComponent(const bool val): value{val} {}
+	Boolean(): value{false} {}
 
-	virtual std::shared_ptr<AbstractComponent> clone() const { return std::static_pointer_cast<AbstractComponent>(std::make_shared<BooleanComponent>(*this)); }
+	Boolean(const bool val): value{val} {}
+
+	virtual std::shared_ptr<AbstractComponent> clone() const { return std::static_pointer_cast<AbstractComponent>(std::make_shared<Boolean>(*this)); }
 
 	bool value;          
 };
@@ -29,17 +31,17 @@ struct EntityComponent: public AbstractComponent {
 	Entity value;          
 };
 
-struct StringComponent: public AbstractComponent {
+struct String: public AbstractComponent {
 
-	StringComponent(): value{""} {}
+	String(): value{""} {}
 
-	StringComponent(const std::string val): value{val} {}
+	String(const std::string val): value{val} {}
 
-	virtual std::shared_ptr<AbstractComponent> clone() const { return std::static_pointer_cast<AbstractComponent>(std::make_shared<StringComponent>(*this)); }
+	virtual std::shared_ptr<AbstractComponent> clone() const { return std::static_pointer_cast<AbstractComponent>(std::make_shared<String>(*this)); }
 
 	std::string value;          
 };
 
-}
+}}
 
 #endif

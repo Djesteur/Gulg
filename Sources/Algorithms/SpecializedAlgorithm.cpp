@@ -2,6 +2,8 @@
 
 namespace Gg {
 
+namespace Algorithm {
+
 SpecializedAlgorithm::SpecializedAlgorithm(const std::string componentToApply, GulgEngine &gulgEngine): 
 	AbstractAlgorithm{gulgEngine},
 	m_componentToApply{componentToApply} {
@@ -23,4 +25,4 @@ SpecializedAlgorithm::SpecializedAlgorithm(const std::vector<std::string> compon
 
 SpecializedAlgorithm::~SpecializedAlgorithm() {}
 
-}
+}}

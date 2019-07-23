@@ -5,7 +5,7 @@
 
 #include "GulgEngine/GulgEngine.hpp"
 
-#include "Systems/Graphics/CharacterDrawSystem.hpp"
+#include "Systems/Graphics/CharacterDraw.hpp"
 #include "Systems/CharacterUpdate.hpp"
 
 #include "Game/Camera.hpp"
@@ -26,7 +26,7 @@ int main() {
 		Camera currentView;
 
 		CharacterUpdate updateChar{engine};
-		CharacterDrawSystem drawChar{window, engine};
+		CharacterDraw drawChar{window, engine};
 
 		Gg::Entity anim = Gg::Object::loadAnimationSetFromFile(engine, "Datas/CharAnimation.xml");
 

@@ -7,6 +7,8 @@
 
 namespace Gg {
 
+namespace Component {
+
 struct AbstractComponent {
 
 	public:
@@ -16,6 +18,6 @@ struct AbstractComponent {
 		virtual std::shared_ptr<AbstractComponent> clone() const = 0;                   
 };
 
-}
+}}
 
 #endif
