@@ -10,7 +10,7 @@
 
 #include "Game/Camera.hpp"
 
-#include "Game/EntityObject/AnimationSet.hpp"
+#include "Components/Graphics/AnimationSet.hpp"
 
 int main() {
 
@@ -28,10 +28,14 @@ int main() {
 		CharacterUpdate updateChar{engine};
 		CharacterDraw drawChar{window, engine};
 
-		Gg::Entity anim = Gg::Object::loadAnimationSetFromFile(engine, "Datas/CharAnimation.xml");
+		Gg::Entity character{engine.getNewEntity()};
 
-		updateChar.addEntity(anim);
-		drawChar.addEntity(anim);
+		std::shared_ptr<Gg::Component::AnimationSet> anim{std::make_shared<Gg::Component::AnimationSet>()};
+		anim->loadFromFile(engine, "Datas/CharAnimation.xml");
+		engine.addComponentToEntity(character, "Animation", std::static_pointer_cast<Gg::Component::AbstractComponent>(anim));
+
+		updateChar.addEntity(character);
+		drawChar.addEntity(character);
 
 		while(window.isOpen()) {
 
@@ -43,10 +47,11 @@ int main() {
 	            if(event.type == sf::Event::Closed) { window.close(); }
 
 	            if(event.type == sf::Event::KeyPressed) {
-				    if(event.key.code == sf::Keyboard::Up) { Gg::Object::changeAnimation(engine, anim, "TopWalk"); }
-				    if(event.key.code == sf::Keyboard::Down) {Gg::Object::changeAnimation(engine, anim, "BotWalk");}
-				    if(event.key.code == sf::Keyboard::Left) {Gg::Object::changeAnimation(engine, anim, "LeftWalk");}
-				    if(event.key.code == sf::Keyboard::Right) {Gg::Object::changeAnimation(engine, anim, "RightWalk");}
+
+				    if(event.key.code == sf::Keyboard::Up) { anim->changeAnimation("TopWalk"); }
+				    if(event.key.code == sf::Keyboard::Down) { anim->changeAnimation("BotWalk");}
+				    if(event.key.code == sf::Keyboard::Left) { anim->changeAnimation("LeftWalk");}
+				    if(event.key.code == sf::Keyboard::Right) { anim->changeAnimation("RightWalk");}
 				}
 			}
 
