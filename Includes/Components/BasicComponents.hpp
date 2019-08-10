@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <SFML/Graphics.hpp>
+
 #include "Components/Component.hpp"
 
 namespace Gg {
@@ -40,6 +42,17 @@ struct String: public AbstractComponent {
 	virtual std::shared_ptr<AbstractComponent> clone() const { return std::static_pointer_cast<AbstractComponent>(std::make_shared<String>(*this)); }
 
 	std::string value;          
+};
+
+struct Vector2D: public AbstractComponent {
+
+	Vector2D(): value{0.f, 0.f} {}
+
+	Vector2D(const Vector2D &vec): value{vec.value} {}
+
+	virtual std::shared_ptr<AbstractComponent> clone() const { return std::static_pointer_cast<AbstractComponent>(std::make_shared<Vector2D>(*this)); }
+
+	sf::Vector2f value;          
 };
 
 }}
