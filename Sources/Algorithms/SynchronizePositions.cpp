@@ -31,13 +31,13 @@ void SynchronizePositions::apply() {
 			std::static_pointer_cast<Component::AbstractHitbox>(m_gulgEngine.getComponent(currentEntity, "Hitbox"))
 		};
 
-		std::shared_ptr<Component::CircleShape> graphicHitbox{ 
-			std::static_pointer_cast<Component::CircleShape>(m_gulgEngine.getComponent(currentEntity, "GraphicHitbox"))
+		std::shared_ptr<Component::Shape> graphicHitbox{ 
+			std::static_pointer_cast<Component::Shape>(m_gulgEngine.getComponent(currentEntity, "GraphicHitbox"))
 		};
 
 		graphic->value = sf::Vector2f{physic->value.x*m_pixelPerMeter, physic->value.y*m_pixelPerMeter};
 		hitbox->centerPosition.value = physic->value;
-		graphicHitbox->circle.setPosition(graphic->value);
+		graphicHitbox->shape->setPosition(graphic->value);
 	}
 }
 

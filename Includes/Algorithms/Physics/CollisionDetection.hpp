@@ -25,6 +25,12 @@ class CollisionDetection: public AbstractAlgorithm {
 
 	private:
 
+		bool bothCircleCollision(std::shared_ptr<Component::CircleHitbox> firstHitbox,
+								 std::shared_ptr<Component::CircleHitbox> secondHitbox) const;
+
+		bool convexAndCircle(std::shared_ptr<Component::ConvexHitbox> convexHitbox,
+						     std::shared_ptr<Component::CircleHitbox> circleHitbox) const;
+
 		std::vector<std::pair<Entity, Entity>> &m_collisionsToResolve;
 };
 

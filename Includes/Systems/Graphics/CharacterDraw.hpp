@@ -5,7 +5,7 @@
 
 #include "Systems/AbstractSystem.hpp"
 #include "Algorithms/Graphics/DrawAnimationSet.hpp"
-#include "Algorithms/Graphics/DrawCircleShape.hpp"
+#include "Algorithms/Graphics/DrawShape.hpp"
 
 class CharacterDraw: public Gg::Systems::AbstractSystem {
 

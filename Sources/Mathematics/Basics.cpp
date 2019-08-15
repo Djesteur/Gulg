@@ -15,4 +15,14 @@ Component::Vector2D vectorFromPoints(const sf::Vector2f &pos1, const sf::Vector2
 	return Component::Vector2D{pos2.x - pos1.x, pos2.y - pos1.y};
 }
 
+float determinant(const sf::Vector2f &v1, const sf::Vector2f &v2) {
+
+	return v1.x*v2.y - v1.y*v2.x;
+}
+
+float scalarPorduct(const sf::Vector2f &v1, const sf::Vector2f &v2) {
+
+	return v1.x*v2.x + v1.y*v2.y;
+}
+
 }}

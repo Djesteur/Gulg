@@ -4,7 +4,7 @@
 #include "Algorithms/Algorithm.hpp"
 
 #include "Components/BasicComponents.hpp"
-#include "Components/Graphics/CircleShape.hpp"
+#include "Components/Graphics/Shapes.hpp"
 #include "Components/Physics/Hitbox.hpp"
 
 namespace Gg {
