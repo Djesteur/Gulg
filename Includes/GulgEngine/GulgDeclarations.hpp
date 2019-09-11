@@ -8,16 +8,6 @@ namespace Gg {
 
 	using Entity = unsigned int;
 
-
-
-
-
-
-
-
-
-
-
 }
 
 #endif

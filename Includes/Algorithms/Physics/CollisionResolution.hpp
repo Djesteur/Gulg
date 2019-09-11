@@ -2,6 +2,7 @@
 #define COLLISION_RESOLUTION_HPP
 
 #include "Algorithms/Algorithm.hpp"
+#include "Algorithms/Physics/CollisionDeclarations.hpp"
 
 #include "Components/Physics/Hitbox.hpp"
 
@@ -15,7 +16,7 @@ class CollisionResolution: public AbstractAlgorithm {
 
 	public:
 
-		CollisionResolution(GulgEngine &gulgEngine, std::vector<std::pair<Entity, Entity>> &collisionsToResolve);
+		CollisionResolution(GulgEngine &gulgEngine, std::vector<Collision> &collisionsToResolve);
 		
 		virtual ~CollisionResolution(); 
 
@@ -23,7 +24,8 @@ class CollisionResolution: public AbstractAlgorithm {
 
 	private:
 
-		std::vector<std::pair<Entity, Entity>> &m_collisionsToResolve;
+		std::vector<Collision> &m_collisionsToResolve;
+		std::map<Entity, Component::Vector2D> m_finalVector;
 };
 
 }}

@@ -25,7 +25,7 @@ int main() {
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 
-	sf::RenderWindow window{sf::VideoMode{1280, 720}, "Gulg v0.1", sf::Style::Default};
+	sf::RenderWindow window{sf::VideoMode{1280, 720}, "Gulg v0.1", sf::Style::Default, settings};
 
 	Gg::GulgEngine engine;
 
@@ -84,7 +84,7 @@ int main() {
 		std::shared_ptr<Gg::Component::Vector2D> graphicPositionTest{std::make_shared<Gg::Component::Vector2D>()};
 		std::shared_ptr<Gg::Component::Vector2D> physicPositionTest{std::make_shared<Gg::Component::Vector2D>()};
 		std::shared_ptr<Gg::Component::Vector2D> speedTest{std::make_shared<Gg::Component::Vector2D>()};
-		std::shared_ptr<Gg::Component::UnsignedInt> massTest{std::make_shared<Gg::Component::UnsignedInt>(10)};
+		std::shared_ptr<Gg::Component::UnsignedInt> massTest{std::make_shared<Gg::Component::UnsignedInt>(100000)};
 		engine.addComponentToEntity(polygonTest, "GraphicPosition", std::static_pointer_cast<Gg::Component::AbstractComponent>(graphicPositionTest));
 		engine.addComponentToEntity(polygonTest, "PhysicPosition", std::static_pointer_cast<Gg::Component::AbstractComponent>(physicPositionTest));
 		engine.addComponentToEntity(polygonTest, "Speed", std::static_pointer_cast<Gg::Component::AbstractComponent>(speedTest));
@@ -101,14 +101,14 @@ int main() {
 
 		hitboxTest->relativPoints.resize(4);
 		hitboxTest->absolutePoints.resize(4);
-		/*hitboxTest->relativPoints[0].value = sf::Vector2f{-8.f, 8.3f};
+		hitboxTest->relativPoints[0].value = sf::Vector2f{-8.f, 8.3f};
 		hitboxTest->relativPoints[1].value = sf::Vector2f{12.f, 14.2f};
 		hitboxTest->relativPoints[2].value = sf::Vector2f{20.f, 8.f};
-		hitboxTest->relativPoints[3].value = sf::Vector2f{9.f, -10.f};*/
-		hitboxTest->relativPoints[0].value = sf::Vector2f{-10.f, -10.f};
+		hitboxTest->relativPoints[3].value = sf::Vector2f{9.f, -10.f};
+		/*hitboxTest->relativPoints[0].value = sf::Vector2f{-10.f, -10.f};
 		hitboxTest->relativPoints[1].value = sf::Vector2f{10.f, -10.f};
 		hitboxTest->relativPoints[2].value = sf::Vector2f{10.f, 10.f};
-		hitboxTest->relativPoints[3].value = sf::Vector2f{-10.f, 10.f};
+		hitboxTest->relativPoints[3].value = sf::Vector2f{-10.f, 10.f};*/
 		hitboxTest->move(Gg::Component::Vector2D{50.f, 50.f});
 
 

@@ -3,7 +3,7 @@
 namespace Gg {
 namespace Algorithm {
 
-CollisionDetection::CollisionDetection(GulgEngine &gulgEngine, std::vector<std::pair<Entity, Entity>> &collisionsToResolve): 
+CollisionDetection::CollisionDetection(GulgEngine &gulgEngine, std::vector<Collision> &collisionsToResolve): 
 	AbstractAlgorithm{gulgEngine},
 	m_collisionsToResolve{collisionsToResolve} {
 
@@ -16,8 +16,6 @@ void CollisionDetection::apply() {
 
 	m_collisionsToResolve.clear();
 	m_collisionsToResolve.reserve(m_entitiesToApply.size()*m_entitiesToApply.size());
-
-	bool theyIsACollision{false};
 
 	for(unsigned int i{0}; i < m_entitiesToApply.size(); i++) {
 
@@ -33,90 +31,109 @@ void CollisionDetection::apply() {
 
 			if(firstHitbox->isCircle() && secondHitbox->isCircle()) {
 
-				theyIsACollision = bothCircleCollision(std::static_pointer_cast<Component::CircleHitbox>(firstHitbox),
-													   std::static_pointer_cast<Component::CircleHitbox>(secondHitbox));
+				bothCircleCollision(m_entitiesToApply[i], m_entitiesToApply[j]);
 			}
 
 			else if(!firstHitbox->isCircle() && !secondHitbox->isCircle()) {}
 
 			else {
 
-				if(firstHitbox->isCircle()) {
-
-					theyIsACollision = convexAndCircle(std::static_pointer_cast<Component::ConvexHitbox>(secondHitbox),
-													   std::static_pointer_cast<Component::CircleHitbox>(firstHitbox));
-				}
-
-				else {
-
-					theyIsACollision = convexAndCircle(std::static_pointer_cast<Component::ConvexHitbox>(firstHitbox),
-													   std::static_pointer_cast<Component::CircleHitbox>(secondHitbox));
-				}
-			}
-
-			if(theyIsACollision) { 
-				//m_collisionsToResolve.emplace_back(std::make_pair(m_entitiesToApply[i], m_entitiesToApply[j])); 
-				std::cout << "Collision !" << std::endl;
+				if(firstHitbox->isCircle()) { convexAndCircle(m_entitiesToApply[j], m_entitiesToApply[i]); }
+				else { convexAndCircle(m_entitiesToApply[i], m_entitiesToApply[j]); }
 			}
 		}
 	}
 }
 
-bool CollisionDetection::bothCircleCollision(std::shared_ptr<Component::CircleHitbox> firstHitbox,
-											 std::shared_ptr<Component::CircleHitbox> secondHitbox) const {
+void CollisionDetection::bothCircleCollision(Entity firstEntity,
+											 Entity secondEntity) {
+
+	std::shared_ptr<Component::CircleHitbox> firstHitbox{ 
+		std::static_pointer_cast<Component::CircleHitbox>(m_gulgEngine.getComponent(firstEntity, "Hitbox"))
+	};
+
+	std::shared_ptr<Component::CircleHitbox> secondHitbox{ 
+		std::static_pointer_cast<Component::CircleHitbox>(m_gulgEngine.getComponent(secondEntity, "Hitbox"))
+	};
 
 	if(Maths::distance(firstHitbox->centerPosition, secondHitbox->centerPosition) 
-					<= firstHitbox->radius + secondHitbox->radius) {
+					< firstHitbox->radius + secondHitbox->radius) {
 
-		return true;
+		float distanceBetween{Maths::distance(firstHitbox->centerPosition, secondHitbox->centerPosition)};
+
+		Collision detectedColision;
+		detectedColision.firstEntity = firstEntity;
+		detectedColision.secondEntity = secondEntity;
+		detectedColision.collisionPoint.value = (firstHitbox->centerPosition.value + secondHitbox->centerPosition.value)/2.f;
+		detectedColision.firstDirection.value = Maths::vectorFromPoints(detectedColision.collisionPoint.value, firstHitbox->centerPosition.value).value/distanceBetween;
+		detectedColision.secondDirection.value = Maths::vectorFromPoints(detectedColision.collisionPoint.value, secondHitbox->centerPosition.value).value/distanceBetween;
+		detectedColision.missingDistance = firstHitbox->radius + secondHitbox->radius 
+										 - distanceBetween;
+
+		m_collisionsToResolve.emplace_back(detectedColision);
 	}
-
-	return false;
 }
 
-bool CollisionDetection::convexAndCircle(std::shared_ptr<Component::ConvexHitbox> convexHitbox,
-						     			 std::shared_ptr<Component::CircleHitbox> circleHitbox) const {
+void CollisionDetection::convexAndCircle(Entity convexEntity,
+						     			 Entity circleEntity) {
 
-	/*
-		A: first point
-		B: second point
-		C: center of circle
-		D: projection
-		t: parameter of the equation of the line with director vector AB
-	*/
+	std::shared_ptr<Component::ConvexHitbox> convex{ 
+		std::static_pointer_cast<Component::ConvexHitbox>(m_gulgEngine.getComponent(convexEntity, "Hitbox"))
+	};
 
-	std::vector<Component::Vector2D> points{convexHitbox->absolutePoints};
-	points.emplace_back(points[0]);
+	std::shared_ptr<Component::CircleHitbox> circle{ 
+		std::static_pointer_cast<Component::CircleHitbox>(m_gulgEngine.getComponent(circleEntity, "Hitbox"))
+	};
 
-	for(unsigned int i{0}; i < points.size()-1; i++) {
+	std::vector<Component::Vector2D> convexPoints{convex->absolutePoints};
+	convexPoints.emplace_back(convexPoints[0]);
 
-		Component::Vector2D AB{Maths::vectorFromPoints(points[i].value, points[i+1].value)}, ABNormalize;
-		ABNormalize.value = AB.value/AB.norm();
+	float t{0.f}, distanceToCircle{0.f};
+	bool foundPoint{false};
+	Component::Vector2D AB, AM, D, collisionPoint;
+	float saveT;
 
-		float b = (ABNormalize.value.x*(circleHitbox->centerPosition.value.x - points[i].value.x) +
-				   ABNormalize.value.y*(circleHitbox->centerPosition.value.y - points[i].value.y));
+	for(unsigned int i{1}; i < 2; i++) {
 
-		float delta = b*b;
+		AB.value = sf::Vector2f{convexPoints[i+1].value.x - convexPoints[i].value.x, convexPoints[i+1].value.y - convexPoints[i].value.y};
+		AM.value = sf::Vector2f{circle->centerPosition.value.x - convexPoints[i].value.x, circle->centerPosition.value.y - convexPoints[i].value.y};
 
-		float t = -b/(-ABNormalize.value.x*ABNormalize.value.x -ABNormalize.value.y*ABNormalize.value.y);
-		Component::Vector2D D{points[i].value.x + ABNormalize.value.x*t, points[i].value.y + ABNormalize.value.y*t};
+		Component::Vector2D ABnorm{AB}, AMnorm{AM};
+		ABnorm.value /= AB.norm();
+		AMnorm.value /= AM.norm();
 
-		float distanceProjectionToCircle{Maths::distance(circleHitbox->centerPosition, D)};
-		float bonusDistanceToCheck{sqrt(circleHitbox->radius*circleHitbox->radius - distanceProjectionToCircle*distanceProjectionToCircle)};
+		t = Maths::scalarProduct(AB.value, AM.value)/(20.f*AB.norm());
+		saveT = t;
+		if(t <= 0.f) { t = 0.f; }
+		if(t >= 1.f) { t = 1.f; } 
+		D.value.x = convexPoints[i].value.x + t*AB.value.x;
+		D.value.y = convexPoints[i].value.y + t*AB.value.y;
 
-		std::cout << t << std::endl;
-		//First check if D is between A and B
+		//std::cout << AB.norm() << " " << t  << " " << Maths::distance(circle->centerPosition, D) << std::endl;
+		std::cout << saveT << " " << D.value.x << " " << D.value.y << std::endl;
+		//std::cout << convexPoints[i].value.x << " " << convexPoints[i].value.y <<  " ! " << AB.value.x << " " << AB.value.y
+		//<<  " ! " << convexPoints[i+1].value.x << " " << convexPoints[i+1].value.y << " ! " << t << std::endl;
 
-		if(t >= (0.f - bonusDistanceToCheck) 
-		&& t <= (AB.norm() + bonusDistanceToCheck)) {
+		if(Maths::distance(circle->centerPosition, D) < circle->radius) {
 
-			//Check distance with circle
+			if(!foundPoint) {
 
-			if(distanceProjectionToCircle <= circleHitbox->radius) { return true; }
+				foundPoint = true;
+				collisionPoint = D;
+				distanceToCircle = Maths::distance(collisionPoint, circle->centerPosition);
+			}
+
+			else if(Maths::distance(collisionPoint, circle->centerPosition) < distanceToCircle) {
+
+				collisionPoint = D;
+				distanceToCircle = Maths::distance(collisionPoint, circle->centerPosition);
+			}
 		}
 	}
 
-	return false;
+	//std::cout << "test : " << saveT << std::endl;
+
+	if(foundPoint) { std::cout << "Collision !" << std::endl; }
 }
 
 }}
