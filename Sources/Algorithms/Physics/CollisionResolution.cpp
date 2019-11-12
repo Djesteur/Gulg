@@ -56,8 +56,8 @@ void CollisionResolution::apply() {
 			m_finalVector.insert(std::make_pair(currentCollision.secondEntity, Component::Vector2D{0.f, 0.f}));
 		}
 
-		m_finalVector[currentCollision.firstEntity].value += currentCollision.firstDirection.value*currentCollision.missingDistance*firstRatio;
-		m_finalVector[currentCollision.secondEntity].value += currentCollision.secondDirection.value*currentCollision.missingDistance*secondRatio;
+		m_finalVector[currentCollision.firstEntity].value += currentCollision.firstDirection.value*currentCollision.missingDistanceFirst*firstRatio;
+		m_finalVector[currentCollision.secondEntity].value += currentCollision.secondDirection.value*currentCollision.missingDistanceSecond*secondRatio;
 	}
 
 	for(std::map<Entity, Component::Vector2D>::iterator it{m_finalVector.begin()}; it != m_finalVector.end(); it++) {

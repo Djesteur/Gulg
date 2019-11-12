@@ -67,15 +67,14 @@ void CollisionDetection::bothCircleCollision(Entity firstEntity,
 		detectedColision.collisionPoint.value = (firstHitbox->centerPosition.value + secondHitbox->centerPosition.value)/2.f;
 		detectedColision.firstDirection.value = Maths::vectorFromPoints(detectedColision.collisionPoint.value, firstHitbox->centerPosition.value).value/distanceBetween;
 		detectedColision.secondDirection.value = Maths::vectorFromPoints(detectedColision.collisionPoint.value, secondHitbox->centerPosition.value).value/distanceBetween;
-		detectedColision.missingDistance = firstHitbox->radius + secondHitbox->radius 
-										 - distanceBetween;
+		detectedColision.missingDistanceFirst = (firstHitbox->radius + secondHitbox->radius - distanceBetween)/2.f;
+		detectedColision.missingDistanceSecond = detectedColision.missingDistanceFirst;
 
 		m_collisionsToResolve.emplace_back(detectedColision);
 	}
 }
 
-void CollisionDetection::convexAndCircle(Entity convexEntity,
-						     			 Entity circleEntity) {
+void CollisionDetection::convexAndCircle(Entity convexEntity, Entity circleEntity) {
 
 	std::shared_ptr<Component::ConvexHitbox> convex{ 
 		std::static_pointer_cast<Component::ConvexHitbox>(m_gulgEngine.getComponent(convexEntity, "Hitbox"))
@@ -88,38 +87,48 @@ void CollisionDetection::convexAndCircle(Entity convexEntity,
 	std::vector<Component::Vector2D> convexPoints{convex->absolutePoints};
 	convexPoints.emplace_back(convexPoints[0]);
 
-	float t{0.f}, distanceToCircle{0.f};
+	float t{0.f}, tx, ty, radiusDistance{0.0}, distanceToCircle{0.f};
 	bool foundPoint{false};
-	Component::Vector2D AB, AM, D, collisionPoint;
+	Component::Vector2D AB, AM, D, collisionPoint, nn1;
 	float saveT;
 
-	for(unsigned int i{1}; i < 2; i++) {
+	Component::Vector2D nH, nC, H, v;
 
-		AB.value = sf::Vector2f{convexPoints[i+1].value.x - convexPoints[i].value.x, convexPoints[i+1].value.y - convexPoints[i].value.y};
-		AM.value = sf::Vector2f{circle->centerPosition.value.x - convexPoints[i].value.x, circle->centerPosition.value.y - convexPoints[i].value.y};
+	for(unsigned int i{0}; i < convexPoints.size()-1; i++) {
 
-		Component::Vector2D ABnorm{AB}, AMnorm{AM};
-		ABnorm.value /= AB.norm();
-		AMnorm.value /= AM.norm();
+		v.value = sf::Vector2f{convexPoints[i+1].value.x - convexPoints[i].value.x, convexPoints[i+1].value.y - convexPoints[i].value.y};
+		if(v.norm() == 0.f) {
 
-		t = Maths::scalarProduct(AB.value, AM.value)/(20.f*AB.norm());
-		saveT = t;
-		if(t <= 0.f) { t = 0.f; }
-		if(t >= 1.f) { t = 1.f; } 
-		D.value.x = convexPoints[i].value.x + t*AB.value.x;
-		D.value.y = convexPoints[i].value.y + t*AB.value.y;
+			throw std::runtime_error("Collision Detection error: find a null vector (two points of the polygon are at the same place");
+		}
 
-		//std::cout << AB.norm() << " " << t  << " " << Maths::distance(circle->centerPosition, D) << std::endl;
-		std::cout << saveT << " " << D.value.x << " " << D.value.y << std::endl;
-		//std::cout << convexPoints[i].value.x << " " << convexPoints[i].value.y <<  " ! " << AB.value.x << " " << AB.value.y
-		//<<  " ! " << convexPoints[i+1].value.x << " " << convexPoints[i+1].value.y << " ! " << t << std::endl;
+		v.value /= v.norm();
+		nn1.value = sf::Vector2f{convexPoints[i+1].value.x - convexPoints[i].value.x, convexPoints[i+1].value.y - convexPoints[i].value.y};
+		nC.value = sf::Vector2f{circle->centerPosition.value.x - convexPoints[i].value.x, circle->centerPosition.value.y - convexPoints[i].value.y};
+		nH.value = Maths::scalarProduct(nC.value, v.value)*v.value;
+		H.value = sf::Vector2f{convexPoints[i].value.x + nH.value.x, convexPoints[i].value.y + nH.value.y};
 
-		if(Maths::distance(circle->centerPosition, D) < circle->radius) {
+		if(convexPoints[i+1].value.x - convexPoints[i].value.x == 0.f) { //In case where v.x = 0;
+
+			t = (H.value.y - convexPoints[i].value.y)/(convexPoints[i+1].value.y - convexPoints[i].value.y);
+		}
+
+		else {
+
+			t = (H.value.x - convexPoints[i].value.x)/(convexPoints[i+1].value.x - convexPoints[i].value.x);
+
+		}
+
+		radiusDistance = circle->radius/nn1.norm();
+
+		if(t >= 0.f - radiusDistance && t <= 1.0 + radiusDistance && Maths::distance(circle->centerPosition, H) < circle->radius) {
+
+			//Collision
 
 			if(!foundPoint) {
 
 				foundPoint = true;
-				collisionPoint = D;
+				collisionPoint = H;
 				distanceToCircle = Maths::distance(collisionPoint, circle->centerPosition);
 			}
 
@@ -131,9 +140,19 @@ void CollisionDetection::convexAndCircle(Entity convexEntity,
 		}
 	}
 
-	//std::cout << "test : " << saveT << std::endl;
+	if(foundPoint) {
 
-	if(foundPoint) { std::cout << "Collision !" << std::endl; }
+		Collision detectedColision;
+		detectedColision.firstEntity = convexEntity;
+		detectedColision.secondEntity = circleEntity;
+		detectedColision.collisionPoint = collisionPoint;
+		detectedColision.firstDirection.value = Maths::vectorFromPoints(collisionPoint.value, convex->centerPosition.value).value;
+		detectedColision.secondDirection.value = Maths::vectorFromPoints(collisionPoint.value, circle->centerPosition.value).value;
+		detectedColision.missingDistanceFirst = 0.0;
+		detectedColision.missingDistanceSecond = circle->radius - Maths::distance(circle->centerPosition, H);
+
+		m_collisionsToResolve.emplace_back(detectedColision);
+	}
 }
 
 }}

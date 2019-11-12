@@ -9,3 +9,5 @@
 ==> Better Error handler for Gulg Engine 
 
 ==> Find name for "Physic" system (position update + collosion detection + collision resolve)
+
+++> Collision detection/resolution: circle inside convex
