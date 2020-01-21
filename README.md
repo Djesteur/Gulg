@@ -1,9 +1,8 @@
-***Gulg Engine***
------------------
+***_Gulg Engine_***
 
 Game engine that I'm making in my free time. Based on an ECS design patern.
 
-**TODO**
+*TODO*
 Needed features for v0.3
 * Rework systems
 * Rework meshs componants and transformations
