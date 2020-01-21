@@ -9,11 +9,7 @@ bool GulgEngine::loadSignatures(const std::string path) {
 	m_signaturesAreLoaded = m_signatureLoader.loadFile(path);
 	if(!m_signaturesAreLoaded) { 
 
-<<<<<<< HEAD
 		std::cout << "GulgEngine warning: can't load signature file\"" << path << "\"." << std::endl;
-=======
-		std::cout << "GulgEngine warning: can't load signature file\"" << path << "\". GulgEngine will throw exception at use." << std::endl;
->>>>>>> fe2f1969785e2560e997539fe4e8f24cdd02b025
 	}
 
 	else { m_entitySignatureKeeper.resetSignatures(m_signatureLoader.getNumberOfSignatures()); }
@@ -88,7 +84,6 @@ void GulgEngine::checkSignatureLoad() const {
 	}
 }
 
-<<<<<<< HEAD
 bool GulgEngine::loadProgram(const std::string vertexPath, const std::string fragmentPath, const std::string name) {
 
 	return m_programKeeper.loadProgram(vertexPath, fragmentPath, name);
@@ -96,11 +91,6 @@ bool GulgEngine::loadProgram(const std::string vertexPath, const std::string fra
 
 GLuint GulgEngine::getProgram(const std::string name) const { return m_programKeeper.getProgram(name); }
 
-=======
-bool GulgEngine::loadTexture(const std::string name, const std::string path) { return m_textureKeeper.loadTexture(name, path); }
-bool GulgEngine::isLoadedTexture(const std::string name) { return m_textureKeeper.isLoadedTexture(name); }
-sf::Texture *GulgEngine::getTexture(const std::string name) { return m_textureKeeper.getTexture(name); }
->>>>>>> fe2f1969785e2560e997539fe4e8f24cdd02b025
 
 Entity GulgEngine::cloneEntity(const Entity entityToClone) {
 
