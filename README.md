@@ -1,8 +1,8 @@
-***_Gulg Engine_***
+***Gulg Engine***
 
 Game engine that I'm making in my free time. Based on an ECS design patern.
 
-Needed features for v0.3
+_Needed features for v0.3_
 * Rework systems
 * Rework meshs componants and transformations
 * Work on a efficient system for a scene graph
@@ -12,5 +12,5 @@ Needed features for v0.3
 * Add texturing on mesh
 * Add bones and weight, then animation
 
-Need to work on it
+_Need to work on it_
 * Fix the Makefile problem
