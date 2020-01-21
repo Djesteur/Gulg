@@ -14,3 +14,5 @@ Needed features for v0.3
 * Add texturing on mesh
 * Add bones and weight, then animation
 
+Need to work on it
+* Fix the Makefile problem
