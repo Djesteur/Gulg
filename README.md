@@ -2,7 +2,6 @@
 
 Game engine that I'm making in my free time. Based on an ECS design patern.
 
-*TODO*
 Needed features for v0.3
 * Rework systems
 * Rework meshs componants and transformations
