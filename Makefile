@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 FMODARCHI = x86_64
 CXX       = g++
 CXXFLAGS  = -g -std=c++17 -Wextra -Wall -pedantic -O3
 LDFLAGS   = -L ./Libraries/GLFW/ -L ./Libraries/GLEW/ -lGLEW -lglfw3 -lGL -lX11 -lpthread -ldl
+=======
+CXX      = g++
+CXXFLAGS = -g -std=c++17 -Wextra -Wall -pedantic
+LDFLAGS  = -L /usr/local/lib -lsfml-system -lsfml-window -lsfml-graphics
+>>>>>>> fe2f1969785e2560e997539fe4e8f24cdd02b025
 
 SRCFILE = Sources
 INCFILE = Includes
@@ -52,6 +58,12 @@ $(OBJFILE)/%.o: $(SRCFILE)/%.cpp
 	@-$(CXX) $(CXXFLAGS) -c $< -o $@ -I $(INCFILE)
 	@printf "%-20b" "$(LGREENCOLOR)[SUCCES]  |$(ENDCOLOR)\\n"
 
+<<<<<<< HEAD
 clean:
 	@rm -rf $(OBJFILE)
 	@rm -f  $(EXEFILE)/$(EXENAME)
+=======
+clean: 
+	@rm -rf $(OBJFILE)
+	@rm -f  $(EXEFILE)/$(EXENAME)
+>>>>>>> fe2f1969785e2560e997539fe4e8f24cdd02b025
