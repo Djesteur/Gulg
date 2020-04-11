@@ -13,7 +13,7 @@ class EntitySignatureKeeper {
 
 	public:
 
-		EntitySignatureKeeper(const size_t signatureSize = 0);
+		EntitySignatureKeeper();
 
 		void resetSignatures(const size_t signatureSize);
 

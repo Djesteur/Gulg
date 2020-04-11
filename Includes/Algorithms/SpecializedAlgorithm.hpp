@@ -13,12 +13,12 @@ class SpecializedAlgorithm: public AbstractAlgorithm {
 
 	public:
 
-		SpecializedAlgorithm(const std::string componentToApply, GulgEngine &gulgEngine);
+		SpecializedAlgorithm(const ComponentType type, GulgEngine &gulgEngine);
 		virtual ~SpecializedAlgorithm(); 
 
 	protected:
 
-		const std::string m_componentToApply;
+		const ComponentType m_componentToApply;
 };
 
 }}

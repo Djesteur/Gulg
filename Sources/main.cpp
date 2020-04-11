@@ -1,11 +1,10 @@
+#include <iostream>
+
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
 
-
 #include "GulgEngine/GulgEngine.hpp"
-
-
 
 bool initOpenGL(GLFWwindow **window) {
 
@@ -56,12 +55,6 @@ int main() {
 
     // Gulg init
     Gg::GulgEngine engine;
-
-    if(!engine.loadSignatures("Datas/Signatures")) {
-
-        std::cout << "Gulg error: Can't open signatures file." << std::endl;
-        return -1;
-    }
 
 
     // Main loop

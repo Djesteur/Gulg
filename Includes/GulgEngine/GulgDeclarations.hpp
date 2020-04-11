@@ -3,10 +3,9 @@
 
 namespace Gg {
 
-	#define Pi 3.141592
 	#define NoEntity Entity{0}
 
-	using Entity = unsigned int;
+	using Entity = uint32_t;
 
 }
 

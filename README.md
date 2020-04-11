@@ -14,3 +14,5 @@ _Needed features for v0.3_
 
 _Need to work on it_
 * Fix the Makefile problem
+* Start documentation
+* Start to think of a possibility of multithreading some systems

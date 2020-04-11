@@ -2,7 +2,7 @@
 
 namespace Gg {
 
-EntitySignatureKeeper::EntitySignatureKeeper(const size_t signatureSize): m_signatureSize(signatureSize) {}
+EntitySignatureKeeper::EntitySignatureKeeper() {}
 
 void EntitySignatureKeeper::resetSignatures(const size_t signatureSize) { 
 
@@ -12,8 +12,7 @@ void EntitySignatureKeeper::resetSignatures(const size_t signatureSize) {
 
 void EntitySignatureKeeper::addEntity(const Entity entity) {
 
-
-	if(!entityExist(entity)) { m_signatures.insert(std::make_pair(entity, Signature{m_signatureSize})); }
+	if(!entityExist(entity)) { m_signatures.insert(std::make_pair(entity, Signature{})); }
 }
 
 void EntitySignatureKeeper::deleteEntity(const Entity entity) {

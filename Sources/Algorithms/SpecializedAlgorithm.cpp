@@ -4,11 +4,11 @@ namespace Gg {
 
 namespace Algorithm {
 
-SpecializedAlgorithm::SpecializedAlgorithm(const std::string componentToApply, GulgEngine &gulgEngine): 
+SpecializedAlgorithm::SpecializedAlgorithm(const ComponentType type, GulgEngine &gulgEngine): 
 	AbstractAlgorithm{gulgEngine},
-	m_componentToApply{componentToApply} {
+	m_componentToApply{type} {
 
-	m_signature = m_gulgEngine.getComponentSignature(m_componentToApply);
+	m_signature = Signature{m_componentToApply};
 }
 
 SpecializedAlgorithm::~SpecializedAlgorithm() {}
