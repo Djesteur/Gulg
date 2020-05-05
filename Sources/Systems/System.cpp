@@ -4,29 +4,23 @@ namespace Gg {
 
 namespace Systems {
 
-System::System(GulgEngine &gulgEngine): m_gulgEngine{gulgEngine} {}
+AbstractSystem::AbstractSystem(GulgEngine &gulgEngine, const Signature signature): 
+	m_gulgEngine{gulgEngine},
+	m_systemSignature{signature} {}
 
-System::~System() {}
+AbstractSystem::~AbstractSystem() {}
 
-void System::addEntity(const Entity newEntity) {
+void AbstractSystem::addEntity(const Entity entity) {
 
-	for(std::unique_ptr<Algorithm::AbstractAlgorithm> &currentAlgo: m_algorithms) {
-
-		if((m_gulgEngine.getEntitySignature(newEntity) & currentAlgo->getSignature()) == currentAlgo->getSignature()) {
-
-			currentAlgo->addEntity(newEntity);
-		}
-	}
+	if((m_gulgEngine.getEntitySignature(entity) & m_systemSignature) == m_systemSignature) { m_entities.emplace_back(entity); }
 }
 
-void System::deleteEntity(const Entity newEntity) {
+void AbstractSystem::deleteEntity(const Entity entity) {
 
-	for(std::unique_ptr<Algorithm::AbstractAlgorithm> &currentAlgo: m_algorithms) { currentAlgo->deleteEntity(newEntity); }
+	std::vector<Entity>::iterator findEntity{std::find(m_entities.begin(), m_entities.end(), entity)};
+
+	if(findEntity != m_entities.end()) { m_entities.erase(findEntity); }
 }
 
-void System::applyAlgorithms() {
-
-	for(std::unique_ptr<Algorithm::AbstractAlgorithm> &currentAlgo: m_algorithms) { currentAlgo->apply(); }
-}
 
 }}

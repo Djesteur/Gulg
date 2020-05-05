@@ -2,33 +2,33 @@
 #define SYSTEM_HPP
 
 #include <vector>
-#include <memory>
+#include <algorithm>
 
 #include "GulgEngine/GulgEngine.hpp"
 #include "GulgEngine/GulgDeclarations.hpp"
-
-#include "Algorithms/Algorithm.hpp"
 
 namespace Gg {
 
 namespace Systems {
 
-class System {
+class AbstractSystem {
 
 	public:
 
-		System(GulgEngine &gulgEngine);
-		virtual ~System(); 
+		AbstractSystem(GulgEngine &gulgEngine, const Signature signature);
+
+		virtual ~AbstractSystem(); 
 
 		virtual void addEntity(const Entity newEntity);
 		virtual void deleteEntity(const Entity newEntity);
 
-		virtual void applyAlgorithms();
+		virtual void apply() = 0;
 
 	protected:
 
-		std::vector<std::unique_ptr<Algorithm::AbstractAlgorithm>> m_algorithms;
-		GulgEngine &m_gulgEngine;      
+		GulgEngine &m_gulgEngine;
+		std::vector<Entity> m_entities;
+		const Signature m_systemSignature;
 };
 
 }}

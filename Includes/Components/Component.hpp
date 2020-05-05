@@ -9,7 +9,7 @@ namespace Gg {
 
 namespace Component {
 
-struct AbstractComponent {
+class AbstractComponent {
 
 	public:
 

@@ -9,19 +9,10 @@ namespace Gg {
 enum class ComponentType {
 
 	MainMesh,
-	Transformations,
-	SceneObject,
-	VoxelMap,
-	Light,
-	Collider,
-	WorldCollider,
-	Forces,
-	Explosive,
-	Timer,
-	StepSound
+	MainMeshRenderer
 };
 
-const uint32_t NbComponentType = 11;
+const uint32_t NbComponentType = 2;
 
 class Signature {
 

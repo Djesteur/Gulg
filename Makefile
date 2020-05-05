@@ -1,7 +1,7 @@
 FMODARCHI = x86_64
 CXX       = g++
 CXXFLAGS  = -g -std=c++17 -Wextra -Wall -pedantic -O3
-LDFLAGS   = -L ./Libraries/GLFW/ -L ./Libraries/GLEW/ -lGLEW -lglfw3 -lGL -lX11 -lpthread -ldl
+LDFLAGS   = -L ./Libraries/GLFW/ -L ./Libraries/Vulkan/ -lvulkan -lglfw3 -lGL -lX11 -lpthread -ldl
 
 SRCFILE = Sources
 INCFILE = Includes
