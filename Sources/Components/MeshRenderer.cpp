@@ -50,83 +50,34 @@ uint32_t findMemoryType(Device &device, uint32_t typeFilter, VkMemoryPropertyFla
 
 void MeshRenderer::loadFromMesh(const Mesh &mesh) {
 
-	VkBufferCreateInfo bufferInfo = {};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = sizeof(glm::vec3) * mesh.m_finalArray.size();
-	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	m_vertexBuffer = createVulkanBuffer(m_device, sizeof(glm::vec3) * mesh.m_finalArray.size(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE);
 
-    checkVulkanError(vkCreateBuffer(m_device->logicalDevice, &bufferInfo, nullptr, &m_verticesBuffer), "GulgEngine can't create vertex buffer.");
+	try {
 
-    VkMemoryRequirements memoryRequirements;
-	vkGetBufferMemoryRequirements(m_device->logicalDevice, m_verticesBuffer, &memoryRequirements);
-
-	VkMemoryAllocateInfo allocInfo = {};
-	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.allocationSize = memoryRequirements.size;
-
-	try { 
-
-		allocInfo.memoryTypeIndex = findMemoryType(*m_device,
-												   memoryRequirements.memoryTypeBits, 
-												   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-		checkVulkanError(vkAllocateMemory(m_device->logicalDevice, &allocInfo, nullptr, &m_verticesBufferMemory), 
-						"GulgEngine can't alocate vertex buffer memory.");
+		m_indexBuffer = createVulkanBuffer(m_device, sizeof(uint32_t) * mesh.m_indices.size(), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE);
 	}
 
 	catch(const std::exception &e) { 
 
-		vkDestroyBuffer(m_device->logicalDevice, m_verticesBuffer, nullptr);
+		m_vertexBuffer.clean(m_device);
 		throw e; 
 	}
 
-	vkBindBufferMemory(m_device->logicalDevice, m_verticesBuffer, m_verticesBufferMemory, 0);
+	try {
 
-	void* data;
-	vkMapMemory(m_device->logicalDevice, m_verticesBufferMemory, 0, bufferInfo.size, 0, &data);
-	memcpy(data, mesh.m_finalArray.data(), static_cast<size_t> (bufferInfo.size));
-	vkUnmapMemory(m_device->logicalDevice, m_verticesBufferMemory);
-
-
-	VkBufferCreateInfo bufferInfoIndices = {};
-	bufferInfoIndices.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfoIndices.size = sizeof(uint32_t) * mesh.m_indices.size();
-	bufferInfoIndices.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-	bufferInfoIndices.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	try { 
-
-		checkVulkanError(vkCreateBuffer(m_device->logicalDevice, &bufferInfoIndices, nullptr, &m_indexBuffer), "GulgEngine can't create indice buffer.");
+		m_uniformBuffer = createVulkanBuffer(m_device, sizeof(glm::mat4) *3, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE);
 	}
 
 	catch(const std::exception &e) { 
 
-		vkFreeMemory(m_device->logicalDevice, m_verticesBufferMemory, nullptr);
-		vkDestroyBuffer(m_device->logicalDevice, m_verticesBuffer, nullptr);
+		m_indexBuffer.clean(m_device);
+		m_vertexBuffer.clean(m_device);
 		throw e; 
 	}
+	
 
- 
-	try { 
-
-		checkVulkanError(vkAllocateMemory(m_device->logicalDevice, &allocInfo, nullptr, &m_indexBufferMemory), 
-						"GulgEngine can't alocate vertex buffer memory.");
-	}
-
-	catch(const std::exception &e) { 
-
-		vkDestroyBuffer(m_device->logicalDevice, m_indexBuffer, nullptr);
-		vkFreeMemory(m_device->logicalDevice, m_verticesBufferMemory, nullptr);
-		vkDestroyBuffer(m_device->logicalDevice, m_verticesBuffer, nullptr);
-		throw e; 
-	}
-
-	vkBindBufferMemory(m_device->logicalDevice, m_indexBuffer, m_indexBufferMemory, 0);
-
-	vkMapMemory(m_device->logicalDevice, m_indexBufferMemory, 0, bufferInfoIndices.size, 0, &data);
-	memcpy(data, mesh.m_indices.data(), static_cast<size_t> (bufferInfoIndices.size));
-	vkUnmapMemory(m_device->logicalDevice, m_indexBufferMemory);
+	m_vertexBuffer.write(m_device, mesh.m_finalArray.data(), sizeof(glm::vec3) * mesh.m_finalArray.size());
+	m_indexBuffer.write(m_device, mesh.m_indices.data(), sizeof(uint32_t) * mesh.m_indices.size());
 
 	m_nbIndices = mesh.m_indices.size();
 
@@ -138,11 +89,10 @@ void MeshRenderer::loadFromMesh(const Mesh &mesh) {
 
 	catch(const std::exception &e) { 
 
-		vkFreeMemory(m_device->logicalDevice, m_indexBufferMemory, nullptr);
-		vkDestroyBuffer(m_device->logicalDevice, m_indexBuffer, nullptr);
+		m_uniformBuffer.clean(m_device);
+		m_indexBuffer.clean(m_device);
+		m_vertexBuffer.clean(m_device);
 
-		vkFreeMemory(m_device->logicalDevice, m_verticesBufferMemory, nullptr);
-		vkDestroyBuffer(m_device->logicalDevice, m_verticesBuffer, nullptr);
 		throw e; 
 	}
 
@@ -152,11 +102,9 @@ void MeshRenderer::loadFromMesh(const Mesh &mesh) {
 
 		m_pipeline.clean(m_device);
 
-		vkFreeMemory(m_device->logicalDevice, m_indexBufferMemory, nullptr);
-		vkDestroyBuffer(m_device->logicalDevice, m_indexBuffer, nullptr);
-
-		vkFreeMemory(m_device->logicalDevice, m_verticesBufferMemory, nullptr);
-		vkDestroyBuffer(m_device->logicalDevice, m_verticesBuffer, nullptr);
+		m_uniformBuffer.clean(m_device);
+		m_indexBuffer.clean(m_device);
+		m_vertexBuffer.clean(m_device);
 
 		throw e; 
 	}
@@ -210,8 +158,8 @@ void MeshRenderer::createCommandBuffers() {
 		vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
 
         VkDeviceSize offsets = 0;
-        vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, &m_verticesBuffer, &offsets);
-        vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, &m_vertexBuffer.buffer, &offsets);
+        vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 
         vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32_t>(m_nbIndices), 1, 0, 0, 0);
 
@@ -226,11 +174,9 @@ void MeshRenderer::clean() {
 
 	if(m_wellInitialized) {
 
-		vkFreeMemory(m_device->logicalDevice, m_indexBufferMemory, nullptr);
-		vkDestroyBuffer(m_device->logicalDevice, m_indexBuffer, nullptr);
-
-		vkFreeMemory(m_device->logicalDevice, m_verticesBufferMemory, nullptr);
-		vkDestroyBuffer(m_device->logicalDevice, m_verticesBuffer, nullptr);
+		m_uniformBuffer.clean(m_device);
+		m_indexBuffer.clean(m_device);
+		m_vertexBuffer.clean(m_device);
 
 		m_pipeline.clean(m_device);
 		m_wellInitialized = false;

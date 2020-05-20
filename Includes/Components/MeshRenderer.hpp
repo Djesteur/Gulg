@@ -6,6 +6,7 @@
 #include "Vulkan/VulkanDeclaration.hpp"
 #include "Vulkan/VulkanDevice.hpp"
 #include "Vulkan/VulkanPipeline.hpp"
+#include "Vulkan/VulkanBuffer.hpp"
 
 #include "Components/Component.hpp"
 #include "Components/Mesh.hpp"
@@ -34,8 +35,10 @@ class MeshRenderer: public AbstractComponent {
 
 		void clean();
 
-		VkBuffer m_verticesBuffer;
-		VkBuffer m_indexBuffer;
+		Buffer m_vertexBuffer;
+		Buffer m_indexBuffer;
+		Buffer m_uniformBuffer;
+		
 		size_t m_nbIndices;
 
 	private:
@@ -48,9 +51,6 @@ class MeshRenderer: public AbstractComponent {
 		bool m_wellInitialized;
 
 		std::vector<VkCommandBuffer> m_commandBuffers;
-		
-		VkDeviceMemory m_verticesBufferMemory;
-		VkDeviceMemory m_indexBufferMemory;
 
 		Pipeline m_pipeline;
 };
