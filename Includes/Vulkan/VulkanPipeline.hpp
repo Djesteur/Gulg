@@ -24,11 +24,13 @@ struct Pipeline {
 		vkDestroyPipeline(device->logicalDevice, pipeline, nullptr);
 		vkDestroyRenderPass(device->logicalDevice, renderPass, nullptr);
 		vkDestroyPipelineLayout(device->logicalDevice, pipelineLayout, nullptr);
+		vkDestroyDescriptorSetLayout(device->logicalDevice, descriptorSetLayout, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, vertexModule, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, fragmentModule, nullptr);
 	}
 
 	VkShaderModule vertexModule, fragmentModule;
+	VkDescriptorSetLayout descriptorSetLayout;
 	VkPipelineLayout pipelineLayout;
 	VkRenderPass renderPass;
 	VkPipeline pipeline;

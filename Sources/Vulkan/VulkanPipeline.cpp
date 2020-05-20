@@ -7,6 +7,7 @@
 //Pipeline creation
 
 void loadShadersFromFiles(std::shared_ptr<Device> device, VkShaderModule &shaderModule, const std::string &path);
+void createDescriptorSetLayout(std::shared_ptr<Device> device, Pipeline &pipeline);
 void createPipelineLayout(std::shared_ptr<Device> device, Pipeline &pipeline);
 void createRenderPass(std::shared_ptr<Device> device, Pipeline &pipeline);
 void createPipeline(std::shared_ptr<Device> device, Pipeline &pipeline);
@@ -30,10 +31,30 @@ void loadShaderFromFile(std::shared_ptr<Device> device, VkShaderModule &shaderMo
 	shaderModule = createShaderModule(device, code);
 }
 
+void createDescriptorSetLayout(std::shared_ptr<Device> device, Pipeline &pipeline) {
+
+	VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+	VkDescriptorSetLayoutCreateInfo layoutInfo{};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = 1;
+	layoutInfo.pBindings = &uboLayoutBinding;
+
+	checkVulkanError(vkCreateDescriptorSetLayout(device->logicalDevice, &layoutInfo, nullptr, &pipeline.descriptorSetLayout),
+					 "GulgEngine can't create VkDescriptorSetLayout.");
+	
+}
+
 void createPipelineLayout(std::shared_ptr<Device> device, Pipeline &pipeline) {
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &pipeline.descriptorSetLayout;
 
 	checkVulkanError(vkCreatePipelineLayout(device->logicalDevice, &pipelineLayoutInfo, nullptr, &pipeline.pipelineLayout), 
 					 "GulgEngine can't create VkPipelineLayout.");
@@ -292,9 +313,19 @@ Pipeline createVulkanPipeline(std::shared_ptr<Device> device, const std::string 
 		throw e; 
 	}
 
+	try { createDescriptorSetLayout(device, workingPipeline); }
+
+	catch(const std::exception &e) { 
+
+		vkDestroyShaderModule(device->logicalDevice, workingPipeline.vertexModule, nullptr);
+		vkDestroyShaderModule(device->logicalDevice, workingPipeline.fragmentModule, nullptr);
+		throw e; 
+	}
+
 	try { createPipelineLayout(device, workingPipeline); }
 	catch(const std::exception &e) { 
 
+		vkDestroyDescriptorSetLayout(device->logicalDevice, workingPipeline.descriptorSetLayout, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, workingPipeline.vertexModule, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, workingPipeline.fragmentModule, nullptr);
 		throw e; 
@@ -304,6 +335,7 @@ Pipeline createVulkanPipeline(std::shared_ptr<Device> device, const std::string 
 	catch(const std::exception &e) { 
 
 		vkDestroyPipelineLayout(device->logicalDevice, workingPipeline.pipelineLayout, nullptr);
+		vkDestroyDescriptorSetLayout(device->logicalDevice, workingPipeline.descriptorSetLayout, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, workingPipeline.vertexModule, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, workingPipeline.fragmentModule, nullptr);
 		throw e; 
@@ -314,6 +346,7 @@ Pipeline createVulkanPipeline(std::shared_ptr<Device> device, const std::string 
 
 		vkDestroyRenderPass(device->logicalDevice, workingPipeline.renderPass, nullptr);
 		vkDestroyPipelineLayout(device->logicalDevice, workingPipeline.pipelineLayout, nullptr);
+		vkDestroyDescriptorSetLayout(device->logicalDevice, workingPipeline.descriptorSetLayout, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, workingPipeline.vertexModule, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, workingPipeline.fragmentModule, nullptr);
 		throw e; 
@@ -325,6 +358,7 @@ Pipeline createVulkanPipeline(std::shared_ptr<Device> device, const std::string 
 		vkDestroyPipeline(device->logicalDevice, workingPipeline.pipeline, nullptr);
 		vkDestroyRenderPass(device->logicalDevice, workingPipeline.renderPass, nullptr);
 		vkDestroyPipelineLayout(device->logicalDevice, workingPipeline.pipelineLayout, nullptr);
+		vkDestroyDescriptorSetLayout(device->logicalDevice, workingPipeline.descriptorSetLayout, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, workingPipeline.vertexModule, nullptr);
 		vkDestroyShaderModule(device->logicalDevice, workingPipeline.fragmentModule, nullptr);
 		throw e; 
