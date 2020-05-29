@@ -3,6 +3,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <Libraries/GLFW/glfw3.h>
 
+#include <Libraries/glm/gtc/matrix_transform.hpp>
+
 #include "Logger.hpp"
 
 #include "GulgEngine/GulgEngine.hpp"
@@ -86,7 +88,11 @@ int main() {
         return -1;
     }
    
-    
+    glm::mat4 M{1.f}, V{1.f}, P{1.f};
+    M = glm::translate(M, glm::vec3{0.5, 0, 0});
+    glm::mat4 MVP[3] = {M, V, P};
+
+    renderer->m_uniformBuffer.write(device, &MVP[0][0][0], sizeof(glm::mat4)*3);
 
     Gg::Systems::RenderSystem renderSystem{engine, device};
 

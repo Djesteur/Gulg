@@ -17,7 +17,6 @@ layout(location = 0) out vec3 fragColor;
 void main() {
 
     gl_Position = MVPMatrix.projection * MVPMatrix.view * MVPMatrix.model * vec4(position, 1.0);
-    //gl_Position = vec4(position, 1.0);
 
     fragColor = color;
 }

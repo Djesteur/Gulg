@@ -44,6 +44,7 @@ class MeshRenderer: public AbstractComponent {
 	private:
 		
 		void createCommandBuffers();
+		void createDescriptorSets();
 
 
 		std::shared_ptr<Device> m_device;
@@ -51,6 +52,7 @@ class MeshRenderer: public AbstractComponent {
 		bool m_wellInitialized;
 
 		std::vector<VkCommandBuffer> m_commandBuffers;
+		std::vector<VkDescriptorSet> m_descriptorSets;
 
 		Pipeline m_pipeline;
 };

@@ -96,6 +96,20 @@ void MeshRenderer::loadFromMesh(const Mesh &mesh) {
 		throw e; 
 	}
 
+	try { createDescriptorSets(); }
+
+	catch(const std::exception &e) { 
+
+		m_pipeline.clean(m_device);
+
+		m_uniformBuffer.clean(m_device);
+		m_indexBuffer.clean(m_device);
+		m_vertexBuffer.clean(m_device);
+
+		throw e; 
+	}
+
+
 	try { createCommandBuffers(); }
 
 	catch(const std::exception &e) { 
@@ -108,6 +122,7 @@ void MeshRenderer::loadFromMesh(const Mesh &mesh) {
 
 		throw e; 
 	}
+	
 
 	m_wellInitialized = true;
 }
@@ -161,12 +176,43 @@ void MeshRenderer::createCommandBuffers() {
         vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, &m_vertexBuffer.buffer, &offsets);
         vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 
+        vkCmdBindDescriptorSets(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipelineLayout, 0, 1,
+                            &m_descriptorSets[0], 0, nullptr);
+
         vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32_t>(m_nbIndices), 1, 0, 0, 0);
 
 		vkCmdEndRenderPass(m_commandBuffers[i]);
 
 		checkVulkanError(vkEndCommandBuffer(m_commandBuffers[i]), "GulgEngine can't end recording command buffer.");
 	}
+}
+
+void MeshRenderer::createDescriptorSets() {
+
+	VkDescriptorSetAllocateInfo alloc_info[1];
+    alloc_info[0].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    alloc_info[0].descriptorPool = m_pipeline.descriptorPool;
+    alloc_info[0].descriptorSetCount = 1;
+    alloc_info[0].pSetLayouts = m_pipeline.descriptorSetLayout.data();
+
+    
+    m_descriptorSets.resize(1);
+
+    checkVulkanError(vkAllocateDescriptorSets(m_device->logicalDevice, alloc_info, m_descriptorSets.data()), 
+    				 "GulgEngine can't end recording command buffer.");
+
+    VkWriteDescriptorSet writes[1];
+
+    writes[0] = {};
+    writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writes[0].dstSet = m_descriptorSets[0];
+    writes[0].descriptorCount = 1;
+    writes[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    writes[0].pBufferInfo = &m_uniformBuffer.info;
+    writes[0].dstArrayElement = 0;
+    writes[0].dstBinding = 0;
+
+    vkUpdateDescriptorSets(m_device->logicalDevice, 1, writes, 0, nullptr);
 }
 
 

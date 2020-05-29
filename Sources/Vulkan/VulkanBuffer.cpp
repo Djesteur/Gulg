@@ -52,7 +52,9 @@ Buffer createVulkanBuffer(std::shared_ptr<Device> device, const uint32_t size, c
 
 	vkBindBufferMemory(device->logicalDevice, newBuffer.buffer, newBuffer.memory, 0);
 
-	newBuffer.size = size;
+	newBuffer.info.buffer = newBuffer.buffer;
+	newBuffer.info.offset = 0;
+	newBuffer.info.range = size;
 
 	return newBuffer;
 }

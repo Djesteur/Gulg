@@ -27,6 +27,7 @@ struct Buffer {
 
 	VkBuffer buffer;
 	VkDeviceMemory memory;
+	VkDescriptorBufferInfo info;
 
 	uint32_t size;
 };
