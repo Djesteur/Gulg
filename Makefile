@@ -1,7 +1,7 @@
 FMODARCHI = x86_64
 CXX       = g++
-CXXFLAGS  = -g -std=c++17 -Wextra -Wall -pedantic -O3
-LDFLAGS   = -L ./Libraries/GLFW/ -L ./Libraries/Vulkan/ -lvulkan -lglfw3 -lGL -lX11 -lpthread -ldl
+CXXFLAGS  = -g -std=c++2a -Wextra -Wall -pedantic
+LDFLAGS   = 
 
 SRCFILE = Sources
 INCFILE = Includes
@@ -40,17 +40,16 @@ all: $(EXENAME)
 
 $(EXENAME): $(OBJ)
 	@mkdir -p $(EXEFILE)
-	@echo "$(LGREENCOLOR)-------------------------------------------------------------------$(ENDCOLOR)"
-	@echo "$(LGREENCOLOR)| Linking:    $(ENDCOLOR)$(LYELLOWCOLOR)$^$(ENDCOLOR)"
+	@echo "$(LGREENCOLOR)├────────────────────────────────────────────────────────────────────────────────────────┘$(ENDCOLOR)"
+	@echo "$(LGREENCOLOR)│ Linking:    $(ENDCOLOR)$(LYELLOWCOLOR)$^$(ENDCOLOR)"
 	@$(CXX) $^ -o $(EXEFILE)/$(EXENAME) $(LDFLAGS)
-	@echo "$(LGREENCOLOR)-------------------------------------------------------------------$(ENDCOLOR)"
-	@echo "$(LGREENCOLOR)| Executable: $(ENDCOLOR)$(LPURPLECOLOR)$(EXEFILE)/$(EXENAME)$(ENDCOLOR)"
+	@echo "$(LGREENCOLOR)│ Executable: $(ENDCOLOR)$(LPURPLECOLOR)$(EXEFILE)/$(EXENAME)$(ENDCOLOR)"
 
 $(OBJFILE)/%.o: $(SRCFILE)/%.cpp
 	@mkdir -p $(DIRECTORIES)
-	@printf "%-100b %s" "$(LGREENCOLOR)| Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)"
+	@printf "%-100b %s" "$(LGREENCOLOR)│ Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)"
 	@-$(CXX) $(CXXFLAGS) -c $< -o $@ -I $(INCFILE)
-	@printf "%-20b" "$(LGREENCOLOR)[SUCCES]  |$(ENDCOLOR)\\n"
+	@printf "%-20b" "$(LGREENCOLOR)[SUCCES]  │$(ENDCOLOR)\\n"
 
 clean:
 	@rm -rf $(OBJFILE)
