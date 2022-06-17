@@ -17,7 +17,7 @@ class GulgEngine {
 
 	public:
 
-		GulgEngine();
+		GulgEngine(const bool wantLogs = false, const std::string logFilePath = "LogFile.log");
 
 		Entity getNewEntity();
 		void deleteEntity(const Entity entity);

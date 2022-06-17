@@ -2,9 +2,17 @@
 
 namespace Gg {
 
-GulgEngine::GulgEngine(): m_componentCreator{m_componentSignatureKeeper} {}
+GulgEngine::GulgEngine(const bool wantLogs = false, const std::string logFilePath = "LogFile.log"): m_componentCreator{m_componentSignatureKeeper} {
+
+	if(wantLogs) {
+
+		Logger::activateLogs();
+		Logger::openFile(logFilePath);
+	}
+}
 
 Entity GulgEngine::getNewEntity() {
+
 
 	Entity newEntity{m_entityCreator.createEntity()};
 	m_entitySignatureKeeper.addEntity(newEntity);
@@ -18,6 +26,7 @@ void GulgEngine::deleteEntity(const Entity entity) {
 	m_componentKeeper.deleteEntity(entity);
 	m_entitySignatureKeeper.deleteEntity(entity);
 	m_entityCreator.freeEntity(entity);
+
 }
 
 
@@ -40,6 +49,7 @@ void GulgEngine::deleteComponentToEntity(const Entity entity, const Component::T
 
 		m_componentKeeper.deleteComponent(entity, type);
 		m_entitySignatureKeeper.deleteToSignature(entity, m_componentSignatureKeeper.getSignature(type));
+		
 	}	
 
 	for(System::AbstractSystem& currentSystem: m_systems) { currentSystem.entitySignatureChanged(entity, m_entitySignatureKeeper.getSignature(entity)); }
@@ -52,12 +62,21 @@ bool GulgEngine::entityHasComponent(const Entity entity, const Component::Type t
 
 Signature GulgEngine::getEntitySignature(const Entity entity) const { return m_entitySignatureKeeper.getSignature(entity); }
 
-void GulgEngine::registerComponent(std::shared_ptr<Component::AbstractComponent> componentToRegister) { m_componentCreator.registerComponent(componentToRegister); }
+void GulgEngine::registerComponent(std::shared_ptr<Component::AbstractComponent> componentToRegister) { 
 
-void GulgEngine::unregisterComponent(std::shared_ptr<Component::AbstractComponent> componentToUnregister) { m_componentCreator.unregisterComponent(componentToUnregister); }
+	m_componentCreator.registerComponent(componentToRegister); 
+}
+
+void GulgEngine::unregisterComponent(std::shared_ptr<Component::AbstractComponent> componentToUnregister) { 
+
+	m_componentCreator.unregisterComponent(componentToUnregister); 
+}
 
 
-std::shared_ptr<Component::AbstractComponent> GulgEngine::createComponent(const Component::Type type) const { return m_componentCreator.createComponent(type); }
+std::shared_ptr<Component::AbstractComponent> GulgEngine::createComponent(const Component::Type type) const { 
+
+	return m_componentCreator.createComponent(type); 
+}
 
 std::shared_ptr<Component::AbstractComponent> GulgEngine::getComponent(const Entity entity, const Component::Type type) const {
 
@@ -73,7 +92,10 @@ Entity GulgEngine::cloneEntity(const Entity entityToClone) {
 	return newEntity;
 }
 
-void GulgEngine::addSystem(System::AbstractSystem& systemToAdd) { m_systems.emplace_back(systemToAdd); }
+void GulgEngine::addSystem(System::AbstractSystem& systemToAdd) { 
+
+	m_systems.emplace_back(systemToAdd); 
+}
 
 void GulgEngine::deleteSystem(System::AbstractSystem& systemToDelete) { 
 
@@ -89,7 +111,10 @@ void GulgEngine::deleteSystem(System::AbstractSystem& systemToDelete) {
 		}
 	}
 
-	if(foundSystemToDelete) { m_systems.erase(m_systems.begin() + systemToDeleteIndex); }
+	if(foundSystemToDelete) { 
+
+		m_systems.erase(m_systems.begin() + systemToDeleteIndex); 
+	}
 
 }
 

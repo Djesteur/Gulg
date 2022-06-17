@@ -19,6 +19,9 @@ class Logger {
 		static void setMaxCharacters(const uint32_t nb);
 		static void write(const std::string &sentence, const LogType log);
 
+		static void activateLogs();
+		static void desactivateLogs();
+
 	private:
 
 		Logger();
@@ -45,6 +48,7 @@ class Logger {
 		static bool m_firstEntry;
 		static uint32_t m_nbEntry;
 		static uint32_t m_nbMaxCharacter;
+		static bool m_logsAreActivated;
 };
 
 

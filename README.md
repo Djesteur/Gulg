@@ -4,4 +4,4 @@ Only the ECS engine part
 
 TODO:
 
- -Possibilité de log
+    - Rework logs

@@ -5,6 +5,7 @@ bool Logger::m_isReady{false};
 bool Logger::m_firstEntry{false};
 uint32_t Logger::m_nbEntry{0};
 uint32_t Logger::m_nbMaxCharacter{100};
+bool Logger::m_logsAreActivated{false};
 
 bool Logger::openFile(const std::string &path) {
 
@@ -34,7 +35,7 @@ void Logger::setMaxCharacters(const uint32_t nb) { m_nbMaxCharacter = nb; }
 
 void Logger::write(const std::string &sentence, const LogType type) { 
 
-	if(m_isReady) {
+	if(m_isReady && m_logsAreActivated) {
 
 		if(m_firstEntry) {
 
@@ -65,6 +66,9 @@ void Logger::write(const std::string &sentence, const LogType type) {
 		m_nbEntry++;
 	} 
 }
+
+void Logger::activateLogs() { m_logsAreActivated = true; }
+void Logger::desactivateLogs() { m_logsAreActivated = true; }
 
 
 void Logger::writeBegin() {
