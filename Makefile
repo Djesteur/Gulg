@@ -3,16 +3,19 @@ CXX       = g++
 CXXFLAGS  = -g -std=c++2a -Wextra -Wall -pedantic
 LDFLAGS   = 
 
-SRCFILE = Sources
-INCFILE = Includes
-OBJFILE = Obj
-EXEFILE = .
+SRCFOLDER = Sources
+INCFOLDER = Includes
+OBJFOLDER = Obj
+EXEFOLDER = .
+BINFOLDER = Bin
+STATICLIBNAME  = libgulgengine.a
+DYNAMICLIBNAME = libgulgengine.so
 
-DIRECTORIES = $(subst $(SRCFILE),$(OBJFILE),$(shell find $(SRCFILE) -type d))
+DIRECTORIES = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
+OBJFILES = $(shell find $(OBJFOLDER) -name *.o)
 
-EXENAME = test
-SRC     = $(wildcard $(SRCFILE)/*.cpp) $(wildcard $(SRCFILE)/**/*.cpp) $(wildcard $(SRCFILE)/**/**/*.cpp)
-OBJ     = $(SRC:$(SRCFILE)/%.cpp=$(OBJFILE)/%.o)
+SRC     = $(wildcard $(SRCFOLDER)/*.cpp) $(wildcard $(SRCFOLDER)/**/*.cpp) $(wildcard $(SRCFOLDER)/**/**/*.cpp)
+OBJ     = $(SRC:$(SRCFOLDER)/%.cpp=$(OBJFOLDER)/%.o)
 
 ENDCOLOR    = \033[m
 
@@ -36,21 +39,28 @@ OKSTRING   = $(LGREENCOLOR)[SUCCES]$(ENDCOLOR)
 WARSTRING  = $(LYELLOWCOLOR)[WARNING]$(ENDCOLOR)
 ERRSTRING  = $(LREDCOLOR)[ERROR]$(ENDCOLOR)
 
-all: $(EXENAME)
+all: compile staticlib dynamiclib
 
-$(EXENAME): $(OBJ)
-	@mkdir -p $(EXEFILE)
-	@echo "$(LGREENCOLOR)├────────────────────────────────────────────────────────────────────────────────────────┘$(ENDCOLOR)"
-	@echo "$(LGREENCOLOR)│ Linking:    $(ENDCOLOR)$(LYELLOWCOLOR)$^$(ENDCOLOR)"
-	@$(CXX) $^ -o $(EXEFILE)/$(EXENAME) $(LDFLAGS)
-	@echo "$(LGREENCOLOR)│ Executable: $(ENDCOLOR)$(LPURPLECOLOR)$(EXEFILE)/$(EXENAME)$(ENDCOLOR)"
+compile: $(OBJ)
+	@printf "$(LGREENCOLOR)Compilation done$(ENDCOLOR)\\n"
 
-$(OBJFILE)/%.o: $(SRCFILE)/%.cpp
+$(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
 	@mkdir -p $(DIRECTORIES)
-	@printf "%-100b %s" "$(LGREENCOLOR)│ Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)"
-	@-$(CXX) $(CXXFLAGS) -c $< -o $@ -I $(INCFILE)
-	@printf "%-20b" "$(LGREENCOLOR)[SUCCES]  │$(ENDCOLOR)\\n"
+	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER)
 
 clean:
-	@rm -rf $(OBJFILE)
-	@rm -f  $(EXEFILE)/$(EXENAME)
+	@rm -rf $(OBJFOLDER)
+	@rm -rf $(BINFOLDER)
+
+staticlib: compile
+	@mkdir -p $(BINFOLDER)
+	@printf "$(LGREENCOLOR)Creating static lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(STATICLIBNAME)$(ENDCOLOR)\\n"
+	@ar rsc $(BINFOLDER)/$(STATICLIBNAME) $(OBJFILES)
+	@printf "$(LGREENCOLOR)Static library created$(ENDCOLOR)\\n"
+
+dynamiclib: compile
+	@mkdir -p $(BINFOLDER)
+	@printf "$(LGREENCOLOR)Creating dynamic lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(DYNAMICLIBNAME)$(ENDCOLOR)\\n"
+	@-$(CXX) -shared -o $(BINFOLDER)/$(DYNAMICLIBNAME) $(OBJFILES)
+	@printf "$(LGREENCOLOR)Dynamic library created$(ENDCOLOR)\\n"
