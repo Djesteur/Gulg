@@ -49,10 +49,6 @@ $(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
 	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
 	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER)
 
-clean:
-	@rm -rf $(OBJFOLDER)
-	@rm -rf $(BINFOLDER)
-
 staticlib: compile
 	@mkdir -p $(BINFOLDER)
 	@printf "$(LGREENCOLOR)Creating static lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(STATICLIBNAME)$(ENDCOLOR)\\n"
@@ -64,3 +60,7 @@ dynamiclib: compile
 	@printf "$(LGREENCOLOR)Creating dynamic lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(DYNAMICLIBNAME)$(ENDCOLOR)\\n"
 	@-$(CXX) -shared -o $(BINFOLDER)/$(DYNAMICLIBNAME) $(OBJFILES)
 	@printf "$(LGREENCOLOR)Dynamic library created$(ENDCOLOR)\\n"
+
+clean:
+	@rm -rf $(OBJFOLDER)
+	@rm -rf $(BINFOLDER)
