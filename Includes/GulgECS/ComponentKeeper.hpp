@@ -5,9 +5,9 @@
 #include <map>
 #include <memory>
 
-#include "GulgDeclarations.hpp"
-#include "AbstractComponent.hpp"
-#include "Signature.hpp"
+#include "GulgECS/GulgDeclarations.hpp"
+#include "GulgECS/AbstractComponent.hpp"
+#include "GulgECS/Signature.hpp"
 
 namespace Gg {
 

@@ -1,17 +1,17 @@
 #ifndef GULG_ENGINE_HPP
 #define GULG_ENGINE_HPP
 
-#include "GulgDeclarations.hpp"
+#include "GulgECS/GulgDeclarations.hpp"
 
-#include "EntityCreator.hpp"
-#include "EntitySignatureKeeper.hpp"
-#include "ComponentKeeper.hpp"
-#include "ComponentCreator.hpp"
-#include "ComponentSignatureKeeper.hpp"
-#include "AbstractComponent.hpp"
-#include "AbstractSystem.hpp"
+#include "GulgECS/EntityCreator.hpp"
+#include "GulgECS/EntitySignatureKeeper.hpp"
+#include "GulgECS/ComponentKeeper.hpp"
+#include "GulgECS/ComponentCreator.hpp"
+#include "GulgECS/ComponentSignatureKeeper.hpp"
+#include "GulgECS/AbstractComponent.hpp"
+#include "GulgECS/AbstractSystem.hpp"
 
-#include "Logger.hpp"
+#include "GulgECS/Logger.hpp"
 
 namespace Gg {
 

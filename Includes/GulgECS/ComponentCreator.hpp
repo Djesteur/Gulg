@@ -4,11 +4,11 @@
 #include <memory>
 
 
-#include "Signature.hpp"
-#include "AbstractComponent.hpp"
-#include "ComponentKeeper.hpp"
-#include "GulgDeclarations.hpp"
-#include "ComponentSignatureKeeper.hpp"
+#include "GulgECS/Signature.hpp"
+#include "GulgECS/AbstractComponent.hpp"
+#include "GulgECS/ComponentKeeper.hpp"
+#include "GulgECS/GulgDeclarations.hpp"
+#include "GulgECS/ComponentSignatureKeeper.hpp"
 
 namespace Gg {
 

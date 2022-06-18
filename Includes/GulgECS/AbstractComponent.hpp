@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "GulgDeclarations.hpp"
+#include "GulgECS/GulgDeclarations.hpp"
 
 namespace Gg {
 

@@ -4,8 +4,8 @@
 #include <string>
 #include <map>
 
-#include "Signature.hpp"
-#include "GulgDeclarations.hpp"
+#include "GulgECS/Signature.hpp"
+#include "GulgECS/GulgDeclarations.hpp"
 
 namespace Gg {
 

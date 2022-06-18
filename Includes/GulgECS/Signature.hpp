@@ -4,7 +4,7 @@
 #include <vector>
 #include <array>
 
-#include "GulgDeclarations.hpp"
+#include "GulgECS/GulgDeclarations.hpp"
 
 namespace Gg {
 

@@ -5,7 +5,7 @@
 #include <deque>
 #include <string>
 
-#include "GulgDeclarations.hpp"
+#include "GulgECS/GulgDeclarations.hpp"
 
 namespace Gg {
 

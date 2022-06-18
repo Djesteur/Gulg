@@ -1,4 +1,4 @@
-#include "AbstractSystem.hpp"
+#include "GulgECS/AbstractSystem.hpp"
 
 namespace Gg {
 

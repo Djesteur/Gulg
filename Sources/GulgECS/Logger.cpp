@@ -1,4 +1,4 @@
-#include "Logger.hpp"
+#include "GulgECS/Logger.hpp"
 
 std::ofstream Logger::m_file;
 bool Logger::m_isReady{false};

@@ -8,6 +8,8 @@ INCFOLDER = Includes
 OBJFOLDER = Obj
 EXEFOLDER = .
 BINFOLDER = Bin
+STATICLIBFOLDER = Static
+DYNAMICLIBFOLDER = Dynamic
 STATICLIBNAME  = libgulgengine.a
 DYNAMICLIBNAME = libgulgengine.so
 
@@ -50,15 +52,15 @@ $(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
 	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER)
 
 staticlib: compile
-	@mkdir -p $(BINFOLDER)
+	@mkdir -p $(BINFOLDER)/$(STATICLIBFOLDER)
 	@printf "$(LGREENCOLOR)Creating static lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(STATICLIBNAME)$(ENDCOLOR)\\n"
-	@ar rsc $(BINFOLDER)/$(STATICLIBNAME) $(OBJFILES)
+	@ar rsc $(BINFOLDER)/$(STATICLIBFOLDER)/$(STATICLIBNAME) $(OBJFILES)
 	@printf "$(LGREENCOLOR)Static library created$(ENDCOLOR)\\n"
 
 dynamiclib: compile
-	@mkdir -p $(BINFOLDER)
+	@mkdir -p $(BINFOLDER)/$(DYNAMICLIBFOLDER)
 	@printf "$(LGREENCOLOR)Creating dynamic lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(DYNAMICLIBNAME)$(ENDCOLOR)\\n"
-	@-$(CXX) -shared -o $(BINFOLDER)/$(DYNAMICLIBNAME) $(OBJFILES)
+	@-$(CXX) -shared -o $(BINFOLDER)/$(DYNAMICLIBFOLDER)/$(DYNAMICLIBNAME) $(OBJFILES)
 	@printf "$(LGREENCOLOR)Dynamic library created$(ENDCOLOR)\\n"
 
 clean:
