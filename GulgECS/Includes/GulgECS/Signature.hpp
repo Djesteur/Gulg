@@ -6,6 +6,7 @@
 
 #include "GulgECS/GulgDeclarations.hpp"
 
+
 namespace Gg {
 
 
@@ -40,8 +41,6 @@ class Signature {
 		bool containSignature(const Signature &second) const;
 
 		std::string asString() const;
-
-		size_t getSignatureSize() const;
 
 	private:
 

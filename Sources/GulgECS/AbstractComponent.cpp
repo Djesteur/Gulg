@@ -1,1 +1,0 @@
-#include "GulgECS/AbstractComponent.hpp"

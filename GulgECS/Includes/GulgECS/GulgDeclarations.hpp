@@ -5,9 +5,9 @@
 
 namespace Gg {
 
-	#define NoEntity Entity{0}
-
 	using Entity = uint32_t;
+
+	#define NoEntity Entity{0}
 
 	const uint32_t MaxComponentType = 256;
 
@@ -16,7 +16,7 @@ namespace Gg {
 		enum class Type {
 
 			Default,
-			ComponentType1,
+			Sprite,
 			ComponentType2
 		};
 	}

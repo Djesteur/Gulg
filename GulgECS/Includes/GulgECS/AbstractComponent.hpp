@@ -16,7 +16,7 @@ class AbstractComponent {
 		AbstractComponent() {}
 
 		virtual std::shared_ptr<AbstractComponent> clone() const = 0; 
-		virtual Type getType() const = 0;
+		Type getType() const;
 
 
 	protected:
