@@ -6,7 +6,6 @@
 #include "GulgECS/EntityCreator.hpp"
 #include "GulgECS/EntitySignatureKeeper.hpp"
 #include "GulgECS/ComponentKeeper.hpp"
-#include "GulgECS/ComponentCreator.hpp"
 #include "GulgECS/ComponentSignatureKeeper.hpp"
 #include "GulgECS/AbstractComponent.hpp"
 #include "GulgECS/AbstractSystem.hpp"
@@ -32,10 +31,6 @@ class GulgEngine {
 
 		Signature getEntitySignature(const Entity entity) const;
 
-		void registerComponent(std::shared_ptr<Component::AbstractComponent> componentToRegister);
-		void unregisterComponent(std::shared_ptr<Component::AbstractComponent> componentToUnregister);
-
-		std::shared_ptr<Component::AbstractComponent> createComponent(const Component::Type type) const;
 		std::shared_ptr<Component::AbstractComponent> getComponent(const Entity entity, const Component::Type type) const;
 
 
@@ -50,9 +45,7 @@ class GulgEngine {
 
 		EntityCreator m_entityCreator;
 		EntitySignatureKeeper m_entitySignatureKeeper;
-		ComponentSignatureKeeper m_componentSignatureKeeper;
 		ComponentKeeper m_componentKeeper;    
-		ComponentCreator m_componentCreator;
 		
 		std::vector<std::reference_wrapper<System::AbstractSystem>> m_systems;                 
 };

@@ -2,13 +2,15 @@
 
 namespace Gg {
 
-GulgEngine::GulgEngine(const bool wantLogs, const std::string logFilePath): m_componentCreator{m_componentSignatureKeeper} {
+GulgEngine::GulgEngine(const bool wantLogs, const std::string logFilePath) {
 
 	if(wantLogs) {
 
 		Logger::activateLogs();
 		Logger::openFile(logFilePath);
 	}
+
+	ComponentSignatureKeeper::Init();
 }
 
 Entity GulgEngine::getNewEntity() {
@@ -36,7 +38,7 @@ void GulgEngine::addComponentToEntity(const Entity entity, std::shared_ptr<Compo
 	if(!m_componentKeeper.entityHasComponent(entity, component->getType())) {
 
 		m_componentKeeper.addComponent(entity, component);
-		m_entitySignatureKeeper.addToSignature(entity, m_componentSignatureKeeper.getSignature(component->getType()));
+		m_entitySignatureKeeper.addToSignature(entity, ComponentSignatureKeeper::getSignature(component->getType()));
 	}
 }
 
@@ -48,7 +50,7 @@ void GulgEngine::deleteComponentToEntity(const Entity entity, const Component::T
 	if(m_componentKeeper.entityHasComponent(entity, type)) {
 
 		m_componentKeeper.deleteComponent(entity, type);
-		m_entitySignatureKeeper.deleteToSignature(entity, m_componentSignatureKeeper.getSignature(type));
+		m_entitySignatureKeeper.deleteToSignature(entity, ComponentSignatureKeeper::getSignature(type));
 		
 	}	
 
@@ -62,21 +64,6 @@ bool GulgEngine::entityHasComponent(const Entity entity, const Component::Type t
 
 Signature GulgEngine::getEntitySignature(const Entity entity) const { return m_entitySignatureKeeper.getSignature(entity); }
 
-void GulgEngine::registerComponent(std::shared_ptr<Component::AbstractComponent> componentToRegister) { 
-
-	m_componentCreator.registerComponent(componentToRegister); 
-}
-
-void GulgEngine::unregisterComponent(std::shared_ptr<Component::AbstractComponent> componentToUnregister) { 
-
-	m_componentCreator.unregisterComponent(componentToUnregister); 
-}
-
-
-std::shared_ptr<Component::AbstractComponent> GulgEngine::createComponent(const Component::Type type) const { 
-
-	return m_componentCreator.createComponent(type); 
-}
 
 std::shared_ptr<Component::AbstractComponent> GulgEngine::getComponent(const Entity entity, const Component::Type type) const {
 

@@ -6,9 +6,16 @@ CLEANSUFFIX = _clean
 FOLDERSTOMAKE = $(addsuffix $(MAKESUFFIX), $(SUBFOLDERS))
 FOLDERSTOCLEAN = $(addsuffix $(CLEANSUFFIX), $(SUBFOLDERS))
 
-.PHONY: all clean $(FOLDERSTOMAKE) $(FOLDERSTOCLEAN)
+LISTOFCOMPONENTSEXEPATH = ./ListOfComponents/ListOfComponents
+GULGTYPESFOLDER = GulgECS/Includes/GulgECS/
+GULGSIGNATUREKEEPERPATH = GulgECS/Sources/GulgECS/ComponentSignatureKeeper.cpp
 
-all: $(FOLDERSTOMAKE)
+.PHONY: all clean listOfComponents $(FOLDERSTOMAKE) $(FOLDERSTOCLEAN)
+
+all: listOfComponents $(FOLDERSTOMAKE)
+
+listOfComponents:
+	@$(LISTOFCOMPONENTSEXEPATH) . $(GULGTYPESFOLDER) $(GULGSIGNATUREKEEPERPATH)
 
 $(FOLDERSTOMAKE):
 	@$(MAKE) -C $(subst $(MAKESUFFIX),, $@) --no-print-directory

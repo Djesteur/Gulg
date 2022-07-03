@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "GulgECS/Signature.hpp"
-#include "GulgECS/GulgDeclarations.hpp"
+#include "GulgECS/ComponentTypes.hpp"
 
 namespace Gg {
 
@@ -13,19 +13,15 @@ class ComponentSignatureKeeper {
 
 	public:
 
-		ComponentSignatureKeeper();
-
-		void registerComponentType(const Component::Type &newType);
-		void unregisterComponentType(const Component::Type &typeToUnregister);
-
-		bool componentTypeHasSignature(const Component::Type &typeToTest) const;
-
-		Signature getSignature(const Component::Type &componentTypeToGet) const;
-		Component::Type getComponentType(const Signature  &signatureToGet) const;
+		static Signature getSignature(const Component::Type &componentTypeToGet);
+		static void Init();
 
 	private:
 
-		std::map<Component::Type, Signature> m_signatures;                     
+		ComponentSignatureKeeper();
+
+		//Dont touch this, need for the auto-generated program
+		static std::map<Component::Type, Signature> m_signatures;                     
 };
 
 }

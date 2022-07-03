@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "GulgECS/GulgDeclarations.hpp"
+#include "GulgECS/ComponentTypes.hpp"
 
 namespace Gg {
 
@@ -16,7 +17,7 @@ class AbstractComponent {
 		AbstractComponent() {}
 
 		virtual std::shared_ptr<AbstractComponent> clone() const = 0; 
-		Type getType() const;
+		virtual Type getType() const;
 
 
 	protected:

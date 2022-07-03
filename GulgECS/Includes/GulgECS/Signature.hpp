@@ -5,6 +5,7 @@
 #include <array>
 
 #include "GulgECS/GulgDeclarations.hpp"
+#include "GulgECS/ComponentTypes.hpp"
 
 
 namespace Gg {
@@ -18,7 +19,7 @@ class Signature {
 		Signature();
 		Signature(const Signature &second);
 		Signature(const std::vector<Signature> &signaturesToAdd);
-		Signature(const std::array<bool, MaxComponentType> &signatureArray);
+		Signature(const std::array<bool, Component::MaxComponentType> &signatureArray);
 
 		void operator=(const Signature &second);
 
@@ -44,7 +45,7 @@ class Signature {
 
 	private:
 
-		std::array<bool, MaxComponentType> m_signature;                  
+		std::array<bool, Component::MaxComponentType> m_signature;                  
 };
 
 std::ostream& operator<<(std::ostream &stream, const Signature &sign);

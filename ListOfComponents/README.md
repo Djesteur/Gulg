@@ -1,0 +1,1 @@
+The goal of this program is to detect all children classes of AbstractComponent, and create the corresponding enumeration in GulgECS/ComponentTypes.hpp

@@ -1,7 +1,7 @@
 FMODARCHI = x86_64
 CXX       = g++
 CXXFLAGS  = -g -std=c++2a -Wextra -Wall -pedantic
-LIBRARIES = -L ../Gulg/Bin/Static -l$(LIBNAME) $(SFMLLIBRARIES) $(OTHERLIBRARIES)
+LIBRARIES = -L ../GulgECS/Bin/Static -l$(LIBNAME) $(SFMLLIBRARIES) $(OTHERLIBRARIES)
 SFMLLIBRARIES = -L ExternalLibraries/SFML/lib -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
 OTHERLIBRARIES = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
 
@@ -51,7 +51,7 @@ all: $(OBJ)
 $(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
 	@mkdir -p $(DIRECTORIES)
 	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
-	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) -I ../Gulg/Includes/ -I ./ExternalLibraries/SFML/include/
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) -I ../GulgECS/Includes/ -I ./ExternalLibraries/SFML/include/
 
 
 clean:
