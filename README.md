@@ -1,7 +1,6 @@
-***Gulg Engine***
-
-Only the ECS engine part
+Main folder of the project
 
 TODO:
 
-    - Rework logs
+	- A better configuration of the doxyfile
+	- Documentation

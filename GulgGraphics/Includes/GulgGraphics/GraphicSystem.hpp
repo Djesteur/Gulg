@@ -4,6 +4,7 @@
 #include "GulgECS/Signature.hpp"
 #include "GulgECS/AbstractSystem.hpp"
 #include "GulgECS/ComponentSignatureKeeper.hpp"
+#include "SFML/Graphics.hpp"
 
 namespace Gg {
 
@@ -13,7 +14,7 @@ class GraphicSystem: public AbstractSystem {
 
 	public:
 
-		GraphicSystem();
+		GraphicSystem(sf::RenderTarget &renderTarget);
 
 		virtual void update(const double deltaTime);
 
@@ -21,6 +22,8 @@ class GraphicSystem: public AbstractSystem {
 
 		std::vector<Entity> m_entities;
 		const Signature m_systemSignature;
+
+		sf::RenderTarget &m_renderTarget;
 };
 
 }
