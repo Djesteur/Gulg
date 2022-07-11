@@ -3,22 +3,26 @@
 
 #include "GulgECS/AbstractComponent.hpp"
 
+#include <SFML/Graphics.hpp>
+
 namespace Gg {
 
 namespace Component {
 
-class SpriteComponent: public AbstractComponent {
+class SpriteComponent: public AbstractComponent, public sf::Drawable {
 
 	public:
 
-		SpriteComponent();
+		SpriteComponent(sf::Vector2f position);
 
-		virtual std::shared_ptr<AbstractComponent> clone() const; 
+		virtual std::shared_ptr<AbstractComponent> clone() const;
 
+	private:
 
-	protected:
+		sf::Texture m_texture;
+		sf::Sprite m_sprite;
 
-		Type m_componentType;                  
+    	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;              
 };
 
 }

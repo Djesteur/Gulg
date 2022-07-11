@@ -9,13 +9,15 @@
 
 namespace Gg {
 
+class GulgEngine;
+
 namespace System {
 
 class AbstractSystem {
 
 	public:
 
-		AbstractSystem();
+		AbstractSystem(GulgEngine &engine, const Signature systemSignature);
 
 		virtual ~AbstractSystem(); 
 
@@ -32,6 +34,7 @@ class AbstractSystem {
 
 		std::vector<Entity> m_entities;
 
+		GulgEngine &m_gulgEngine;
 		const Signature m_systemSignature;
 };
 

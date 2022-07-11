@@ -1,10 +1,13 @@
 #include "GulgECS/AbstractSystem.hpp"
+#include "GulgECS/GulgEngine.hpp" 
 
 namespace Gg {
 
 namespace System {
 
-AbstractSystem::AbstractSystem(){}
+AbstractSystem::AbstractSystem(GulgEngine &engine, const Signature systemSignature): 
+	m_gulgEngine{engine},
+	m_systemSignature{systemSignature} {}
 
 AbstractSystem::~AbstractSystem() {}
 

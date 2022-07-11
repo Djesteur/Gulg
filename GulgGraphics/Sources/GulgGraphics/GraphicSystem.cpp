@@ -5,22 +5,22 @@ namespace Gg {
 namespace System {
 
 
-GraphicSystem::GraphicSystem(sf::RenderTarget &renderTarget): 
-	m_systemSignature{ComponentSignatureKeeper::getSignature(Component::Type::SpriteComponent)},
-	m_renderTarget{renderTarget}
+GraphicSystem::GraphicSystem(GulgEngine &engine, sf::RenderWindow &renderWindow): 
+	AbstractSystem{engine, ComponentSignatureKeeper::getSignature(Component::Type::SpriteComponent)},
+	m_renderWindow{renderWindow}
 	{}
 
 
 void GraphicSystem::update(const double deltaTime) {
 
-	m_renderTarget.clear(sf::Color::Black);
+	m_renderWindow.clear(sf::Color::Black);
 
-	for(const Entity currentEntity: m_entities) {
+	for(const Entity currentEntity: m_entities) { 
 
-		//m_renderTarget.draw();
+		m_renderWindow.draw(*std::static_pointer_cast<Component::SpriteComponent>(m_gulgEngine.getComponent(currentEntity, Component::Type::SpriteComponent))); 
 	}
 
-	//m_renderTarget.display();
+	m_renderWindow.display();
 
 }
 
