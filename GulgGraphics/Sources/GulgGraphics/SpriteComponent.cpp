@@ -5,9 +5,9 @@ namespace Gg {
 namespace Component {
 
 
-SpriteComponent::SpriteComponent(sf::Vector2f position): AbstractComponent{Type::SpriteComponent} {
+SpriteComponent::SpriteComponent(sf::Vector2f position, std::string texturePath): AbstractComponent{Type::SpriteComponent} {
 
-	m_texture.loadFromFile("GulgGraphics/Datas/characterTest.png");
+	m_texture.loadFromFile(texturePath);
 
 	m_sprite.setTexture(m_texture);
 	m_sprite.setPosition(position);

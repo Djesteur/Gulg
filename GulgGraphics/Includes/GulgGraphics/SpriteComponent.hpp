@@ -1,6 +1,8 @@
 #ifndef SPRITE_COMPONENT_HPP
 #define SPRITE_COMPONENT_HPP
 
+#include <string>
+
 #include "GulgECS/AbstractComponent.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -13,7 +15,7 @@ class SpriteComponent: public AbstractComponent, public sf::Drawable {
 
 	public:
 
-		SpriteComponent(sf::Vector2f position);
+		SpriteComponent(sf::Vector2f position, std::string texturePath);
 
 		virtual std::shared_ptr<AbstractComponent> clone() const;
 

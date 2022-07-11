@@ -13,7 +13,7 @@ GraphicSystem::GraphicSystem(GulgEngine &engine, sf::RenderWindow &renderWindow)
 
 void GraphicSystem::update(const double deltaTime) {
 
-	m_renderWindow.clear(sf::Color::Black);
+	m_renderWindow.clear(sf::Color{165, 80, 54});
 
 	for(const Entity currentEntity: m_entities) { 
 
