@@ -30,9 +30,12 @@ LPURPLECOLOR = \033[1;35m
 LCYANCOLOR	 = \033[1;36m
 LGREYCOLOR	 = \033[1;37m
 
-.PHONY: all clean listOfComponents documentation $(FOLDERSTOMAKE) $(FOLDERSTOCLEAN)
+.PHONY: all clean listOfComponents documentation $(FOLDERSTOMAKE) $(FOLDERSTOCLEAN) toDoBeforeMake
 
-all: listOfComponents $(FOLDERSTOMAKE) documentation
+all: toDoBeforeMake listOfComponents $(FOLDERSTOMAKE) documentation
+
+toDoBeforeMake:
+	@clear
 
 listOfComponents:
 	@$(LISTOFCOMPONENTSEXEPATH) . $(GULGTYPESFOLDER) $(GULGSIGNATUREKEEPERPATH)

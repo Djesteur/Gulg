@@ -14,15 +14,10 @@ class AbstractComponent {
 
 	public:
 
-		AbstractComponent(const Type componentType);
+		AbstractComponent();
 
-		virtual std::shared_ptr<AbstractComponent> clone() const = 0; 
-		virtual Type getType() const;
-
-
-	protected:
-
-		const Type m_componentType;        
+		virtual std::shared_ptr<AbstractComponent> clone() const = 0;
+       
 };
 
 }}

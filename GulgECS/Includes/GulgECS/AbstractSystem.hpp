@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "GulgECS/ComponentKeeper.hpp"
 #include "GulgECS/Signature.hpp"
 #include "GulgECS/GulgDeclarations.hpp"
 
@@ -17,12 +18,12 @@ class AbstractSystem {
 
 	public:
 
-		AbstractSystem(GulgEngine &engine, const Signature systemSignature);
+		AbstractSystem(ComponentKeeper &keeper, const Signature systemSignature);
 
 		virtual ~AbstractSystem(); 
 
 		virtual void addEntity(const Entity newEntity, const Signature entitySignature);
-		virtual void deleteEntity(const Entity newEntity);
+		virtual void removeEntity(const Entity newEntity);
 
 		virtual void entitySignatureChanged(const Entity entity, const Signature newSignature);
 
@@ -34,8 +35,9 @@ class AbstractSystem {
 
 		std::vector<Entity> m_entities;
 
-		GulgEngine &m_gulgEngine;
+		ComponentKeeper &m_componentKeeper;
 		const Signature m_systemSignature;
+
 };
 
 }}

@@ -5,9 +5,9 @@ namespace Gg {
 namespace System {
 
 
-GraphicSystem::GraphicSystem(GulgEngine &engine, sf::RenderWindow &renderWindow): 
-	AbstractSystem{engine, ComponentSignatureKeeper::getSignature(Component::Type::SpriteComponent)},
-	m_renderWindow{renderWindow}
+GraphicSystem::GraphicSystem(ComponentKeeper &keeper, sf::RenderWindow &window): 
+	AbstractSystem{keeper, ComponentSignatureKeeper::getSignature(Component::Type::SpriteComponent)},
+	m_renderWindow{window}
 	{}
 
 
@@ -17,7 +17,7 @@ void GraphicSystem::update(const double deltaTime) {
 
 	for(const Entity currentEntity: m_entities) { 
 
-		m_renderWindow.draw(*std::static_pointer_cast<Component::SpriteComponent>(m_gulgEngine.getComponent(currentEntity, Component::Type::SpriteComponent))); 
+		m_renderWindow.draw(*m_componentKeeper.getComponent<Component::SpriteComponent>(currentEntity));
 	}
 
 	m_renderWindow.display();

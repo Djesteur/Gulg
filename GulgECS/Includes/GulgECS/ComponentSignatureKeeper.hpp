@@ -6,12 +6,16 @@
 
 #include "GulgECS/Signature.hpp"
 #include "GulgECS/ComponentTypes.hpp"
+#include "GulgECS/GulgDeclarations.hpp"
 
 namespace Gg {
 
 class ComponentSignatureKeeper {
 
 	public:
+
+		template<Component::ComponentConstraint T>
+		static Signature getSignature(const Component::Type &componentTypeToGet) { return getSignature(T::getType()); }
 
 		static Signature getSignature(const Component::Type &componentTypeToGet);
 		static void Init();

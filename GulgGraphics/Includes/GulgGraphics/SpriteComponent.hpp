@@ -15,9 +15,13 @@ class SpriteComponent: public AbstractComponent, public sf::Drawable {
 
 	public:
 
+
+		SpriteComponent();
 		SpriteComponent(sf::Vector2f position, std::string texturePath);
 
 		virtual std::shared_ptr<AbstractComponent> clone() const;
+
+		static Component::Type getType() { return Component::Type::SpriteComponent; }
 
 	private:
 

@@ -4,8 +4,10 @@ namespace Gg {
 
 namespace Component {
 
+SpriteComponent::SpriteComponent() {}
 
-SpriteComponent::SpriteComponent(sf::Vector2f position, std::string texturePath): AbstractComponent{Type::SpriteComponent} {
+
+SpriteComponent::SpriteComponent(sf::Vector2f position, std::string texturePath) {
 
 	m_texture.loadFromFile(texturePath);
 

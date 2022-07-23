@@ -14,30 +14,27 @@ int main() {
 
 	sf::RenderWindow window{sf::VideoMode{800, 800}, "Gulg Graphics"};
 
-	Gg::System::GraphicSystem graphicSystem(engine, window);
-	engine.addSystem(graphicSystem);
+	std::shared_ptr<Gg::System::GraphicSystem> graphicSystem = engine.createSystem<Gg::System::GraphicSystem>(window);
 
+	Gg::Entity newEntity1{engine.createEntity()};
+	engine.createComponent<Gg::Component::SpriteComponent>(newEntity1, sf::Vector2f{400.f, 200.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/White.png");
+	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity1);
 
+	Gg::Entity newEntity2{engine.createEntity()};
+	engine.createComponent<Gg::Component::SpriteComponent>(newEntity2, sf::Vector2f{650.f, 350.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Blue.png");
+	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity2);
 
-	Gg::Entity newEntity1{engine.getNewEntity()};
-	engine.addComponentToEntity(newEntity1, std::make_shared<Gg::Component::SpriteComponent>(sf::Vector2f{400.f, 200.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/White.png"));
-	graphicSystem.addEntity(newEntity1, engine.getEntitySignature(newEntity1));
+	Gg::Entity newEntity3{engine.createEntity()};
+	engine.createComponent<Gg::Component::SpriteComponent>(newEntity3, sf::Vector2f{550.f, 600.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Black.png");
+	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity3);
 
-	Gg::Entity newEntity2{engine.getNewEntity()};
-	engine.addComponentToEntity(newEntity2, std::make_shared<Gg::Component::SpriteComponent>(sf::Vector2f{650.f, 350.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Blue.png"));
-	graphicSystem.addEntity(newEntity2, engine.getEntitySignature(newEntity2));
+	Gg::Entity newEntity4{engine.createEntity()};
+	engine.createComponent<Gg::Component::SpriteComponent>(newEntity4, sf::Vector2f{250.f, 600.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Red.png");
+	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity4);
 
-	Gg::Entity newEntity3{engine.getNewEntity()};
-	engine.addComponentToEntity(newEntity3, std::make_shared<Gg::Component::SpriteComponent>(sf::Vector2f{550.f, 600.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Black.png"));
-	graphicSystem.addEntity(newEntity3, engine.getEntitySignature(newEntity3));
-
-	Gg::Entity newEntity4{engine.getNewEntity()};
-	engine.addComponentToEntity(newEntity4, std::make_shared<Gg::Component::SpriteComponent>(sf::Vector2f{250.f, 600.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Red.png"));
-	graphicSystem.addEntity(newEntity4, engine.getEntitySignature(newEntity4));
-
-	Gg::Entity newEntity5{engine.getNewEntity()};
-	engine.addComponentToEntity(newEntity5, std::make_shared<Gg::Component::SpriteComponent>(sf::Vector2f{150.f, 350.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Green.png"));
-	graphicSystem.addEntity(newEntity5, engine.getEntitySignature(newEntity5));
+	Gg::Entity newEntity5{engine.createEntity()};
+	engine.createComponent<Gg::Component::SpriteComponent>(newEntity5, sf::Vector2f{150.f, 350.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Green.png");
+	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity5);
 
 	while (window.isOpen()) {
 
@@ -47,7 +44,7 @@ int main() {
             if (event.type == sf::Event::Closed) { window.close(); }
         }
 
-        graphicSystem.update(0);
+        graphicSystem->update(0);
     }
 
 

@@ -1,5 +1,7 @@
 #include "GulgECS/ComponentKeeper.hpp"
 
+#include <iostream>
+
 namespace Gg {
 
 ComponentKeeper::ComponentKeeper() {}
@@ -14,13 +16,6 @@ void ComponentKeeper::deleteEntity(const Entity currentEntity) {
 	if(entityExist(currentEntity)) { m_components.erase(m_components.find(currentEntity)); }
 }
 
-void ComponentKeeper::addComponent(const Entity currentEntity, const std::shared_ptr<Component::AbstractComponent> newComponent) {
-
-	if(!entityExist(currentEntity)) { m_components.insert(std::make_pair(currentEntity, std::map<Component::Type, std::shared_ptr<Component::AbstractComponent>>{})); }
-
-	if(entityHasComponent(currentEntity, newComponent->getType())) { m_components[currentEntity][newComponent->getType()] = newComponent; }
-	else { m_components[currentEntity].insert(std::make_pair(newComponent->getType(), newComponent)); }
-}
 
 void ComponentKeeper::deleteComponent(const Entity currentEntity, const Component::Type type) {
 
@@ -66,6 +61,7 @@ std::shared_ptr<Component::AbstractComponent> ComponentKeeper::getComponent(cons
 
 	throw std::runtime_error("Gulg error: asked for component " + std::to_string(static_cast<uint32_t>(type)) + " of entity " 
 		+ std::to_string(currentEntity) + ", which doesn't exist.");
+
 	return nullptr;
 }
 

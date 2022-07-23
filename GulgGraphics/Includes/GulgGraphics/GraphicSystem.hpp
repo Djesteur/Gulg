@@ -18,7 +18,7 @@ class GraphicSystem: public AbstractSystem {
 
 	public:
 
-		GraphicSystem(GulgEngine &engine, sf::RenderWindow &renderWindow);
+		GraphicSystem(ComponentKeeper &keeper, sf::RenderWindow &window);
 
 		virtual void update(const double deltaTime);
 

@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <array>
+#include <string>
+#include <sstream>
 
 #include "GulgECS/GulgDeclarations.hpp"
 #include "GulgECS/ComponentTypes.hpp"
