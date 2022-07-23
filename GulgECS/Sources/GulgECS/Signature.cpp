@@ -20,26 +20,6 @@ Signature::Signature(const std::array<bool, Component::MaxComponentType> &signat
 
 void Signature::operator=(const Signature &second) { m_signature = second.m_signature; }
 
-bool Signature::operator<(const Signature &second) const {
-
-	for(size_t i{0}; i < Component::MaxComponentType; i++) { 
-
-		if(m_signature[i] != second.m_signature[i] && m_signature[i] == true) { return false; } // So second.m_signature[i] == false
-	}
-
-	return true;
-}
-
-bool Signature::operator>(const Signature &second) const {
-
-	for(size_t i{0}; i < Component::MaxComponentType; i++) { 
-
-		if(m_signature[i] != second.m_signature[i] && m_signature[i] == false) { return false; } // So second.m_signature[i] == false
-	}
-
-	return true;
-}
-
 bool Signature::operator==(const Signature &second) const {
 
 	for(size_t i{0}; i < Component::MaxComponentType; i++) { 

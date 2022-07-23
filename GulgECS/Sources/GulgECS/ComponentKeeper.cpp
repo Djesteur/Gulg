@@ -11,7 +11,7 @@ void ComponentKeeper::addEntity(const Entity newEntity) {
 	if(!entityExist(newEntity)) { m_components.insert(std::make_pair(newEntity, std::map<Component::Type, std::shared_ptr<Component::AbstractComponent>>{})); }
 }
 
-void ComponentKeeper::deleteEntity(const Entity currentEntity) {
+void ComponentKeeper::removeEntity(const Entity currentEntity) {
 
 	if(entityExist(currentEntity)) { m_components.erase(m_components.find(currentEntity)); }
 }

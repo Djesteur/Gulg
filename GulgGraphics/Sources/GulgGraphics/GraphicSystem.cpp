@@ -6,7 +6,7 @@ namespace System {
 
 
 GraphicSystem::GraphicSystem(ComponentKeeper &keeper, sf::RenderWindow &window): 
-	AbstractSystem{keeper, ComponentSignatureKeeper::getSignature(Component::Type::SpriteComponent)},
+	AbstractSystem{keeper, ComponentSignatureKeeper::getSignature<SpriteComponent>()},
 	m_renderWindow{window}
 	{}
 

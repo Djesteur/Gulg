@@ -25,9 +25,9 @@ Entity GulgEngine::createEntity() {
 
 void GulgEngine::deleteEntity(const Entity entity) {
 
-	m_componentKeeper.deleteEntity(entity);
-	m_entitySignatureKeeper.deleteEntity(entity);
-	m_entityCreator.freeEntity(entity);
+	m_componentKeeper.removeEntity(entity);
+	m_entitySignatureKeeper.removeEntity(entity);
+	m_entityCreator.deleteEntity(entity);
 }
 
 
@@ -36,6 +36,12 @@ Entity GulgEngine::cloneEntity(const Entity entityToClone) {
 	Entity newEntity{createEntity()};
 	m_entitySignatureKeeper.addToSignature(newEntity, m_entitySignatureKeeper.getSignature(entityToClone));
 	m_componentKeeper.cloneEntity(entityToClone, newEntity);
+
+	for(std::shared_ptr<AbstractSystem> currentSystem: m_systems) { 
+
+		if(currentSystem->isInSystem(entityToClone)) { currentSystem->addEntity(newEntity, m_entitySignatureKeeper.getSignature(newEntity)); }
+
+	 }
 
 	return newEntity;
 }
@@ -46,7 +52,7 @@ void GulgEngine::deleteComponent(const Entity entity, const Component::Type type
 	if(m_componentKeeper.entityHasComponent(entity, type)) {
 
 		m_componentKeeper.deleteComponent(entity, type);
-		m_entitySignatureKeeper.deleteToSignature(entity, ComponentSignatureKeeper::getSignature(type));
+		m_entitySignatureKeeper.removeFromSignature(entity, ComponentSignatureKeeper::getSignature(type));
 	}	
 
 	for(std::shared_ptr<AbstractSystem> currentSystem: m_systems) { currentSystem->entitySignatureChanged(entity, m_entitySignatureKeeper.getSignature(entity)); }

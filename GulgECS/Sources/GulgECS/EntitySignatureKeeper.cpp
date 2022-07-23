@@ -10,7 +10,7 @@ void EntitySignatureKeeper::addEntity(const Entity entity) {
 	if(!entityExist(entity)) { m_signatures.insert(std::make_pair(entity, Signature{})); }
 }
 
-void EntitySignatureKeeper::deleteEntity(const Entity entity) {
+void EntitySignatureKeeper::removeEntity(const Entity entity) {
 
 	if(entityExist(entity)) { m_signatures.erase(m_signatures.find(entity)); }
 }
@@ -26,7 +26,7 @@ void EntitySignatureKeeper::addToSignature(const Entity entity, const Signature 
 	if(entityExist(entity)) { m_signatures[entity] += signature; }
 }
 
-void EntitySignatureKeeper::deleteToSignature(const Entity entity, const Signature signature) {
+void EntitySignatureKeeper::removeFromSignature(const Entity entity, const Signature signature) {
 
 	if(entityExist(entity)) { m_signatures[entity] -= signature; }
 }

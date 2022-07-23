@@ -15,7 +15,7 @@ Entity EntityCreator::createEntity() {
 	return newEntity;
 }
 
-void EntityCreator::freeEntity(const Entity freeEntity) { m_nextEntities.emplace_back(freeEntity); }
+void EntityCreator::deleteEntity(const Entity freeEntity) { m_nextEntities.emplace_back(freeEntity); }
 
 void EntityCreator::addToReserve(const uint32_t numberOfEntititesToReserve) {
 

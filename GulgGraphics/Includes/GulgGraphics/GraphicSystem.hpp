@@ -14,15 +14,29 @@ namespace Gg {
 
 namespace System {
 
+/**
+ * @brief      A graphic system
+ */
 class GraphicSystem: public AbstractSystem {
 
 	public:
 
+		/**
+		 * @brief      Constructs a new instance.
+		 *
+		 * @param      keeper  The keeper
+		 * @param      window  The window
+		 */
 		GraphicSystem(ComponentKeeper &keeper, sf::RenderWindow &window);
 
+		/**
+		 * @brief      Updates the given delta time.
+		 *
+		 * @param[in]  deltaTime  The delta time
+		 */
 		virtual void update(const double deltaTime);
 
-	protected:
+	private:
 
 		sf::RenderWindow &m_renderWindow;
 };

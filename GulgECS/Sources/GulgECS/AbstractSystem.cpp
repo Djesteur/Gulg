@@ -9,8 +9,6 @@ AbstractSystem::AbstractSystem(ComponentKeeper &keeper, const Signature systemSi
 	m_componentKeeper{keeper},
 	m_systemSignature{systemSignature} {}
 
-AbstractSystem::~AbstractSystem() {}
-
 void AbstractSystem::addEntity(const Entity entity, const Signature entitySignature) {
 
 	if(entitySignature.containSignature(m_systemSignature)) { m_entities.emplace_back(entity); }

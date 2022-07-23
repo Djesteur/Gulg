@@ -8,18 +8,58 @@
 #include <ctime>
 #include <vector>
 
+/**
+ * @brief      Type of log entry
+ */
 enum class LogType{Error, Warning, Debug, Info};
 
+/**
+ * @brief      Logger for GulgEngine
+ */
 class Logger {
 
 	public:
 
+		/**
+		 * @brief      Opens a file.
+		 *
+		 * @param[in]  path  The path
+		 *
+		 * @return     True if the file is succesfully opened, else false
+		 */
 		static bool openFile(const std::string &path);
+		
+		/**
+		 * @brief      Closes the opened file.
+		 */
 		static void closeFile();
+
+
+		/**
+		 * @brief      Sets the maximum number of characters per line.
+		 *
+		 * @param[in]  nb    The new value
+		 */
 		static void setMaxCharacters(const uint32_t nb);
+
+
+		/**
+		 * @brief      Write an entry into the logs
+		 *
+		 * @param[in]  sentence  The sentence
+		 * @param[in]  log       The log type
+		 */
 		static void write(const std::string &sentence, const LogType log);
 
+		/**
+		 * @brief      Enable logs
+		 */
 		static void activateLogs();
+
+
+		/**
+		 * @brief      Disable logs
+		 */
 		static void desactivateLogs();
 
 	private:
