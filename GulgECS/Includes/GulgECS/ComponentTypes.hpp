@@ -7,11 +7,12 @@ namespace Gg {
 
 	namespace Component {
 
-		const uint32_t MaxComponentType = 1;
+		const uint32_t MaxComponentType = 2;
 
 		enum class Type {
 
-			SpriteComponent
+			Drawable,
+			Position
 		};
 	}
 }

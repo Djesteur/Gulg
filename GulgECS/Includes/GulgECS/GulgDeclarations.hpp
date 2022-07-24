@@ -16,6 +16,16 @@ namespace Gg {
 	/// The "null" entity
 	#define NoEntity Entity{0}
 
+	#define STATIC_GET_TYPE(componentType)											    \
+																						\
+	/**																					\
+	* @brief      Gets the type.														\
+	*																					\
+	* @return     The type.																\
+	*/																					\
+																						\
+	static Gg::Component::Type getType() { return Gg::Component::Type::componentType; } \
+
 	namespace Component {
 
 		class AbstractComponent;
@@ -23,7 +33,7 @@ namespace Gg {
 
 		/**
 		 * \concept ComponentConstraint
-		 * @brief Constraint for the component. Must inherits of AbstractComponent, and has a satic function with the signature: Component::Type getType();
+		 * @brief Constraint for the component. Must inherits of AbstractComponent, and has a static function in the header file with the signature: static Gg::Component::Type getType();
 		 */
 		template<class T> 											
 		concept ComponentConstraint = requires(T a) {   			

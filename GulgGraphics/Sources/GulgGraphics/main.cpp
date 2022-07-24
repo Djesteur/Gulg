@@ -1,40 +1,50 @@
+#include <SFML/System/Vector2.hpp>
+
 #include "GulgECS/GulgEngine.hpp"
 #include "GulgECS/GulgDeclarations.hpp"
 #include "GulgECS/ComponentTypes.hpp"
 
-#include "GulgGraphics/GraphicSystem.hpp"
-#include "GulgGraphics/SpriteComponent.hpp"
+#include "GulgGraphics/Systems/Graphics2D.hpp"
+#include "GulgGraphics/Components/Sprite.hpp"
 
-#include <SFML/Graphics.hpp>
+#include "GeneratedMap.hpp"
 
 int main() {
 
+	const sf::Vector2u mapSize{100, 100};
+	const sf::Vector2u tileTextureSize{32, 32};
+	const sf::VideoMode windowVideoMode{800, 800};
+
+	GenerationDatas datas;
+
+	datas.mapSizeX = mapSize.x;
+	datas.mapSizeY = mapSize.y;
+	datas.numberOfGrassSeeds = 12;
+	datas.numberOfEarthSeeds = 4;
+	datas.numberOfRivers = 1;
+	datas.numberOfRoads = 0;
+
+	std::vector<Tile> tileMap = generateMap(datas);
+
 	Gg::GulgEngine engine;
 
+	sf::RenderWindow window{windowVideoMode, "Gulg Graphics"};
 
-	sf::RenderWindow window{sf::VideoMode{800, 800}, "Gulg Graphics"};
+	std::shared_ptr<Gg::System::Graphics2D> graphicSystem = engine.createSystem<Gg::System::Graphics2D>(window);
 
-	std::shared_ptr<Gg::System::GraphicSystem> graphicSystem = engine.createSystem<Gg::System::GraphicSystem>(window);
+	for(Tile &currentTile: tileMap) {
 
-	Gg::Entity newEntity1{engine.createEntity()};
-	engine.createComponent<Gg::Component::SpriteComponent>(newEntity1, sf::Vector2f{400.f, 200.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/White.png");
-	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity1);
+		Gg::Entity currentTileEntity{engine.createEntity()};
+		engine.createComponent<Gg::Component::Sprite>(currentTileEntity, sf::Vector2f{currentTile.tilePositionX*tileTextureSize.x*1.f, currentTile.tilePositionY*tileTextureSize.y*1.f}, currentTile.typeTexturePath);
+		engine.addEntityToSystem<Gg::System::Graphics2D>(currentTileEntity);
+	}
 
-	Gg::Entity newEntity2{engine.createEntity()};
-	engine.createComponent<Gg::Component::SpriteComponent>(newEntity2, sf::Vector2f{650.f, 350.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Blue.png");
-	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity2);
+	sf::View tileMapView;
+	tileMapView.setCenter(mapSize.x*tileTextureSize.x/2, mapSize.y*tileTextureSize.y/2);
+	tileMapView.setSize(mapSize.x*tileTextureSize.x, mapSize.y*tileTextureSize.y);
+	tileMapView.setViewport(sf::FloatRect{0.f, 0.f, 1.f, 1.f});
 
-	Gg::Entity newEntity3{engine.createEntity()};
-	engine.createComponent<Gg::Component::SpriteComponent>(newEntity3, sf::Vector2f{550.f, 600.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Black.png");
-	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity3);
-
-	Gg::Entity newEntity4{engine.createEntity()};
-	engine.createComponent<Gg::Component::SpriteComponent>(newEntity4, sf::Vector2f{250.f, 600.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Red.png");
-	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity4);
-
-	Gg::Entity newEntity5{engine.createEntity()};
-	engine.createComponent<Gg::Component::SpriteComponent>(newEntity5, sf::Vector2f{150.f, 350.f} - sf::Vector2f{32, 32}, "GulgGraphics/Datas/Green.png");
-	engine.addEntityToSystem<Gg::System::GraphicSystem>(newEntity5);
+	window.setView(tileMapView);
 
 	while (window.isOpen()) {
 

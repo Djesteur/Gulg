@@ -6,105 +6,23 @@
 #include <fstream>
 #include <cstring>
 
-std::vector<std::string> splitString(const std::string toSplit, const char delimiter) {
+void removeKeyword(std::string &line, const std::string toDelete) {
 
-	std::vector<std::string> splitResult;
-	std::string currentPart;
+	size_t beginPosition{line.find(toDelete)};
 
-	for(char currentChar: toSplit) {
-
-		if(currentChar == delimiter) { 
-
-			splitResult.emplace_back(currentPart); 
-			currentPart = "";
-		}
-
-		else { currentPart += currentChar; }
-	}
-
-	if(currentPart != "") { splitResult.emplace_back(currentPart); }
-
-	return splitResult;
+	if(beginPosition == std::string::npos) { return; }
+	line.erase(beginPosition, toDelete.size());
 }
 
-bool isCommentaryLine(const std::vector<std::string> splittedLine) {
+bool isMacroDefinition(const std::string lineToTest) {
 
-	for(std::string currentPart: splittedLine) {
-
-		if(currentPart == "/*" || currentPart == "//" || currentPart == "///") { return true; }
-	}
-
+	if(lineToTest.find('#') != std::string::npos) { return true; }
 	return false;
 }
 
-bool isEnumLine(const std::vector<std::string> splittedLine) {
+std::vector<std::string> searchInFile(const std::filesystem::path currentFilePath) {
 
-	for(std::string currentPart: splittedLine) {
-
-		if(currentPart == "enum") { return true; }
-	}
-
-	return false;
-}
-
-bool isForwardDeclarationLine(const std::vector<std::string> splittedLine) {
-
-	for(std::string currentPart: splittedLine) {
-
-		if(currentPart.find(";") != std::string::npos) { return true; }
-	}
-
-	return false;
-}
-
-bool containtInheritance(const std::vector<std::string> splittedLine) {
-
-	for(std::string currentPart: splittedLine) {
-
-		if(currentPart.find(":") != std::string::npos) { return true; }
-	}
-
-	return false;
-}
-
-void printLine(const std::vector<std::string> splittedLine) {
-
-	for(std::string currentPart: splittedLine) {
-
-		std::cout << currentPart << " ";
-	}
-
-	std::cout << std::endl;
-}
-
-void removeKeyword(std::vector<std::string> &splittedLine, const std::string toDelete) {
-
-	for(size_t i{0}; i < splittedLine.size(); i++) {
-
-		if(splittedLine[i] == toDelete) { 
-
-			splittedLine.erase(splittedLine.begin() + i); 
-			i = 0;
-		}
-	}
-}
-
-void splitEndCharacterFromString(std::vector<std::string> &splittedLine, const char toSplit) {
-
-	for(size_t i{0}; i < splittedLine.size(); i++) {
-
-		if(splittedLine[i].back() == toSplit) {
-
-			splittedLine[i].pop_back();
-			splittedLine.insert(splittedLine.begin() + i + 1, std::string{toSplit});
-			i++;
-		}
-	}
-}
-
-std::map<std::string, std::vector<std::string>> searchInFile(const std::filesystem::path currentFilePath) {
-
-	std::map<std::string, std::vector<std::string>> searchResult;
+	std::vector<std::string> searchResult;
 
 	std::ifstream currentFile{currentFilePath};
 	if(!currentFile) { 
@@ -119,80 +37,26 @@ std::map<std::string, std::vector<std::string>> searchInFile(const std::filesyst
 
 	while(std::getline(currentFile, currentLine, '\n')) {
 
-		if(currentLine.find("class") != std::string::npos) { linesToTreat.emplace_back(currentLine); }
+		if(currentLine.find("STATIC_GET_TYPE") != std::string::npos) { linesToTreat.emplace_back(currentLine); }
 	}
 
 	currentFile.close();
 
 	for(std::string currentLineToTreat: linesToTreat) {
 
-		std::vector<std::string> splittedCurrentLine = splitString(currentLineToTreat, ' ');
+		if(isMacroDefinition(currentLineToTreat)) { continue; }
 
-		if(isCommentaryLine(splittedCurrentLine)) { continue; }
-		if(isEnumLine(splittedCurrentLine)) { continue; }
-		if(isForwardDeclarationLine(splittedCurrentLine)) { continue; }
-		if(!containtInheritance(splittedCurrentLine)) { continue; }
+		removeKeyword(currentLineToTreat, "STATIC_GET_TYPE");
+		currentLineToTreat.erase(std::remove(currentLineToTreat.begin(), currentLineToTreat.end(), '('), currentLineToTreat.end());
+		currentLineToTreat.erase(std::remove(currentLineToTreat.begin(), currentLineToTreat.end(), ')'), currentLineToTreat.end());
+		currentLineToTreat.erase(std::remove(currentLineToTreat.begin(), currentLineToTreat.end(), ' '), currentLineToTreat.end());
+		currentLineToTreat.erase(std::remove(currentLineToTreat.begin(), currentLineToTreat.end(), '\t'), currentLineToTreat.end());
 
-		splitEndCharacterFromString(splittedCurrentLine, ',');
-		splitEndCharacterFromString(splittedCurrentLine, ':');
-
-		removeKeyword(splittedCurrentLine, "public");
-		removeKeyword(splittedCurrentLine, "private");
-		removeKeyword(splittedCurrentLine, "protected");
-		removeKeyword(splittedCurrentLine, "class");
-		removeKeyword(splittedCurrentLine, "{");
-		removeKeyword(splittedCurrentLine, ",");
-		removeKeyword(splittedCurrentLine, "");
-		removeKeyword(splittedCurrentLine, " ");
-		removeKeyword(splittedCurrentLine, "	");
-		removeKeyword(splittedCurrentLine, "\t");
-
-		size_t inheritanceSeparatorIndex{0};
-		bool foundInheritanceSeparator{false};
-
-		for(size_t i{0}; i < splittedCurrentLine.size(); i++) {
-
-			if(splittedCurrentLine[i] == ":") {
-
-				inheritanceSeparatorIndex = i;
-				foundInheritanceSeparator = true;
-			}
-		}
-
-		if(!foundInheritanceSeparator || inheritanceSeparatorIndex == 0 || inheritanceSeparatorIndex == splittedCurrentLine.size() - 1) { continue; }
-
-		if(!searchResult.contains(splittedCurrentLine[inheritanceSeparatorIndex - 1])) {
-
-			searchResult.insert(std::make_pair(splittedCurrentLine[inheritanceSeparatorIndex - 1], std::vector<std::string>()));
-
-			for(size_t i{inheritanceSeparatorIndex + 1}; i < splittedCurrentLine.size(); i++) { 
-
-				searchResult[splittedCurrentLine[inheritanceSeparatorIndex - 1]].emplace_back(splittedCurrentLine[i]);
-			}
-		}
+		searchResult.emplace_back(currentLineToTreat);
 	}
 
 	return searchResult;
 }
-
-
-
-
-
-
-
-
-bool inheritsFromAbstractComponent(const std::vector<std::string> parentsOfCurrentClass, const std::map<std::string, std::vector<std::string>> classesAndParents) {
-
-	for(std::string currentParent: parentsOfCurrentClass) {
-
-		if(currentParent == "AbstractComponent") { return true; }
-		else if(classesAndParents.contains(currentParent) && inheritsFromAbstractComponent(classesAndParents.at(currentParent), classesAndParents)) { return true; }
-	}
-
-	return false;
-}
-
 
 
 
@@ -351,32 +215,21 @@ int main(int argc, char** argv) {
 		if(currentDir.path().extension() == ".hpp") { filesToSearch.emplace_back(currentDir); }
 	}
 
-	std::map<std::string, std::vector<std::string>> classesAndParents;
+	std::vector<std::string> classToAddInEnum;
 
 	for(const std::filesystem::directory_entry &currentDir: filesToSearch) {
 
-		std::map<std::string, std::vector<std::string>> justFind = searchInFile(currentDir.path());
-
-		for(std::map<std::string, std::vector<std::string>>::iterator it = justFind.begin(); it != justFind.end(); it++) {
-
-			if(classesAndParents.find(it->first) == classesAndParents.end()) { classesAndParents.insert(std::make_pair(it->first, it->second)); }
-		}
-
+		std::vector<std::string> justFind = searchInFile(currentDir.path());
+		classToAddInEnum.insert(classToAddInEnum.end(), justFind.begin(), justFind.end());
 	}
 
-	std::vector<std::string> classToAddInEnum;
-
-	for(std::map<std::string, std::vector<std::string>>::iterator it = classesAndParents.begin(); it != classesAndParents.end(); it++) {
-
-		if(inheritsFromAbstractComponent(it->second, classesAndParents)) { classToAddInEnum.emplace_back(it->first); }
-	}
+	std::sort(classToAddInEnum.begin(), classToAddInEnum.end(), [](const std::string a, const std::string b) { return a < b; } );
+	classToAddInEnum.erase(std::unique(classToAddInEnum.begin(), classToAddInEnum.end()), classToAddInEnum.end());
 
 	for(std::string foundComponent: classToAddInEnum) {
 
 		std::cout << "Found component: " << foundComponent << std::endl;
 	}
-
-	std::sort(classToAddInEnum.begin(), classToAddInEnum.end(), [](const std::string a, const std::string b) { return a < b; } );
 
 	createGeneratedComponentTypesFile(folderToWriteResult, classToAddInEnum);
 	insertAutoGeneratedInitOfComponentSignatureKeeper(fileToInsertComponents, classToAddInEnum);
