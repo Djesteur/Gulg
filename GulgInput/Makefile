@@ -8,10 +8,11 @@ INCFOLDER = Includes
 OBJFOLDER = Obj
 EXEFOLDER = .
 BINFOLDER = Bin
+
 STATICLIBFOLDER = Static
 DYNAMICLIBFOLDER = Dynamic
-STATICLIBNAME  = libgulgecs.a
-DYNAMICLIBNAME = libgulgecs.so
+STATICLIBNAME  = libgulginput.a
+DYNAMICLIBNAME = libgulginput.so
 
 DIRECTORIES = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
 OBJFILES = $(shell find $(OBJFOLDER) -name *.o)

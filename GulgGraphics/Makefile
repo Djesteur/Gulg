@@ -1,17 +1,22 @@
 FMODARCHI = x86_64
 CXX       = g++
 CXXFLAGS  = -g -std=c++2a -Wextra -Wall -pedantic
-LIBRARIES = -L ../GulgECS/Bin/Static -l$(LIBNAME) $(SFMLLIBRARIES) $(OTHERLIBRARIES)
+LIBRARIES = -L ./GulgLibraries/ -lgulgecs.so $(SFMLLIBRARIES) $(OTHERLIBRARIES)
 SFMLLIBRARIES = -L ExternalLibraries/SFML/lib -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
 OTHERLIBRARIES = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
 
 SRCFOLDER = Sources
 INCFOLDER = Includes
 OBJFOLDER = Obj
+GULGLIBFOLDER = GulgLibraries
 EXEFOLDER = .
 BINFOLDER = Bin
-EXENAME = test
-LIBNAME  = gulgengine
+LIBINCLUDEFOLDERS = -I ../GulgECS/Includes -I ../ExternalLibraries/SFML/include
+
+STATICLIBFOLDER  = Static
+DYNAMICLIBFOLDER = Dynamic
+STATICLIBNAME  = libgulggraphics.a
+DYNAMICLIBNAME = libgulggraphics.so
 
 DIRECTORIES = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
 OBJFILES = $(shell find $(OBJFOLDER) -name *.o)
@@ -41,19 +46,34 @@ OKSTRING   = $(LGREENCOLOR)[SUCCES]$(ENDCOLOR)
 WARSTRING  = $(LYELLOWCOLOR)[WARNING]$(ENDCOLOR)
 ERRSTRING  = $(LREDCOLOR)[ERROR]$(ENDCOLOR)
 
-all: $(OBJ)
+all: copylibs compile staticlib dynamiclib
+
+copylibs:
+	@mkdir -p $(GULGLIBFOLDER)
+	@cp ../GulgECS/Bin/Static/* $(GULGLIBFOLDER)
+
+compile: $(OBJ)
 	@printf "$(LGREENCOLOR)Compilation done$(ENDCOLOR)\\n"
-	@printf "$(LGREENCOLOR)Linking $(ENDCOLOR)$(LYELLOWCOLOR)$^$(ENDCOLOR)\\n"
-	@$(CXX) $^ -o $(EXEFOLDER)/$(EXENAME) $(LIBRARIES)
-	@printf "$(LGREENCOLOR)Linking done$(ENDCOLOR)\\n"
-	@printf "$(LGREENCOLOR)Executable created at path: $(ENDCOLOR)$(LREDCOLOR)$(EXEFOLDER)/$(EXENAME)$(ENDCOLOR)\\n"
 
 $(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
 	@mkdir -p $(DIRECTORIES)
 	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
-	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) -I ../GulgECS/Includes/ -I ./ExternalLibraries/SFML/include/
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) $(LIBINCLUDEFOLDERS)
+
+staticlib: copylibs compile
+	@mkdir -p $(BINFOLDER)/$(STATICLIBFOLDER)
+	@printf "$(LGREENCOLOR)Creating static lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(STATICLIBNAME)$(ENDCOLOR)\\n"
+	@ar rsc $(BINFOLDER)/$(STATICLIBFOLDER)/$(STATICLIBNAME) $(OBJFILES)
+	@printf "$(LGREENCOLOR)Static library created$(ENDCOLOR)\\n"
+
+dynamiclib: copylibs compile
+	@mkdir -p $(BINFOLDER)/$(DYNAMICLIBFOLDER)
+	@printf "$(LGREENCOLOR)Creating dynamic lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(DYNAMICLIBNAME)$(ENDCOLOR)\\n"
+	@-$(CXX) -shared -o $(BINFOLDER)/$(DYNAMICLIBFOLDER)/$(DYNAMICLIBNAME) $(OBJFILES)
+	@printf "$(LGREENCOLOR)Dynamic library created$(ENDCOLOR)\\n"
 
 
 clean:
 	@rm -rf $(OBJFOLDER)
 	@rm -rf $(BINFOLDER)
+	@rm -rf $(GULGLIBFOLDER)

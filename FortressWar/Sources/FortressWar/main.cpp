@@ -7,7 +7,7 @@
 #include "GulgGraphics/Systems/Graphics2D.hpp"
 #include "GulgGraphics/Components/Sprite.hpp"
 
-#include "GeneratedMap.hpp"
+#include "FortressWar/GeneratedMap.hpp"
 
 int main() {
 

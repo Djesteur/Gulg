@@ -1,4 +1,4 @@
-#include "GeneratedMap.hpp"
+#include "FortressWar/GeneratedMap.hpp"
 
 size_t getTileIndex(const size_t x, const size_t y, const size_t sizeX) { return sizeX*y+ x; }
 
@@ -41,31 +41,31 @@ std::string getTexturePathFromTileType(const TileType type) {
 	switch(type) {
 
 		case TileType::Grass:
-			return "GulgGraphics/Datas/Grass.png";
+			return "FortressWar/Datas/Grass.png";
 			break;
 
 		case TileType::Water:
-			return "GulgGraphics/Datas/Water.png";
+			return "FortressWar/Datas/Water.png";
 			break;
 
 		case TileType::Earth:
-			return "GulgGraphics/Datas/Earth.png";
+			return "FortressWar/Datas/Earth.png";
 			break;
 
 		case TileType::Sand:
-			return "GulgGraphics/Datas/Sand.png";
+			return "FortressWar/Datas/Sand.png";
 			break;
 
 		case TileType::Stone:
-			return "GulgGraphics/Datas/Stone.png";
+			return "FortressWar/Datas/Stone.png";
 			break;
 
 		case TileType::NotDefined:
-			return "GulgGraphics/Datas/DefaultTile.png";
+			return "FortressWar/Datas/DefaultTile.png";
 			break;
 	}
 
-	return "GulgGraphics/Datas/DefaultTile.png";
+	return "FortressWar/Datas/DefaultTile.png";
 }
 
 void generateGround(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {
@@ -136,43 +136,90 @@ void generateGround(std::vector<Tile> &generatedMap, const GenerationDatas &data
 
 }
 
-/*sf::Vector2f normalize(sf::Vector2f vector) {
+sf::Vector2f normalize(const sf::Vector2f &vector) {
 
 	if(vector.x == 0.f && vector.x == 0.f) { return vector; }
-	return vector/sqrt(vector.x*vector.x + vector.y*vector.y)
-}*/
+	return vector/sqrtf(vector.x*vector.x + vector.y*vector.y);
+}
+
+sf::Vector2f rotateAround(const sf::Vector2f &pivot, const sf::Vector2f &pointToRotate, const float angle) {
+
+	sf::Vector2f tmp{pointToRotate - pivot}, result{0.f, 0.f};
+	result.x = tmp.x*cos(angle) - tmp.y*sin(angle);
+	result.y = tmp.x*sin(angle) + tmp.y*cos(angle);
+
+	return result + pivot;
+}
 
 void generateRivers(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {
 
+	//Todo: take from datas
+
+	const float maxAngle{3.14159f/2.f};
+	const unsigned int tilePerSegment{3};
+
 	//Todo: make it random
 
-	/*const sf::Vector2f beginRiver{-1, datas.mapSizeY/2};
-	const sf::Vector2f endRiver{datas.mapSizeX, datas.mapSizeY/2};
+	const sf::Vector2f beginRiver{0.f, datas.mapSizeY/2.f};
 
-	const sf::Vector2f angleConstraint1{0.f, 1.f}, angleConstraint2{0.f, -1.f};
+	const sf::Vector2f angleConstraint1{0.f, 1.f}, angleConstraint2{0.f, -1.f}, firstAngleDirection{1.f, 0.f};
 
 	//End random
 
-	const float maxAngle{90.f};
-	const unsigned int tilePerSegment{3};
+	bool haveToContinue{true};
 
-	sf::Vector2f previousDirection{normalize(endRiver - beginRiver)};
+	sf::Vector2f previousDirection{firstAngleDirection};
+	sf::Vector2f beginCurrentSegment{beginRiver};
 
-	sf::Vector2f beginCurrentSegment{beginRiverX, beginRiverY};
-
-	const float sinAngle1{sin(maxAngle/2)};
-	const float cosAngle1{cos(maxAngle/2)};
-
-	sf::Vector2f nextSegment{]nextSegmentBorder1, nextSegmentBorder2;
-	nextSegmentBorder1.x = beginCurrentSegment*cosAngle1 + */
+	std::default_random_engine engine { std::time(nullptr) };
 
 
+	while(haveToContinue) {
+
+		sf::Vector2f endCurrentSegment{beginRiver + previousDirection*static_cast<float>(tilePerSegment)};
+
+		float segmentLeftAngle{-maxAngle/2.f}, segmentRightAngle{maxAngle/2.f};
+
+
+		//Todo: reduce angles if > to constraint
+
+		//end todo
+
+		std::uniform_real_distribution<float> distribution(segmentLeftAngle, segmentRightAngle);
+	    float testAngle = distribution(engine)/2.f;
+	    				std::cout << "Angle: " << testAngle << std::endl;
+
+	    sf::Vector2f beginNextSegment{rotateAround(beginCurrentSegment, endCurrentSegment, testAngle)};
+		previousDirection = beginNextSegment - beginCurrentSegment;
+		beginCurrentSegment = beginNextSegment;
+
+				std::cout << "Next begin: " << beginCurrentSegment.x << " " << beginCurrentSegment.y << std::endl;
+
+		if(floor(beginCurrentSegment.x) > 0.f
+		&& static_cast<size_t>(floor(beginCurrentSegment.x)) < datas.mapSizeX - 1
+		&& floor(beginCurrentSegment.y) > 0.f
+		&& static_cast<size_t>(floor(beginCurrentSegment.y)) < datas.mapSizeY - 1) {
+
+			generatedMap[getTileIndex(static_cast<size_t>(floor(beginCurrentSegment.x)), static_cast<size_t>(floor(beginCurrentSegment.y)), datas.mapSizeX)].type = TileType::Water;
+		}
+
+		else { haveToContinue = false; }
+	}
 
 
 }
 
 void addSand(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {
 
+	for(size_t i{0}; i < generatedMap.size(); i++) {
+
+		std::vector<size_t> neighbourgs = getNeighbourgs8(generatedMap, i, datas.mapSizeX, datas.mapSizeY);
+
+		for(size_t currentNeighbourgs: neighbourgs) {
+
+			if(generatedMap[currentNeighbourgs].type == TileType::Water && generatedMap[i].type != TileType::Water) { generatedMap[i].type = TileType::Sand; }
+		}
+	}
 }
 
 void addStoneRoad(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {
