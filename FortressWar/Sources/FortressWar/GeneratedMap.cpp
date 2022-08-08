@@ -151,62 +151,88 @@ sf::Vector2f rotateAround(const sf::Vector2f &pivot, const sf::Vector2f &pointTo
 	return result + pivot;
 }
 
-void generateRivers(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {
+std::vector<RiverSegment> generateRiverPath(const GenerationDatas &datas) {
+
+	std::vector<RiverSegment> resultPath;
+
+	const unsigned int tilePerSegment{datas.segmentSize};
 
 	//Todo: take from datas
 
 	const float maxAngle{3.14159f/2.f};
-	const unsigned int tilePerSegment{3};
 
 	//Todo: make it random
 
-	const sf::Vector2f beginRiver{0.f, datas.mapSizeY/2.f};
-
-	const sf::Vector2f angleConstraint1{0.f, 1.f}, angleConstraint2{0.f, -1.f}, firstAngleDirection{1.f, 0.f};
+	sf::Vector2f previousDirection{1.f, 0.f};
+	sf::Vector2f beginCurrentSegment{0.f, datas.mapSizeY/2.f};
 
 	//End random
 
 	bool haveToContinue{true};
-
-	sf::Vector2f previousDirection{firstAngleDirection};
-	sf::Vector2f beginCurrentSegment{beginRiver};
 
 	std::default_random_engine engine { std::time(nullptr) };
 
 
 	while(haveToContinue) {
 
-		sf::Vector2f endCurrentSegment{beginRiver + previousDirection*static_cast<float>(tilePerSegment)};
+		sf::Vector2f endCurrentSegment{beginCurrentSegment + previousDirection*static_cast<float>(tilePerSegment)};
 
 		float segmentLeftAngle{-maxAngle/2.f}, segmentRightAngle{maxAngle/2.f};
+		//Todo: constraint angles
 
-
-		//Todo: reduce angles if > to constraint
-
-		//end todo
 
 		std::uniform_real_distribution<float> distribution(segmentLeftAngle, segmentRightAngle);
 	    float testAngle = distribution(engine)/2.f;
-	    				std::cout << "Angle: " << testAngle << std::endl;
 
 	    sf::Vector2f beginNextSegment{rotateAround(beginCurrentSegment, endCurrentSegment, testAngle)};
-		previousDirection = beginNextSegment - beginCurrentSegment;
+		previousDirection = normalize(beginNextSegment - beginCurrentSegment);
+
+		RiverSegment newSegment;
+		newSegment.begin = beginCurrentSegment;
+		newSegment.end = beginNextSegment;
+		resultPath.emplace_back(newSegment);
 		beginCurrentSegment = beginNextSegment;
 
-				std::cout << "Next begin: " << beginCurrentSegment.x << " " << beginCurrentSegment.y << std::endl;
-
-		if(floor(beginCurrentSegment.x) > 0.f
-		&& static_cast<size_t>(floor(beginCurrentSegment.x)) < datas.mapSizeX - 1
-		&& floor(beginCurrentSegment.y) > 0.f
-		&& static_cast<size_t>(floor(beginCurrentSegment.y)) < datas.mapSizeY - 1) {
-
-			generatedMap[getTileIndex(static_cast<size_t>(floor(beginCurrentSegment.x)), static_cast<size_t>(floor(beginCurrentSegment.y)), datas.mapSizeX)].type = TileType::Water;
-		}
-
-		else { haveToContinue = false; }
+		if(floor(beginCurrentSegment.x) < 0.f
+		|| static_cast<size_t>(floor(beginCurrentSegment.x)) >= datas.mapSizeX
+		|| floor(beginCurrentSegment.y) < 0.f
+		|| static_cast<size_t>(floor(beginCurrentSegment.y)) >= datas.mapSizeY) { haveToContinue = false; }
 	}
 
+	return resultPath;
+}
 
+sf::Vector2f projectionOnSegment(const sf::Vector2f &segmentBegin, const sf::Vector2f &segmentEnd, const sf::Vector2f &point) {
+
+	const sf::Vector2f beginToPoint{point - segmentBegin};
+	const sf::Vector2f beginToEnd{segmentEnd - segmentBegin};
+
+	const float dotAB{beginToPoint.x*beginToEnd.x + beginToPoint.y*beginToEnd.y};
+	const float dotBB{beginToEnd.x*beginToEnd.x + beginToEnd.y*beginToEnd.y};
+
+	return segmentBegin + (dotAB/(dotBB*dotBB))*beginToEnd;
+}
+
+float norm(const sf::Vector2f &vectorToNorm) { return sqrtf(vectorToNorm.x*vectorToNorm.x + vectorToNorm.y*vectorToNorm.y); }
+ 
+void applyRiverPathOnMap(const std::vector<RiverSegment> path, const float segmentWidth, std::vector<Tile> &generatedMap) {
+
+	for(Tile &currentTile: generatedMap) {
+
+		const sf::Vector2f tileCenter{currentTile.tilePositionX + 0.5f, currentTile.tilePositionY + 0.5f};
+
+		for(const RiverSegment &currentSegment: path) {
+
+			const sf::Vector2f projection{projectionOnSegment(currentSegment.begin, currentSegment.end, tileCenter)};
+
+			if(norm(tileCenter - projection) <= segmentWidth) { currentTile.type = TileType::Water; }
+		}
+	}
+}
+
+void generateRivers(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {
+
+	applyRiverPathOnMap(generateRiverPath(datas), datas.riverWidth, generatedMap);
 }
 
 void addSand(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {

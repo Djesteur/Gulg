@@ -22,6 +22,8 @@ int main() {
 	datas.numberOfGrassSeeds = 12;
 	datas.numberOfEarthSeeds = 4;
 	datas.numberOfRivers = 1;
+	datas.segmentSize = 3.f;
+	datas.riverWidth = 2.f;
 	datas.numberOfRoads = 0;
 
 	std::vector<Tile> tileMap = generateMap(datas);

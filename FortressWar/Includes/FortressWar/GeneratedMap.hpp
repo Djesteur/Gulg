@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Rect.hpp>
 
 enum class TileType {
 
@@ -28,6 +29,12 @@ struct Tile {
 	unsigned int tilePositionY{0};
 };
 
+struct RiverSegment {
+
+	sf::Vector2f begin;
+	sf::Vector2f end;
+};
+
 struct GenerationDatas {
 
 	unsigned int mapSizeX{0};
@@ -41,6 +48,8 @@ struct GenerationDatas {
 	//River generation
 
 	unsigned int numberOfRivers{0};
+	float segmentSize{0};
+	float riverWidth{0};
 
 
 	//Road generation
@@ -59,5 +68,9 @@ void addSand(std::vector<Tile> &generatedMap, const GenerationDatas &datas);
 void addStoneRoad(std::vector<Tile> &generatedMap, const GenerationDatas &datas);
 
 std::vector<Tile> generateMap(const GenerationDatas &datas);
+
+sf::Vector2f projectionOnSegment(const sf::Vector2f &segmentBegin, const sf::Vector2f &segmentEnd, const sf::Vector2f &point);
+float norm(const sf::Vector2f &vectorToNorm);
+void applyRiverPathOnMap(const std::vector<RiverSegment> path, const float segmentWidth, std::vector<Tile> &generatedMap);
 
 #endif
