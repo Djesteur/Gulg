@@ -7,7 +7,13 @@
 #include "GulgGraphics/Systems/Graphics2D.hpp"
 #include "GulgGraphics/Components/Sprite.hpp"
 
+#include "GulgInput/Event.hpp"
+#include "GulgInput/Action.hpp"
+#include "GulgInput/InputUpdater.hpp"
+
 #include "FortressWar/GeneratedMap.hpp"
+
+void inputTestFunction() { std::cout << "Z has been pressed !" << std::endl; }
 
 int main() {
 
@@ -48,12 +54,29 @@ int main() {
 
 	window.setView(tileMapView);
 
+	Gg::Input::InputUpdater updater;
+	updater.createActionGroup("MainGroup");
+	Gg::Input::Action &testAction{updater.createAction("MainGroup")};
+
+	std::cout << "TEST ACTION ADDED: " << &testAction << std::endl;
+	testAction.addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonPressed});
+	testAction.addCallback(std::function<void()>{inputTestFunction});
+
 	while (window.isOpen()) {
 
         sf::Event event;
         while (window.pollEvent(event))  {
 
-            if (event.type == sf::Event::Closed) { window.close(); }
+        	switch (event.type) {
+
+        		case sf::Event::Closed:
+        			window.close();
+        			break;
+
+        		case sf::Event::KeyPressed:
+        			updater.update();
+        			break;
+        	}
         }
 
         graphicSystem->update(0);
