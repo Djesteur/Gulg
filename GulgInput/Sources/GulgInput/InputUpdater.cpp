@@ -11,7 +11,7 @@ void InputUpdater::createActionGroup(const std::string &groupName) {
 
 	if(!actionGroupExist(groupName)) { 
 
-		m_actions.insert(std::make_pair(groupName, std::vector<Action>{}));
+		m_actions.insert(std::make_pair(groupName, std::vector<std::shared_ptr<Action>>{}));
 		activateGroup(groupName);
 	}
 }
@@ -43,25 +43,23 @@ void InputUpdater::desactivateGroup(const std::string &groupName) {
 bool InputUpdater::isActivatedGroup(const std::string &groupName) { return std::find(m_groupsToTrigger.begin(), m_groupsToTrigger.end(), groupName) != m_groupsToTrigger.end(); }
 
 
-Action& InputUpdater::createAction(const std::string &groupName) {
+std::shared_ptr<Action> InputUpdater::createAction(const std::string &groupName) {
 
 	if(!actionGroupExist(groupName)) { createActionGroup(groupName); }
-	m_actions[groupName].emplace_back();
-
-	std::cout << "INPUT ADDED: " << &(m_actions[groupName].back()) << std::endl;
+	m_actions[groupName].emplace_back(std::make_shared<Action>());
 
 	return m_actions[groupName].back();
 }
 
-void InputUpdater::deleteAction(const Action &toDelete, const std::string &groupName) {
+void InputUpdater::deleteAction(std::shared_ptr<Action> toDelete, const std::string &groupName) {
 
 	if(!actionGroupExist(groupName)) { return; }
 
-	std::vector<Action>::iterator foundInActions = std::find(m_actions[groupName].begin(), m_actions[groupName].end(), toDelete);
+	std::vector<std::shared_ptr<Action>>::iterator foundInActions = std::find(m_actions[groupName].begin(), m_actions[groupName].end(), toDelete);
 	if(foundInActions != m_actions[groupName].end()) { m_actions[groupName].erase(foundInActions); }
 }
 
-bool InputUpdater::actionIsInGroup(const Action &toCheck, const std::string &groupName) {
+bool InputUpdater::actionIsInGroup(std::shared_ptr<Action> toCheck, const std::string &groupName) {
 
 	if(!actionGroupExist(groupName)) { return false; }
 	return std::find(m_actions[groupName].begin(), m_actions[groupName].end(), toCheck) != m_actions[groupName].end();
@@ -84,9 +82,9 @@ void InputUpdater::update() {
 
 		for(const std::string &currentGroup: m_groupsToTrigger) {
 
-			for(Action &currentAction: m_actions[currentGroup]) { 
+			for(std::shared_ptr<Action> currentAction: m_actions[currentGroup]) { 
 
-				currentAction.eventOccured(currentEvent);
+				currentAction->eventOccured(currentEvent);
 			}
 		}
 	}

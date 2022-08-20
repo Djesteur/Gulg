@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include <iostream>
+#include <memory>
 
 #include "GulgInput/Action.hpp"
 #include "GulgInput/Event.hpp"
@@ -28,15 +28,15 @@ class InputUpdater {
 		void desactivateGroup(const std::string &groupName);
 		bool isActivatedGroup(const std::string &groupName);
 
-		Action &createAction(const std::string &groupName);
-		void deleteAction(const Action &toDelete, const std::string &groupName);
-		bool actionIsInGroup(const Action &toCheck, const std::string &groupName);
+		std::shared_ptr<Action> createAction(const std::string &groupName);
+		void deleteAction(std::shared_ptr<Action> toDelete, const std::string &groupName);
+		bool actionIsInGroup(std::shared_ptr<Action> toCheck, const std::string &groupName);
 
 		void update();
 
 	private:
 
-		std::map<std::string, std::vector<Action>> m_actions;
+		std::map<std::string, std::vector<std::shared_ptr<Action>>> m_actions;
 		std::vector<std::string> m_groupsToTrigger;
 
 };

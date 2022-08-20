@@ -56,11 +56,10 @@ int main() {
 
 	Gg::Input::InputUpdater updater;
 	updater.createActionGroup("MainGroup");
-	Gg::Input::Action &testAction{updater.createAction("MainGroup")};
+	std::shared_ptr<Gg::Input::Action> testAction{updater.createAction("MainGroup")};
 
-	std::cout << "TEST ACTION ADDED: " << &testAction << std::endl;
-	testAction.addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonPressed});
-	testAction.addCallback(std::function<void()>{inputTestFunction});
+	testAction->addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonPressed});
+	testAction->addCallback(std::function<void()>{inputTestFunction});
 
 	while (window.isOpen()) {
 
