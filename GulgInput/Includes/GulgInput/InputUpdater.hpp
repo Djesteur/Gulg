@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include <SFML/Window.hpp>
+
 #include "GulgInput/Action.hpp"
 #include "GulgInput/Event.hpp"
 
@@ -18,7 +20,7 @@ class InputUpdater {
 	public:
 
 
-		InputUpdater();
+		InputUpdater(sf::Window &eventWindow);
 
 		void createActionGroup(const std::string &groupName);
 		void deleteActionGroup(const std::string &groupName);
@@ -32,12 +34,22 @@ class InputUpdater {
 		void deleteAction(std::shared_ptr<Action> toDelete, const std::string &groupName);
 		bool actionIsInGroup(std::shared_ptr<Action> toCheck, const std::string &groupName);
 
-		void update();
+		std::vector<Event> update();
 
 	private:
 
+		std::vector<Event> detectInputChanges(std::vector<Event> &notHandledEvents);
+		std::vector<Event> checkIfStillPressed(const std::vector<Event> &alreadyTakeInCountEvents) const;
+
+		Event pressedKeyboardKey(const sf::Keyboard::Key &key);
+		Event releasedKeyboardKey(const sf::Keyboard::Key &key);
+
 		std::map<std::string, std::vector<std::shared_ptr<Action>>> m_actions;
 		std::vector<std::string> m_groupsToTrigger;
+
+
+		sf::Window &m_eventWindow;
+		std::map<sf::Keyboard::Key, bool> m_keyboardState;
 
 };
 

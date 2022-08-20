@@ -34,7 +34,7 @@ class Action {
 
 		Action();
 
-		void addEvent(const Event &event);
+		void addEvent(const Event event);
 		void addCallback(std::function<void()> functionToCall);
 
 		bool operator==(const Action &second);
@@ -42,7 +42,7 @@ class Action {
 	private:
 
 		friend class InputUpdater;
-		void eventOccured(const Event &occuredEvent);
+		void eventOccured(const Event occuredEvent);
 
 		std::vector<Event> m_eventsThatTriggerAction;
 		std::vector<std::function<void()>> m_callbacks;

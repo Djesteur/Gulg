@@ -13,7 +13,9 @@
 
 #include "FortressWar/GeneratedMap.hpp"
 
-void inputTestFunction() { std::cout << "Z has been pressed !" << std::endl; }
+void testZPressed() { std::cout << "Z has been pressed  !" << std::endl; }
+void testZStillPressed() { std::cout << "Z is still pressed  !" << std::endl; }
+void testZReleased() { std::cout << "Z has been released !" << std::endl; }
 
 int main() {
 
@@ -54,29 +56,37 @@ int main() {
 
 	window.setView(tileMapView);
 
-	Gg::Input::InputUpdater updater;
-	updater.createActionGroup("MainGroup");
-	std::shared_ptr<Gg::Input::Action> testAction{updater.createAction("MainGroup")};
+	Gg::Input::InputUpdater inputUpdater{window};
+	inputUpdater.createActionGroup("MainGroup");
 
-	testAction->addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonPressed});
-	testAction->addCallback(std::function<void()>{inputTestFunction});
+	std::shared_ptr<Gg::Input::Action> testAction1{inputUpdater.createAction("MainGroup")};
+	testAction1->addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonPressed});
+	testAction1->addCallback(std::function<void()>{testZPressed});
+
+	std::shared_ptr<Gg::Input::Action> testAction2{inputUpdater.createAction("MainGroup")};
+	testAction2->addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonStillPressed});
+	testAction2->addCallback(std::function<void()>{testZStillPressed});
+
+	std::shared_ptr<Gg::Input::Action> testAction3{inputUpdater.createAction("MainGroup")};
+	testAction3->addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonReleased});
+	testAction3->addCallback(std::function<void()>{testZReleased});
 
 	while (window.isOpen()) {
 
-        sf::Event event;
-        while (window.pollEvent(event))  {
+		std::vector<Gg::Input::Event> notHandledByInputUpdater = inputUpdater.update();
 
-        	switch (event.type) {
+		for(Gg::Input::Event currentEvent: notHandledByInputUpdater) {
 
-        		case sf::Event::Closed:
+			switch (currentEvent.eventType) {
+
+        		case Gg::Input::EventType::WindowClosed:
         			window.close();
         			break;
 
-        		case sf::Event::KeyPressed:
-        			updater.update();
+        		default:
         			break;
         	}
-        }
+		}
 
         graphicSystem->update(0);
     }

@@ -9,6 +9,8 @@ OBJFOLDER = Obj
 EXEFOLDER = .
 BINFOLDER = Bin
 
+LIBINCLUDEFOLDERS = -I ../GulgECS/Includes -I ../ExternalLibraries/SFML/include
+
 STATICLIBFOLDER = Static
 DYNAMICLIBFOLDER = Dynamic
 STATICLIBNAME  = libgulginput.a
@@ -50,7 +52,7 @@ compile: $(OBJ)
 $(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
 	@mkdir -p $(DIRECTORIES)
 	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
-	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER)
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) $(LIBINCLUDEFOLDERS)
 
 staticlib: compile
 	@mkdir -p $(BINFOLDER)/$(STATICLIBFOLDER)
