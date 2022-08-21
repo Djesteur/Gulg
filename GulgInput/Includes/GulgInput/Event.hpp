@@ -16,6 +16,7 @@ namespace Input {
 enum class EventType {
 
 	Unknown,
+	NotImplementedYet,
 	ButtonPressed,
 	ButtonStillPressed,
 	ButtonReleased,
@@ -145,9 +146,26 @@ enum class HandledInput {
  */
 struct Event {
 
+
+
+	/**
+	 * @brief      Constructs a new instance.
+	 *
+	 * @param[in]  hi    The HandledInput
+	 * @param[in]  et    The EventType
+	 */
 	Event(const HandledInput &hi = HandledInput::Unknown, const EventType &et = EventType::Unknown): handledInput{hi}, eventType{et} {}
 
+
+
+	/**
+	 * @brief      The button/axis/device that changed since last update
+	 */
 	HandledInput handledInput;
+
+	/**
+	 * @brief      What appened to the handledInput.
+	 */
 	EventType eventType;
 };
 
@@ -163,7 +181,26 @@ struct Event {
  */
 bool operator==(const Event &firstEvent, const Event &secondEvent);
 
+
+
+/**
+ * @brief      Gets the sf::Keyboard::Key from a Gulg::HandledInput.
+ *
+ * @param[in]  handledInput  The input to convert
+ *
+ * @return     The corresponding sf::Keyboard::Key.
+ */
 sf::Keyboard::Key getSFMLFromGulgKey(const HandledInput &handledInput);
+
+
+
+/**
+ * @brief      Gets the Gulg::HandledInput from a sf::Keyboard::Key.
+ *
+ * @param[in]  key   The input to convert
+ *
+ * @return     The corresponding Gulg::HandledInput.
+ */
 HandledInput getGulgFromSFMLKey(const sf::Keyboard::Key &key);
 
 

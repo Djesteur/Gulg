@@ -59,15 +59,15 @@ int main() {
 	Gg::Input::InputUpdater inputUpdater{window};
 	inputUpdater.createActionGroup("MainGroup");
 
-	std::shared_ptr<Gg::Input::Action> testAction1{inputUpdater.createAction("MainGroup")};
+	std::shared_ptr<Gg::Input::Action> testAction1{inputUpdater.createAction()};
 	testAction1->addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonPressed});
 	testAction1->addCallback(std::function<void()>{testZPressed});
 
-	std::shared_ptr<Gg::Input::Action> testAction2{inputUpdater.createAction("MainGroup")};
+	std::shared_ptr<Gg::Input::Action> testAction2{inputUpdater.createAction()};
 	testAction2->addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonStillPressed});
 	testAction2->addCallback(std::function<void()>{testZStillPressed});
 
-	std::shared_ptr<Gg::Input::Action> testAction3{inputUpdater.createAction("MainGroup")};
+	std::shared_ptr<Gg::Input::Action> testAction3{inputUpdater.createAction()};
 	testAction3->addEvent(Gg::Input::Event{Gg::Input::HandledInput::Z, Gg::Input::EventType::ButtonReleased});
 	testAction3->addCallback(std::function<void()>{testZReleased});
 

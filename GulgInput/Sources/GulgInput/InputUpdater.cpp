@@ -231,66 +231,66 @@ std::vector<Event> InputUpdater::detectInputChanges(std::vector<Event> &notHandl
 
 			//Mouse
 			case sf::Event::MouseWheelMoved:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::MouseWheelScrolled:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::MouseButtonPressed:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::MouseButtonReleased:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::MouseMoved:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::MouseEntered:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::MouseLeft:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			//Joystick
 
 			case sf::Event::JoystickButtonPressed:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::JoystickButtonReleased:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::JoystickMoved:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::JoystickConnected:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::JoystickDisconnected:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			//Pad
 			case sf::Event::TouchBegan:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::TouchMoved:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 			case sf::Event::TouchEnded:
-				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::Unknown});
+				notHandledEvents.emplace_back(Event{HandledInput::Unknown, EventType::NotImplementedYet});
 				break;
 
 				//Unknown
