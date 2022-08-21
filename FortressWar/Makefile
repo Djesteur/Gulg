@@ -1,20 +1,59 @@
-FMODARCHI = x86_64
-CXX       = g++
-CXXFLAGS  = -g -std=c++2a -Wextra -Wall -pedantic
-LDFLAGS   = 
+#Compilation
+CXX        = g++
+CXXFLAGS   = -g -std=c++2a -Wextra -Wall -pedantic
+
+OBJFOLDERS = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
+OBJFILES   = $(shell find $(OBJFOLDER) -name *.o)
+
+
+#List of all .cpp files to compile
+SRC     = $(wildcard $(SRCFOLDER)/*.cpp) $(wildcard $(SRCFOLDER)/**/*.cpp) $(wildcard $(SRCFOLDER)/**/**/*.cpp) $(wildcard $(SRCFOLDER)/**/**/**/*.cpp)
+
+#List of targets for the compilation (a .o for each .cpp file)
+OBJ     = $(SRC:$(SRCFOLDER)/%.cpp=$(OBJFOLDER)/%.o)
+
+#Paths
+
+SRCFOLDER = ./Sources
+INCFOLDER = ./Includes
+OBJFOLDER = ./Obj
+BINFOLDER = ./Bin
+EXENAME   = GulgGraphics
 
 SRCFOLDER = Sources
 INCFOLDER = Includes
 OBJFOLDER = Obj
 EXEFOLDER = .
-BINFOLDER = Bin
 EXENAME   = FortressWarExe
-SFMLLIBRARIES  = -L $(GULGLIBFOLDER)/SFML/ -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
-OTHERLIBRARIES = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
-#Don't forget that order is important !
-LIBRARIES      = -L ./GulgLibraries/ -lgulggraphics -lgulginput -lgulgecs $(SFMLLIBRARIES) $(OTHERLIBRARIES)
-LIBINCLUDES    = -I ../GulgECS/Includes -I ../GulgGraphics/Includes -I ../GulgInput/Includes -I ../ExternalLibraries/SFML/include
-GULGLIBFOLDER  = GulgLibraries
+
+#Libraries
+
+LIBRARIESTOINCLUDE  = $(GULGLIBRARIESINCLUDESFOLDER) $(EXTERNALLIBFOLDERSTOINCLUDE)
+LIBRARIESTOLINK     = $(GULGLIBRARIESTOLINK) $(EXTERNALLIBFOLDERSTOLINK)
+
+#Gulg libraries
+
+GULGLIBRARIESTOLINK 		= -L $(GULGLIBRARIESLIBFOLDER)/GulgECS/Static -L $(GULGLIBRARIESLIBFOLDER)/GulgGraphics/Static -L $(GULGLIBRARIESLIBFOLDER)/GulgInput/Static -lgulginput -lgulggraphics -lgulgecs
+
+#Folder where we will create a symbolink link to INCFOLDER for other libraries
+GULGLIBRARIESINCLUDESFOLDER = ../GulgLibraries/Includes
+
+#Folder where we will create a symbolink link to LIBFOLDER for other libraries
+GULGLIBRARIESLIBFOLDER 		= ../GulgLibraries/Libraries
+
+#External libraries
+
+EXTERNALLIBFOLDER 			= ../ExternalLibraries/
+EXTERNALLIBFOLDERSTOINCLUDE = -I $(EXTERNALLIBFOLDER)/$(SFMLINCLUDEFOLDER)
+EXTERNALLIBTOLINK    		= $(SFMLLINK)
+
+#SFML
+SFMLINCLUDEFOLDER 	= SFML/include
+SFMLLINKFOLDER 		= SFML/lib
+SFMLLIBTOLINK 		= -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
+SFMLNEEDEDLIBTOLINK = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
+SFMLLINK 			= -L $(EXTERNALLIBFOLDER)/$(SFMLLINKFOLDER) $(SFMLLIBTOLINK) $(SFMLNEEDEDLIBTOLINK)
+
 
 DIRECTORIES = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
 OBJFILES = $(shell find $(OBJFOLDER) -name *.o)
@@ -44,26 +83,21 @@ OKSTRING   = $(LGREENCOLOR)[SUCCES]$(ENDCOLOR)
 WARSTRING  = $(LYELLOWCOLOR)[WARNING]$(ENDCOLOR)
 ERRSTRING  = $(LREDCOLOR)[ERROR]$(ENDCOLOR)
 
-all: copylibs $(OBJ)
+all: $(OBJ) copyExeToParent
 	@printf "$(LGREENCOLOR)Compilation done$(ENDCOLOR)\\n"
 	@printf "$(LGREENCOLOR)Linking $(ENDCOLOR)$(LYELLOWCOLOR)$(OBJ)$(ENDCOLOR)\\n"
-	@$(CXX) $(OBJ) -o $(EXEFOLDER)/$(EXENAME) $(LIBRARIES)
+	@$(CXX) $(OBJ) -o $(EXEFOLDER)/$(EXENAME) $(GULGLIBRARIESTOLINK) $(EXTERNALLIBTOLINK)
 	@printf "$(LGREENCOLOR)Linking done$(ENDCOLOR)\\n"
 	@printf "$(LGREENCOLOR)Executable created at path: $(ENDCOLOR)$(LREDCOLOR)$(EXEFOLDER)/$(EXENAME)$(ENDCOLOR)\\n"
 
-copylibs:
-	@mkdir -p $(GULGLIBFOLDER) $(GULGLIBFOLDER)/SFML/
-	@cp ../GulgECS/Bin/Static/* $(GULGLIBFOLDER)
-	@cp ../GulgGraphics/Bin/Static/* $(GULGLIBFOLDER)
-	@cp ../GulgGraphics/ExternalLibraries/SFML/lib/* $(GULGLIBFOLDER)/SFML/
-	@cp ../GulgInput/Bin/Static/* $(GULGLIBFOLDER)
+copyExeToParent:
+	@cp $(EXEFOLDER)/$(EXENAME) ../
 
 $(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
 	@mkdir -p $(DIRECTORIES)
 	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
-	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) $(LIBINCLUDES)
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) -I $(GULGLIBRARIESINCLUDESFOLDER) $(EXTERNALLIBFOLDERSTOINCLUDE)
 
 clean:
 	@rm -rf $(OBJFOLDER)
 	@rm -rf $(BINFOLDER)
-	@rm -rf $(GULGLIBFOLDER)

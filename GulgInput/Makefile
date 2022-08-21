@@ -1,27 +1,63 @@
-FMODARCHI = x86_64
-CXX       = g++
-CXXFLAGS  = -g -std=c++2a -Wextra -Wall -pedantic
-LDFLAGS   = 
+#Compilation
+CXX        = g++
+CXXFLAGS   = -g -std=c++2a -Wextra -Wall -pedantic
 
-SRCFOLDER = Sources
-INCFOLDER = Includes
-OBJFOLDER = Obj
-EXEFOLDER = .
-BINFOLDER = Bin
+OBJFOLDERS = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
+OBJFILES   = $(shell find $(OBJFOLDER) -name *.o)
 
-LIBINCLUDEFOLDERS = -I ../GulgECS/Includes -I ../ExternalLibraries/SFML/include
 
-STATICLIBFOLDER = Static
-DYNAMICLIBFOLDER = Dynamic
-STATICLIBNAME  = libgulginput.a
-DYNAMICLIBNAME = libgulginput.so
-
-DIRECTORIES = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
-OBJFILES = $(shell find $(OBJFOLDER) -name *.o)
-
+#List of all .cpp files to compile
 SRC     = $(wildcard $(SRCFOLDER)/*.cpp) $(wildcard $(SRCFOLDER)/**/*.cpp) $(wildcard $(SRCFOLDER)/**/**/*.cpp) $(wildcard $(SRCFOLDER)/**/**/**/*.cpp)
+
+#List of targets for the compilation (a .o for each .cpp file)
 OBJ     = $(SRC:$(SRCFOLDER)/%.cpp=$(OBJFOLDER)/%.o)
 
+#Paths
+
+SRCFOLDER = ./Sources
+INCFOLDER = ./Includes
+OBJFOLDER = ./Obj
+LIBFOLDER = ./Bin
+LIBNAME   = GulgInput
+
+LOWERLIBNAME = `echo $(LIBNAME) | tr A-Z a-z`
+
+#Link
+STATICLIBFOLDER  = Static
+DYNAMICLIBFOLDER = Dynamic
+STATICLIBNAME    = lib$(LOWERLIBNAME).a
+DYNAMICLIBNAME   = lib$(LOWERLIBNAME).so
+
+#Libraries
+
+LIBRARIESTOINCLUDE  = $(GULGLIBRARIESINCLUDESFOLDER) $(EXTERNALLIBFOLDERSTOINCLUDE)
+LIBRARIESTOLINK     = $(GULGLIBRARIESTOLINK) $(EXTERNALLIBFOLDERSTOLINK)
+
+#Gulg libraries
+
+GULGLIBRARIESTOLINK 		= -L $(GULGLIBRARIESLIBFOLDER)
+
+#Folder where we will create a symbolink link to INCFOLDER for other libraries
+GULGLIBRARIESINCLUDESFOLDER = ../GulgLibraries/Includes
+
+#Folder where we will create a symbolink link to LIBFOLDER for other libraries
+GULGLIBRARIESLIBFOLDER 		= ../GulgLibraries/Libraries
+
+#External libraries
+
+EXTERNALLIBFOLDER 			= ../ExternalLibraries/
+EXTERNALLIBFOLDERSTOINCLUDE = -I $(EXTERNALLIBFOLDER)/$(SFMLINCLUDEFOLDER)
+EXTERNALLIBTOLINK    		= $(SFMLLINK)
+
+#SFML
+SFMLINCLUDEFOLDER 	= SFML/include
+SFMLLINKFOLDER 		= SFML/lib
+SFMLLIBTOLINK 		= -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
+SFMLNEEDEDLIBTOLINK = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
+SFMLLINK 			= -L $(EXTERNALLIBFOLDER)/$(SFMLLINKFOLDER) $(SFMLLIBTOLINK) $(SFMLNEEDEDLIBTOLINK)
+
+
+#Colors in terminal
 ENDCOLOR    = \033[m
 
 REDCOLOR	= \033[0;31m
@@ -44,28 +80,37 @@ OKSTRING   = $(LGREENCOLOR)[SUCCES]$(ENDCOLOR)
 WARSTRING  = $(LYELLOWCOLOR)[WARNING]$(ENDCOLOR)
 ERRSTRING  = $(LREDCOLOR)[ERROR]$(ENDCOLOR)
 
-all: compile staticlib dynamiclib
+all: compile staticlib dynamiclib exportLib
+	@printf "$(LPURPLECOLOR)$(LIBNAME) successfully make$(ENDCOLOR)\\n"
 
 compile: $(OBJ)
 	@printf "$(LGREENCOLOR)Compilation done$(ENDCOLOR)\\n"
 
 $(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
-	@mkdir -p $(DIRECTORIES)
+	@mkdir -p $(OBJFOLDERS)
 	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
-	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) $(LIBINCLUDEFOLDERS)
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) -I $(GULGLIBRARIESINCLUDESFOLDER) $(EXTERNALLIBFOLDERSTOINCLUDE)
 
 staticlib: compile
-	@mkdir -p $(BINFOLDER)/$(STATICLIBFOLDER)
-	@printf "$(LGREENCOLOR)Creating static lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(STATICLIBNAME)$(ENDCOLOR)\\n"
-	@ar rsc $(BINFOLDER)/$(STATICLIBFOLDER)/$(STATICLIBNAME) $(OBJFILES)
+	@mkdir -p $(LIBFOLDER)/$(STATICLIBFOLDER)
+	@ar rsc $(LIBFOLDER)/$(STATICLIBFOLDER)/$(STATICLIBNAME) $(OBJFILES)
 	@printf "$(LGREENCOLOR)Static library created$(ENDCOLOR)\\n"
 
 dynamiclib: compile
-	@mkdir -p $(BINFOLDER)/$(DYNAMICLIBFOLDER)
-	@printf "$(LGREENCOLOR)Creating dynamic lib:  $(ENDCOLOR)$(LCYANCOLOR)$(BINFOLDER)/$(DYNAMICLIBNAME)$(ENDCOLOR)\\n"
-	@-$(CXX) -shared -o $(BINFOLDER)/$(DYNAMICLIBFOLDER)/$(DYNAMICLIBNAME) $(OBJFILES)
+	@mkdir -p $(LIBFOLDER)/$(DYNAMICLIBFOLDER)
+	@-$(CXX) -shared -o $(LIBFOLDER)/$(DYNAMICLIBFOLDER)/$(DYNAMICLIBNAME) $(OBJFILES)
 	@printf "$(LGREENCOLOR)Dynamic library created$(ENDCOLOR)\\n"
 
+exportLib:
+	@mkdir -p $(GULGLIBRARIESINCLUDESFOLDER)
+	@mkdir -p $(GULGLIBRARIESLIBFOLDER)
+	@ln -sf "$(realpath $(INCFOLDER)/$(LIBNAME))" $(GULGLIBRARIESINCLUDESFOLDER)
+	@ln -sf "$(realpath $(LIBFOLDER))" $(GULGLIBRARIESLIBFOLDER)
+	@mv $(GULGLIBRARIESLIBFOLDER)/$(subst ./,,$(LIBFOLDER)) $(GULGLIBRARIESLIBFOLDER)/$(LIBNAME)
+	@printf "$(LGREENCOLOR)Library successfully exported$(ENDCOLOR)\\n"
+
 clean:
+	@rm -rf $(GULGLIBRARIESINCLUDESFOLDER)/$(LIBNAME)
+	@rm -rf $(GULGLIBRARIESLIBFOLDER)/$(LIBNAME)
 	@rm -rf $(OBJFOLDER)
-	@rm -rf $(BINFOLDER)
+	@rm -rf $(LIBFOLDER)

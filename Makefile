@@ -2,6 +2,7 @@ GULGECSFOLDER = GulgECS
 GULGGRAPHICSFOLDER = GulgGraphics
 GULGINPUTFOLDER = GulgInput
 FORTRESSWAR = FortressWar
+GULGLIBRARIESFOLDER = GulgLibraries
 SUBFOLDERS = $(GULGECSFOLDER) $(GULGGRAPHICSFOLDER) $(GULGINPUTFOLDER) $(FORTRESSWAR)
 MAKESUFFIX = _make
 CLEANSUFFIX = _clean
@@ -50,6 +51,7 @@ documentation:
 	@printf "$(LGREENCOLOR)Documentation created.$(ENDCOLOR)\\n"
 
 clean: $(FOLDERSTOCLEAN)
+	@rm -rf $(GULGLIBRARIESFOLDER)
 
 $(FOLDERSTOCLEAN):
 	@$(MAKE) clean -C $(subst $(CLEANSUFFIX),, $@) --no-print-directory
