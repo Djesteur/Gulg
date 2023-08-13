@@ -19,19 +19,19 @@ void testZReleased() { std::cout << "Z has been released !" << std::endl; }
 
 int main() {
 
-	const sf::Vector2u mapSize{100, 100};
+	const sf::Vector2u mapSize{200, 100};
 	const sf::Vector2u tileTextureSize{32, 32};
-	const sf::VideoMode windowVideoMode{800, 800};
+	const sf::VideoMode windowVideoMode{1600, 800};
 
 	GenerationDatas datas;
 
 	datas.mapSizeX = mapSize.x;
 	datas.mapSizeY = mapSize.y;
-	datas.numberOfGrassSeeds = 12;
-	datas.numberOfEarthSeeds = 4;
-	datas.numberOfRivers = 1;
-	datas.segmentSize = 3.f;
-	datas.riverWidth = 2.f;
+	datas.numberOfGrassSeeds = 8;
+	datas.numberOfEarthSeeds = 3;
+	datas.numberOfRivers = 3;
+	datas.segmentSize = 2.f;
+	datas.riverWidth = 3.f;
 	datas.numberOfRoads = 0;
 
 	std::vector<Tile> tileMap = generateMap(datas);

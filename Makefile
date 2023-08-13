@@ -35,7 +35,7 @@ LGREYCOLOR	 = \033[1;37m
 
 .PHONY: all clean listOfComponents documentation $(FOLDERSTOMAKE) $(FOLDERSTOCLEAN) toDoBeforeMake
 
-all: toDoBeforeMake listOfComponents $(FOLDERSTOMAKE) documentation
+all: toDoBeforeMake listOfComponents $(FOLDERSTOMAKE)
 
 toDoBeforeMake:
 	@clear

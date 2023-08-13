@@ -11,8 +11,8 @@ std::vector<size_t> getNeighbourgs4(const std::vector<Tile> &map, const size_t c
 
 	if(positionY != 0) { neighbourgs.emplace_back(getTileIndex(positionX, positionY - 1, mapSizeX)); }
 	if(positionX != 0) { neighbourgs.emplace_back(getTileIndex(positionX - 1, positionY, mapSizeX)); }
-	if(positionX != mapSizeX - 1) { neighbourgs.emplace_back(getTileIndex(positionX + 1, positionY, mapSizeX)); }
-	if(positionY != mapSizeY - 1) { neighbourgs.emplace_back(getTileIndex(positionX, positionY + 1, mapSizeX)); }
+	if(positionX < mapSizeX - 1) { neighbourgs.emplace_back(getTileIndex(positionX + 1, positionY, mapSizeX)); }
+	if(positionY < mapSizeY - 1) { neighbourgs.emplace_back(getTileIndex(positionX, positionY + 1, mapSizeX)); }
 
 	return neighbourgs;
 }
@@ -26,12 +26,12 @@ std::vector<size_t> getNeighbourgs8(const std::vector<Tile> &map, const size_t c
 
 	if(positionX != 0 && positionY != 0) { neighbourgs.emplace_back(getTileIndex(positionX - 1, positionY - 1, mapSizeX)); }
 	if(positionY != 0) { neighbourgs.emplace_back(getTileIndex(positionX, positionY - 1, mapSizeX)); }
-	if(positionX != mapSizeX - 1 && positionY != 0) { neighbourgs.emplace_back(getTileIndex(positionX + 1, positionY - 1, mapSizeX)); }
+	if(positionX < mapSizeX - 1 && positionY != 0) { neighbourgs.emplace_back(getTileIndex(positionX + 1, positionY - 1, mapSizeX)); }
 	if(positionX != 0) { neighbourgs.emplace_back(getTileIndex(positionX - 1, positionY, mapSizeX)); }
-	if(positionX != mapSizeX - 1) { neighbourgs.emplace_back(getTileIndex(positionX + 1, positionY, mapSizeX)); }
-	if(positionX != 0 && positionY != mapSizeY - 1) { neighbourgs.emplace_back(getTileIndex(positionX - 1, positionY + 1, mapSizeX)); }
-	if(positionY != mapSizeY - 1) { neighbourgs.emplace_back(getTileIndex(positionX, positionY + 1, mapSizeX)); }
-	if(positionX != mapSizeX - 1 && positionY != mapSizeY - 1) { neighbourgs.emplace_back(getTileIndex(positionX + 1, positionY + 1, mapSizeX)); }
+	if(positionX < mapSizeX - 1) { neighbourgs.emplace_back(getTileIndex(positionX + 1, positionY, mapSizeX)); }
+	if(positionX != 0 && positionY < mapSizeY - 1) { neighbourgs.emplace_back(getTileIndex(positionX - 1, positionY + 1, mapSizeX)); }
+	if(positionY < mapSizeY - 1) { neighbourgs.emplace_back(getTileIndex(positionX, positionY + 1, mapSizeX)); }
+	if(positionX < mapSizeX - 1 && positionY < mapSizeY - 1) { neighbourgs.emplace_back(getTileIndex(positionX + 1, positionY + 1, mapSizeX)); }
 
 	return neighbourgs;
 }
@@ -73,7 +73,7 @@ void generateGround(std::vector<Tile> &generatedMap, const GenerationDatas &data
 	std::vector<size_t> openGrassList, closedGrassList, addToOpenGrassList, addToCloseGrassList;
 	std::vector<size_t> openEarthList, closedEarthList, addToOpenEarthList, addToCloseEarthList;
 
-	std::default_random_engine engine { std::time(nullptr) };
+	std::default_random_engine engine { std::chrono::system_clock::now().time_since_epoch().count() };
     std::uniform_int_distribution<unsigned int> distribution(0, generatedMap.size() - 1);
 
     for(unsigned int i{0}; i < datas.numberOfGrassSeeds; i++) {
@@ -104,7 +104,7 @@ void generateGround(std::vector<Tile> &generatedMap, const GenerationDatas &data
 
 	    for(size_t currentGrass: openGrassList) {
 
-	    	std::vector<size_t> neighbourgs = getNeighbourgs4(generatedMap, currentGrass, datas.mapSizeX, datas.mapSizeX);
+	    	std::vector<size_t> neighbourgs = getNeighbourgs8(generatedMap, currentGrass, datas.mapSizeX, datas.mapSizeY);
 
 	    	for(size_t currentNeighbourgs: neighbourgs) {
 
@@ -118,7 +118,7 @@ void generateGround(std::vector<Tile> &generatedMap, const GenerationDatas &data
 
 	    for(size_t currentEarth: openEarthList) {
 
-	    	std::vector<size_t> neighbourgs = getNeighbourgs4(generatedMap, currentEarth, datas.mapSizeX, datas.mapSizeX);
+	    	std::vector<size_t> neighbourgs = getNeighbourgs8(generatedMap, currentEarth, datas.mapSizeX, datas.mapSizeY);
 
 	    	for(size_t currentNeighbourgs: neighbourgs) {
 
@@ -155,22 +155,37 @@ std::vector<RiverSegment> generateRiverPath(const GenerationDatas &datas) {
 
 	std::vector<RiverSegment> resultPath;
 
+	std::default_random_engine engine { std::chrono::system_clock::now().time_since_epoch().count() };
+
 	const unsigned int tilePerSegment{datas.segmentSize};
 
 	//Todo: take from datas
 
 	const float maxAngle{3.14159f/2.f};
 
-	//Todo: make it random
+	//Select the beginning point and the direction
 
-	sf::Vector2f previousDirection{1.f, 0.f};
-	sf::Vector2f beginCurrentSegment{0.f, datas.mapSizeY/2.f};
+	std::uniform_int_distribution<int> beginningSideDistribution(0, 3);
+	const int choosenSide = beginningSideDistribution(engine);
+
+	std::uniform_real_distribution<float> beginningPointDistribution(0.f, 1.f);
+	const float choosenPoint = beginningPointDistribution(engine);
+
+	sf::Vector2f previousDirection{0.f, 0.f};
+	sf::Vector2f beginCurrentSegment{0.f, 0.f};
+
+	if(choosenSide == 0) { beginCurrentSegment = sf::Vector2f{0.f, choosenPoint}; previousDirection = normalize(sf::Vector2f{1.f, 1.f - choosenPoint} - beginCurrentSegment); }
+	if(choosenSide == 1) { beginCurrentSegment = sf::Vector2f{1.f, choosenPoint}; previousDirection = normalize(sf::Vector2f{0.f, 1.f - choosenPoint} - beginCurrentSegment); } 
+	if(choosenSide == 2) { beginCurrentSegment = sf::Vector2f{choosenPoint, 0.f}; previousDirection = normalize(sf::Vector2f{1.f - choosenPoint, 1.f} - beginCurrentSegment); } 
+	if(choosenSide == 3) { beginCurrentSegment = sf::Vector2f{choosenPoint, 1.f}; previousDirection = normalize(sf::Vector2f{1.f - choosenPoint, 0.f} - beginCurrentSegment); }
+
+
+	beginCurrentSegment.x *= datas.mapSizeX;
+	beginCurrentSegment.y *= datas.mapSizeY;
 
 	//End random
 
 	bool haveToContinue{true};
-
-	std::default_random_engine engine { std::time(nullptr) };
 
 
 	while(haveToContinue) {
@@ -232,7 +247,10 @@ void applyRiverPathOnMap(const std::vector<RiverSegment> path, const float segme
 
 void generateRivers(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {
 
-	applyRiverPathOnMap(generateRiverPath(datas), datas.riverWidth, generatedMap);
+	for(size_t nbRiver{0}; nbRiver < datas.numberOfRivers; nbRiver++) {
+
+		applyRiverPathOnMap(generateRiverPath(datas), datas.riverWidth, generatedMap);
+	}
 }
 
 void addSand(std::vector<Tile> &generatedMap, const GenerationDatas &datas) {

@@ -16,6 +16,7 @@ Sprite::Sprite(sf::Vector2f position, std::string texturePath) {
 }
 
 
+//TODO
 std::shared_ptr<AbstractComponent> Sprite::clone() const { return nullptr; }
 
 
