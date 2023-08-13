@@ -33,12 +33,50 @@ LPURPLECOLOR = \033[1;35m
 LCYANCOLOR	 = \033[1;36m
 LGREYCOLOR	 = \033[1;37m
 
+
+REPLACED_TEXT =
+
+#Commands
+
+ifeq ($(OS),Windows_NT)
+	DETECTED_OS = Windows
+else
+	DETECTED_OS = Linux
+endif
+ 
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_CLEAR = cls
+else
+	COMMAND_CLEAR = clear
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_PRINTF =
+else
+	COMMAND_PRINTF = printf
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_RM = rmdr /s /q
+else
+	COMMAND_RM = rm -rf
+endif
+
+
+define string_replace
+	$(if $(filter $(DETECTED_OS),Windows), $(eval $(4)=$(shell WindowsScript\subst.bat "$1" "$2" "$3")), $(4)=$(subst $1, $2, $3))
+endef
+
 .PHONY: all clean listOfComponents documentation $(FOLDERSTOMAKE) $(FOLDERSTOCLEAN) toDoBeforeMake
 
 all: toDoBeforeMake listOfComponents $(FOLDERSTOMAKE)
 
 toDoBeforeMake:
-	@clear
+	@$(COMMAND_CLEAR)
+	@echo Detected OS: $(DETECTED_OS)
+	$(call string_replace,is,bob,This is a test, TESTNAME)
+	@echo $(TESTNAME)
+
 
 listOfComponents:
 	@$(LISTOFCOMPONENTSEXEPATH) . $(GULGTYPESFOLDER) $(GULGSIGNATUREKEEPERPATH)
@@ -48,11 +86,12 @@ $(FOLDERSTOMAKE):
 
 documentation:
 	@doxygen Documentation/Doxyfile
-	@printf "$(LGREENCOLOR)Documentation created.$(ENDCOLOR)\\n"
+	@$(COMMAND_PRINTF) "$(LGREENCOLOR)Documentation created.$(ENDCOLOR)\\n"
 
 clean: $(FOLDERSTOCLEAN)
-	@rm -rf $(GULGLIBRARIESFOLDER)
+	@$(COMMAND_RM) $(GULGLIBRARIESFOLDER)
 
 $(FOLDERSTOCLEAN):
-	@$(MAKE) clean -C $(subst $(CLEANSUFFIX),, $@) --no-print-directory
-	@rm -rf $(DOCUMENTATIONFOLDER)
+	$(call string_replace,$(CLEANSUFFIX),,$@, REPLACED_TEXT)
+	@$(MAKE) clean -C $(REPLACED_TEXT) --no-print-directory
+	@$(COMMAND_RM) -rf $(DOCUMENTATIONFOLDER)
