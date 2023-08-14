@@ -15,24 +15,27 @@ LISTOFCOMPONENTSEXEPATH = ./ListOfComponents/ListOfComponents
 GULGTYPESFOLDER = GulgECS/Includes/GulgECS/
 GULGSIGNATUREKEEPERPATH = GulgECS/Sources/GulgECS/ComponentSignatureKeeper.cpp
 
-ENDCOLOR    = \033[m
+COLOR_RED	 = \033[0;31m
+COLOR_GREEN  = \033[0;32m
+COLOR_YELLOW = \033[0;33m
+COLOR_BLUE	 = \033[0;34m
+COLOR_PURPLE = \033[0;35m
+COLOR_CYAN	 = \033[0;36m
+COLOR_GREY 	 = \033[0;37m
 
-REDCOLOR	= \033[0;31m
-GREENCOLOR  = \033[0;32m
-YELLOWCOLOR = \033[0;33m
-BLUECOLOR	= \033[0;34m
-PURPLECOLOR = \033[0;35m
-CYANCOLOR	= \033[0;36m
-GREYCOLOR 	= \033[0;37m
+COLOR_RED_LIGHT	  = \033[1;31m
+COLOR_GREEN_LIGHT  = \033[1;32m
+COLOR_YELLOW_LIGHT = \033[1;33m
+COLOR_BLUE_LIGHT   = \033[1;34m
+COLOR_PURPLE_LIGHT = \033[1;35m
+COLOR_CYAN_LIGHT	  = \033[1;36m
+COLOR_GREY_LIGHT	  = \033[1;37m
 
-LREDCOLOR	 = \033[1;31m
-LGREENCOLOR	 = \033[1;32m
-LYELLOWCOLOR = \033[1;33m
-LBLUECOLOR   = \033[1;34m
-LPURPLECOLOR = \033[1;35m
-LCYANCOLOR	 = \033[1;36m
-LGREYCOLOR	 = \033[1;37m
+COLOR_END = \033[m
 
+STRING_OK   = $(COLOR_GREEN_LIGHT)[SUCCES]$(COLOR_END)
+STRING_WARNING  = $(COLOR_YELLOW_LIGHT)[WARNING]$(COLOR_END)
+STRING_ERROR  = $(COLOR_RED_LIGHT)[ERROR]$(COLOR_END)
 
 REPLACED_TEXT =
 
@@ -57,12 +60,18 @@ else
 endif
 
 ifeq ($(DETECTED_OS),Windows)
-	COMMAND_RM = rmdr /s /q
+	COMMAND_RM = del /s /q
 else
 	COMMAND_RM = rm -rf
 endif
 
+ifeq ($(DETECTED_OS),Windows)
+	SLASH = \\
+else
+	SLASH = /
+endif
 
+#Replace text function
 define string_replace
 	$(if $(filter $(DETECTED_OS),Windows), $(eval $(4)=$(shell WindowsScript\subst.bat "$1" "$2" "$3")), $(4)=$(subst $1, $2, $3))
 endef
@@ -82,11 +91,12 @@ listOfComponents:
 	@$(LISTOFCOMPONENTSEXEPATH) . $(GULGTYPESFOLDER) $(GULGSIGNATUREKEEPERPATH)
 
 $(FOLDERSTOMAKE):
-	@$(MAKE) -C $(subst $(MAKESUFFIX),, $@) --no-print-directory
+	$(call string_replace,$(MAKESUFFIX),,$@, REPLACED_TEXT)
+	@$(MAKE) -C $(REPLACED_TEXT) --no-print-directory
 
 documentation:
 	@doxygen Documentation/Doxyfile
-	@$(COMMAND_PRINTF) "$(LGREENCOLOR)Documentation created.$(ENDCOLOR)\\n"
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Documentation created.$(COLOR_END)\\n"
 
 clean: $(FOLDERSTOCLEAN)
 	@$(COMMAND_RM) $(GULGLIBRARIESFOLDER)

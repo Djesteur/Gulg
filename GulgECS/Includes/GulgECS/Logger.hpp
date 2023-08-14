@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <ctime>
 #include <vector>
+#include <cstdint>
 
 /**
  * @brief      Type of log entry
