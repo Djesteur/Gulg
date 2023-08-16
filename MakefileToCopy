@@ -1,59 +1,3 @@
-#Commands
-
-ifeq ($(OS),Windows_NT)
-	DETECTED_OS = Windows
-else
-	DETECTED_OS = Linux
-endif
- 
-ifeq ($(DETECTED_OS),Windows)
-	COMMAND_CLEAR = cls
-else
-	COMMAND_CLEAR = clear
-endif
-
-ifeq ($(DETECTED_OS),Windows)
-	COMMAND_PRINTF = wsl printf
-else
-	COMMAND_PRINTF = printf
-endif
-
-ifeq ($(DETECTED_OS),Windows)
-	COMMAND_RM = wsl rm
-else
-	COMMAND_RM = rm
-endif
-
-ifeq ($(DETECTED_OS),Windows)
-	COMMAND_LN = wsl ln
-else
-	COMMAND_LN = ln
-endif
-
-ifeq ($(DETECTED_OS),Windows)
-	COMMAND_MV = wsl mv
-else
-	COMMAND_MV = mv
-endif
-
-ifeq ($(DETECTED_OS),Windows)
-	COMMAND_MKDIR = wsl mkdir
-else
-	COMMAND_MKDIR = mkdir
-endif
-
-ifeq ($(DETECTED_OS),Windows)
-	COMMAND_AR = wsl ar
-else
-	COMMAND_AR = ar
-endif
-
-ifeq ($(DETECTED_OS),Windows)
-	COMMAND_CP = wsl cp
-else
-	COMMAND_CP = cp
-endif
-
 COLOR_RED	 = \033[0;31m
 COLOR_GREEN  = \033[0;32m
 COLOR_YELLOW = \033[0;33m
@@ -81,13 +25,10 @@ STRING_ERROR   = $(COLOR_RED_LIGHT)[ERROR]$(COLOR_END)
 CXX        = g++
 CXXFLAGS   = -g -std=c++2a -Wextra -Wall -pedantic
 
-ifeq ($(DETECTED_OS),Windows)
-	OBJECT_FOLDERS = $(subst $(SOURCE_FOLDER),$(OBJECT_FOLDER),$(shell wsl find $(SOURCE_FOLDER) -type d))
-	OBJECT_FILES   = $(shell wsl find $(OBJECT_FOLDER) -name *.o)
-else
-	OBJECT_FOLDERS = $(subst $(SOURCE_FOLDER),$(OBJFOLDER),$(shell find $(SOURCE_FOLDER) -type d))
-	OBJECT_FILES   = $(shell find $(OBJFOLDER) -name *.o)
-endif
+
+OBJECT_FOLDERS = $(subst $(SOURCE_FOLDER),$(OBJECT_FOLDER),$(shell $(COMMAND_FIND) $(SOURCE_FOLDER) -type d))
+OBJECT_FILES   = $(shell $(COMMAND_FIND) $(OBJECT_FOLDER) -name *.o)
+
 
 
 #List of all .cpp files to compile
@@ -103,11 +44,7 @@ INCLUDE_FOLDER = Includes
 OBJECT_FOLDER  = Obj
 BIN_FOLDER     = Bin
 
-ifeq ($(DETECTED_OS),Windows)
-	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| wsl tr A-Z a-z)
-else
-	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| tr A-Z a-z)
-endif
+
 
 #Link
 STATIC_LIBRARY_FOLDER  = Static
@@ -138,17 +75,18 @@ EXTERNAL_LIBRARIES_TO_LINK    		  = $(SFML_LINK)
 
 #SFML
 
-ifeq ($(DETECTED_OS),Windows)
-	SFML_LINK_FOLDER 		       = SFML/lib/Windows
-	SFML_NEEDED_LIBRARIES_TO_LINK  =
-	SFML_STATIC_LIBRARIES_TO_LINK  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
-	SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d-2 -lsfml-window-d-2 -lsfml-system-d-2
-else
-	SFML_LINK_FOLDER 		       = SFML/lib/Linux
-	SFML_NEEDED_LIBRARIES_TO_LINK  = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
-	SFML_STATIC_LIBRARIES_TO_LINK  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
-	SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d -lsfml-window-d -lsfml-system-d
-endif
+#OS-DIFFERENCE#
+#Windows
+SFML_LINK_FOLDER 		       = SFML/lib/Windows
+SFML_NEEDED_LIBRARIES_TO_LINK  =
+SFML_STATIC_LIBRARIES_TO_LINK  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
+SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d-2 -lsfml-window-d-2 -lsfml-system-d-2
+#Linux
+SFML_LINK_FOLDER 		       = SFML/lib/Linux
+SFML_NEEDED_LIBRARIES_TO_LINK  = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
+SFML_STATIC_LIBRARIES_TO_LINK  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
+SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d -lsfml-window-d -lsfml-system-d
+#OS-DIFFERENCE-END#
 
 SFML_INCLUDE_FOLDER 	      = SFML/include
 SFML_LINK 			          = -L $(EXTERNAL_LIBRARIES_FOLDER)/$(SFML_LINK_FOLDER) $(SFML_STATIC_LIBRARIES_TO_LINK) $(SFML_NEEDED_LIBRARIES_TO_LINK)
@@ -157,11 +95,7 @@ SFML_LINK 			          = -L $(EXTERNAL_LIBRARIES_FOLDER)/$(SFML_LINK_FOLDER) $(S
 #---------------------------------------------#
 #All
 
-ifeq ($(DETECTED_OS),Windows)
-	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| wsl tr A-Z a-z)
-else
-	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| tr A-Z a-z)
-endif
+LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| $(COMMAND_TR) A-Z a-z)
 
 
 #Link
@@ -171,7 +105,7 @@ STATIC_LIBRARY_NAME    = lib$(LOWER_LIBRARY_NAME).a
 DYNAMIC_LIBARY_NAME    = lib$(LOWER_LIBRARY_NAME).so
 
 all: compile staticlib exportLib
-	@$(COMMAND_PRINTF) "$(COLOR_PURPLE_LIGHT)$(LIBRARY_NAME) successfully make$(COLOR_END)\\n"
+	@$(COMMAND_PRINTF) "$(COLOR_PURPLE_LIGHT)$(LIBRARY_NAME) successfully made$(COLOR_END)\\n"
 
 compile: $(OBJECTS)
 	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compilation done$(COLOR_END)\\n"
@@ -195,17 +129,16 @@ dynamiclib: compile
 exportLib:
 	@$(COMMAND_MKDIR) -p $(GULG_LIBRARIES_INCLUDES_FOLDER)
 	@$(COMMAND_MKDIR) -p $(GULG_LIBRARIES_TO_LINK_FOLDER)
-
-ifeq ($(DETECTED_OS),Windows)
+#OS-DIFFERENCE#
+#Windows
 	@$(COMMAND_RM) -f $(GULG_LIBRARIES_INCLUDES_FOLDER)/$(LIBRARY_NAME)
 	@$(COMMAND_RM) -f $(GULG_LIBRARIES_TO_LINK_FOLDER)/$(LIBRARY_NAME)
 	@mklink /D "$(realpath $(GULG_LIBRARIES_INCLUDES_FOLDER)/$(LIBRARY_NAME))" "$(realpath $(INCLUDE_FOLDER)/$(LIBRARY_NAME))"
 	@mklink /D "$(realpath $(GULG_LIBRARIES_TO_LINK_FOLDER)/$(LIBRARY_NAME))" "$(realpath $(LIBRARY_FOLDER))"
-	
-else
+#Linux
 	@ln -sf "$(realpath $(INCLUDE_FOLDER)/$(LIBNAME))" $(GULG_LIBRARIES_INCLUDES_FOLDER)
 	@ln -sf "$(realpath $(LIBRARY_FOLDER))/$(LIBRARY_NAME)" $(GULG_LIBRARIES_TO_LINK_FOLDER)
-endif
+#OS-DIFFERENCE-END#
 
 	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Library successfully exported$(COLOR_END)\\n"
 
