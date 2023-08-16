@@ -5,6 +5,7 @@
 #include <map>
 #include <fstream>
 #include <cstring>
+#include <algorithm>
 
 void removeKeyword(std::string &line, const std::string toDelete) {
 

@@ -1,116 +1,190 @@
+#Commands
+
+ifeq ($(OS),Windows_NT)
+	DETECTED_OS = Windows
+else
+	DETECTED_OS = Linux
+endif
+ 
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_CLEAR = cls
+else
+	COMMAND_CLEAR = clear
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_PRINTF = wsl printf
+else
+	COMMAND_PRINTF = printf
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_RM = wsl rm
+else
+	COMMAND_RM = rm
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_LN = wsl ln
+else
+	COMMAND_LN = ln
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_MV = wsl mv
+else
+	COMMAND_MV = mv
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_MKDIR = wsl mkdir
+else
+	COMMAND_MKDIR = mkdir
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_AR = wsl ar
+else
+	COMMAND_AR = ar
+endif
+
+COLOR_RED	 = \033[0;31m
+COLOR_GREEN  = \033[0;32m
+COLOR_YELLOW = \033[0;33m
+COLOR_BLUE	 = \033[0;34m
+COLOR_PURPLE = \033[0;35m
+COLOR_CYAN	 = \033[0;36m
+COLOR_GREY 	 = \033[0;37m
+
+COLOR_RED_LIGHT	   = \033[1;31m
+COLOR_GREEN_LIGHT  = \033[1;32m
+COLOR_YELLOW_LIGHT = \033[1;33m
+COLOR_BLUE_LIGHT   = \033[1;34m
+COLOR_PURPLE_LIGHT = \033[1;35m
+COLOR_CYAN_LIGHT   = \033[1;36m
+COLOR_GREY_LIGHT   = \033[1;37m
+
+COLOR_END = \033[m
+
 #Compilation
 CXX        = g++
 CXXFLAGS   = -g -std=c++2a -Wextra -Wall -pedantic
 
-OBJFOLDERS = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
-OBJFILES   = $(shell find $(OBJFOLDER) -name *.o)
+ifeq ($(DETECTED_OS),Windows)
+	OBJECT_FOLDERS = $(subst $(SOURCE_FOLDER),$(OBJECT_FOLDER),$(shell wsl find $(SOURCE_FOLDER) -type d))
+	OBJECT_FILES   = $(shell wsl find $(OBJECT_FOLDER) -name *.o)
+else
+	OBJECT_FOLDERS = $(subst $(SOURCE_FOLDER),$(OBJFOLDER),$(shell find $(SOURCE_FOLDER) -type d))
+	OBJECT_FILES   = $(shell find $(OBJFOLDER) -name *.o)
+endif
 
 
 #List of all .cpp files to compile
-SRC     = $(wildcard $(SRCFOLDER)/*.cpp) $(wildcard $(SRCFOLDER)/**/*.cpp) $(wildcard $(SRCFOLDER)/**/**/*.cpp) $(wildcard $(SRCFOLDER)/**/**/**/*.cpp)
+SOURCES     = $(wildcard $(SOURCE_FOLDER)/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/**/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/**/**/*.cpp)
 
 #List of targets for the compilation (a .o for each .cpp file)
-OBJ     = $(SRC:$(SRCFOLDER)/%.cpp=$(OBJFOLDER)/%.o)
+OBJECTS     = $(SOURCES:$(SOURCE_FOLDER)/%.cpp=$(OBJECT_FOLDER)/%.o)
 
 #Paths
 
-SRCFOLDER = ./Sources
-INCFOLDER = ./Includes
-OBJFOLDER = ./Obj
-LIBFOLDER = ./Bin
-LIBNAME   = GulgGraphics
+SOURCE_FOLDER  = ./Sources
+INCLUDE_FOLDER = ./Includes
+OBJECT_FOLDER  = ./Obj
+LIBRARY_FOLDER = ./Bin
+LIBRARY_NAME   = GulgGraphics
 
-LOWERLIBNAME = `echo $(LIBNAME) | tr A-Z a-z`
+ifeq ($(DETECTED_OS),Windows)
+	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| wsl tr A-Z a-z)
+else
+	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| tr A-Z a-z)
+endif
+
 
 #Link
-STATICLIBFOLDER  = Static
-DYNAMICLIBFOLDER = Dynamic
-STATICLIBNAME    = lib$(LOWERLIBNAME).a
-DYNAMICLIBNAME   = lib$(LOWERLIBNAME).so
+STATIC_LIBRARY_FOLDER  = Static
+DYNAMIC_LIBRARY_FOLDER = Dynamic
+STATIC_LIBRARY_NAME    = lib$(LOWER_LIBRARY_NAME).a
+DYNAMIC_LIBARY_NAME    = lib$(LOWER_LIBRARY_NAME).so
 
 #Libraries
 
-LIBRARIESTOINCLUDE  = $(GULGLIBRARIESINCLUDESFOLDER) $(EXTERNALLIBFOLDERSTOINCLUDE)
-LIBRARIESTOLINK     = $(GULGLIBRARIESTOLINK) $(EXTERNALLIBFOLDERSTOLINK)
+LIBRARIES_TO_INCLUDE  = $(GULG_LIBRARIES_INCLUDES_FOLDER) $(EXTERNAL_LIBRARIES_FOLDERS_TO_INCLUDE)
+LIBRARIES_TO_LINK     = $(GULG_LIBRARIES_TO_LINK) $(GULG_LIBRARIES_TO_LINK_FOLDER)
 
 #Gulg libraries
 
-GULGLIBRARIESTOLINK 		= -L $(GULGLIBRARIESLIBFOLDER) -lgulgecs.o
+GULG_LIBRARIES_TO_LINK 		   = -L $(GULG_LIBRARIES_TO_LINK_FOLDER)
 
-#Folder where we will create a symbolink link to INCFOLDER for other libraries
-GULGLIBRARIESINCLUDESFOLDER = ../GulgLibraries/Includes
+#Folder where we will create a symbolink link to INCLUDE_FOLDER for other libraries
+GULG_LIBRARIES_INCLUDES_FOLDER = ../GulgLibraries/Includes
 
-#Folder where we will create a symbolink link to LIBFOLDER for other libraries
-GULGLIBRARIESLIBFOLDER 		= ../GulgLibraries/Libraries
+#Folder where we will create a symbolink link to LIBRARY_FOLDER for other libraries
+GULG_LIBRARIES_TO_LINK_FOLDER  = ../GulgLibraries/Libraries
 
 #External libraries
 
-EXTERNALLIBFOLDER 			= ../ExternalLibraries/
-EXTERNALLIBFOLDERSTOINCLUDE = -I $(EXTERNALLIBFOLDER)/$(SFMLINCLUDEFOLDER)
-EXTERNALLIBTOLINK    		= $(SFMLLINK)
+EXTERNAL_LIBRARIES_FOLDER 			  = ../ExternalLibraries/
+EXTERNAL_LIBRARIES_FOLDERS_TO_INCLUDE = $(EXTERNAL_LIBRARIES_FOLDER)/$(SFML_INCLUDE_FOLDER)
+EXTERNAL_LIBRARIES_TO_LINK    		  = $(SFML_LINK)
 
 #SFML
-SFMLINCLUDEFOLDER 	= SFML/include
-SFMLLINKFOLDER 		= SFML/lib
-SFMLLIBTOLINK 		= -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
-SFMLNEEDEDLIBTOLINK = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
-SFMLLINK 			= -L $(EXTERNALLIBFOLDER)/$(SFMLLINKFOLDER) $(SFMLLIBTOLINK) $(SFMLNEEDEDLIBTOLINK)
+
+ifeq ($(DETECTED_OS),Windows)
+	SFML_LINK_FOLDER 		       = SFML/lib/Windows
+	SFML_NEEDED_LIBRARIES_TO_LINK  = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
+	SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d-2 -lsfml-window-d-2 -lsfml-system-d-2
+else
+	SFML_LINK_FOLDER 		       = SFML/lib/Linux
+	SFML_NEEDED_LIBRARIES_TO_LINK  = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
+	SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d -lsfml-window-d -lsfml-system-d
+endif
+
+SFML_INCLUDE_FOLDER 	      = SFML/include
+SFML_STATIC_LIBRARIES_TO_LINK = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
+SFML_LINK 			          = -L $(EXTERNAL_LIBRARIES_FOLDERS_TO_INCLUDE)/$(SFML_LINK_FOLDER) $(SFML_STATIC_LIBRARIES_TO_LINK) $(SFML_NEEDED_LIBRARIES_TO_LINK)
 
 
-#Colors in terminal
-ENDCOLOR    = \033[m
+all: compile staticlib exportLib
+	@$(COMMAND_PRINTF) "$(COLOR_PURPLE_LIGHT)$(LIBRARY_NAME) successfully make$(COLOR_END)\\n"
 
-REDCOLOR	= \033[0;31m
-GREENCOLOR  = \033[0;32m
-YELLOWCOLOR = \033[0;33m
-BLUECOLOR	= \033[0;34m
-PURPLECOLOR = \033[0;35m
-CYANCOLOR	= \033[0;36m
-GREYCOLOR 	= \033[0;37m
+compile: $(OBJECTS)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compilation done$(COLOR_END)\\n"
 
-LREDCOLOR	 = \033[1;31m
-LGREENCOLOR	 = \033[1;32m
-LYELLOWCOLOR = \033[1;33m
-LBLUECOLOR   = \033[1;34m
-LPURPLECOLOR = \033[1;35m
-LCYANCOLOR	 = \033[1;36m
-LGREYCOLOR	 = \033[1;37m
-
-OKSTRING   = $(LGREENCOLOR)[SUCCES]$(ENDCOLOR)
-WARSTRING  = $(LYELLOWCOLOR)[WARNING]$(ENDCOLOR)
-ERRSTRING  = $(LREDCOLOR)[ERROR]$(ENDCOLOR)
-
-all: compile staticlib dynamiclib exportLib
-	@printf "$(LPURPLECOLOR)$(LIBNAME) successfully make$(ENDCOLOR)\\n"
-
-compile: $(OBJ)
-	@printf "$(LGREENCOLOR)Compilation done$(ENDCOLOR)\\n"
-
-$(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
-	@mkdir -p $(OBJFOLDERS)
-	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
-	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER) -I $(GULGLIBRARIESINCLUDESFOLDER) $(EXTERNALLIBFOLDERSTOINCLUDE)
+$(OBJECT_FOLDER)/%.o: $(SOURCE_FOLDER)/%.cpp
+	@$(COMMAND_MKDIR) -p $(OBJECT_FOLDERS)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compiling:  $(COLOR_END)$(COLOR_CYAN_LIGHT)$<$(COLOR_END)\\n"
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCLUDE_FOLDER) -I $(GULG_LIBRARIES_INCLUDES_FOLDER) -I $(EXTERNAL_LIBRARIES_FOLDERS_TO_INCLUDE)
+	
 
 staticlib: compile
-	@mkdir -p $(LIBFOLDER)/$(STATICLIBFOLDER)
-	@ar rsc $(LIBFOLDER)/$(STATICLIBFOLDER)/$(STATICLIBNAME) $(OBJFILES)
-	@printf "$(LGREENCOLOR)Static library created$(ENDCOLOR)\\n"
+	@$(COMMAND_MKDIR) -p $(LIBRARY_FOLDER)/$(STATIC_LIBRARY_FOLDER)
+	@$(COMMAND_AR) rsc $(LIBRARY_FOLDER)/$(STATIC_LIBRARY_FOLDER)/$(STATIC_LIBRARY_NAME) $(OBJECT_FILES)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Static library created$(COLOR_END)\\n"
 
 dynamiclib: compile
-	@mkdir -p $(LIBFOLDER)/$(DYNAMICLIBFOLDER)
-	@-$(CXX) -shared -o $(LIBFOLDER)/$(DYNAMICLIBFOLDER)/$(DYNAMICLIBNAME) $(OBJFILES)
-	@printf "$(LGREENCOLOR)Dynamic library created$(ENDCOLOR)\\n"
+	@$(COMMAND_MKDIR) -p $(LIBRARY_FOLDER)/$(DYNAMIC_LIBRARY_FOLDER)
+	@-$(CXX) -shared -o $(LIBRARY_FOLDER)/$(DYNAMIC_LIBRARY_FOLDER)/$(DYNAMIC_LIBARY_NAME) $(OBJECT_FILES)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Dynamic library created$(COLOR_END)\\n"
 
 exportLib:
-	@mkdir -p $(GULGLIBRARIESINCLUDESFOLDER)
-	@mkdir -p $(GULGLIBRARIESLIBFOLDER)
-	@ln -sf "$(realpath $(INCFOLDER)/$(LIBNAME))" $(GULGLIBRARIESINCLUDESFOLDER)
-	@ln -sf "$(realpath $(LIBFOLDER))" $(GULGLIBRARIESLIBFOLDER)
-	@mv $(GULGLIBRARIESLIBFOLDER)/$(subst ./,,$(LIBFOLDER)) $(GULGLIBRARIESLIBFOLDER)/$(LIBNAME)
-	@printf "$(LGREENCOLOR)Library successfully exported$(ENDCOLOR)\\n"
+	@$(COMMAND_MKDIR) -p $(GULG_LIBRARIES_INCLUDES_FOLDER)
+	@$(COMMAND_MKDIR) -p $(GULG_LIBRARIES_TO_LINK_FOLDER)
+
+ifeq ($(DETECTED_OS),Windows)
+	@$(COMMAND_RM) -f $(GULG_LIBRARIES_INCLUDES_FOLDER)/$(LIBRARY_NAME)
+	@$(COMMAND_RM) -f $(GULG_LIBRARIES_TO_LINK_FOLDER)/$(LIBRARY_NAME)
+	@mklink /D "$(realpath $(GULG_LIBRARIES_INCLUDES_FOLDER)/$(LIBRARY_NAME))" "$(realpath $(INCLUDE_FOLDER)/$(LIBRARY_NAME))"
+	@mklink /D "$(realpath $(GULG_LIBRARIES_TO_LINK_FOLDER)/$(LIBRARY_NAME))" "$(realpath $(LIBRARY_FOLDER))"
+	
+else
+	@ln -sf "$(realpath $(INCLUDE_FOLDER)/$(LIBNAME))" $(GULG_LIBRARIES_INCLUDES_FOLDER)
+	@ln -sf "$(realpath $(LIBRARY_FOLDER))/$(LIBRARY_NAME)" $(GULG_LIBRARIES_TO_LINK_FOLDER)
+endif
+
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Library successfully exported$(COLOR_END)\\n"
 
 clean:
-	@rm -rf $(GULGLIBRARIESINCLUDESFOLDER)/$(LIBNAME)
-	@rm -rf $(GULGLIBRARIESLIBFOLDER)/$(LIBNAME)
-	@rm -rf $(OBJFOLDER)
-	@rm -rf $(LIBFOLDER)
+	@$(COMMAND_RM) -rf $(GULG_LIBRARIES_INCLUDES_FOLDER)/$(LIBRARY_NAME)
+	@$(COMMAND_RM) -rf $(GULG_LIBRARIES_TO_LINK_FOLDER)/$(LIBRARY_NAME)
+	@$(COMMAND_RM) -rf $(OBJECT_FOLDER)
+	@$(COMMAND_RM) -rf $(LIBRARY_FOLDER)

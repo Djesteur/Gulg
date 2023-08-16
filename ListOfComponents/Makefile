@@ -1,53 +1,112 @@
+#Commands
+
+ifeq ($(OS),Windows_NT)
+	DETECTED_OS = Windows
+else
+	DETECTED_OS = Linux
+endif
+ 
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_CLEAR = cls
+else
+	COMMAND_CLEAR = clear
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_PRINTF = wsl printf
+else
+	COMMAND_PRINTF = printf
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_RM = wsl rm
+else
+	COMMAND_RM = rm
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_LN = wsl ln
+else
+	COMMAND_LN = ln
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_MV = wsl mv
+else
+	COMMAND_MV = mv
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_MKDIR = wsl mkdir
+else
+	COMMAND_MKDIR = mkdir
+endif
+
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_AR = wsl ar
+else
+	COMMAND_AR = ar
+endif
+
+COLOR_RED	 = \033[0;31m
+COLOR_GREEN  = \033[0;32m
+COLOR_YELLOW = \033[0;33m
+COLOR_BLUE	 = \033[0;34m
+COLOR_PURPLE = \033[0;35m
+COLOR_CYAN	 = \033[0;36m
+COLOR_GREY 	 = \033[0;37m
+
+COLOR_RED_LIGHT	   = \033[1;31m
+COLOR_GREEN_LIGHT  = \033[1;32m
+COLOR_YELLOW_LIGHT = \033[1;33m
+COLOR_BLUE_LIGHT   = \033[1;34m
+COLOR_PURPLE_LIGHT = \033[1;35m
+COLOR_CYAN_LIGHT   = \033[1;36m
+COLOR_GREY_LIGHT   = \033[1;37m
+
+COLOR_END = \033[m
+
+STRING_OK      = $(COLOR_GREEN_LIGHT)[SUCCES]$(COLOR_END)
+STRING_WARNING = $(COLOR_YELLOW_LIGHT)[WARNING]$(COLOR_END)
+STRING_ERROR   = $(COLOR_RED_LIGHT)[ERROR]$(COLOR_END)
+
+
+
 FMODARCHI = x86_64
 CXX       = g++
 CXXFLAGS  = -g -std=c++2a -Wextra -Wall -pedantic
 
-SRCFOLDER = Sources
-INCFOLDER = Includes
-OBJFOLDER = Obj
-EXEFOLDER = .
-EXENAME = ListOfComponents
+SOURCE_FOLDER  = Sources
+INCLUDE_FOLDER = Includes
+OBJECT_FOLDER  = Obj
+EXE_FOLDER     = .
+EXE_NAME       = ListOfComponents
 
-DIRECTORIES = $(subst $(SRCFOLDER),$(OBJFOLDER),$(shell find $(SRCFOLDER) -type d))
-OBJFILES = $(shell find $(OBJFOLDER) -name *.o)
 
-SRC     = $(wildcard $(SRCFOLDER)/*.cpp) $(wildcard $(SRCFOLDER)/**/*.cpp) $(wildcard $(SRCFOLDER)/**/**/*.cpp)
-OBJ     = $(SRC:$(SRCFOLDER)/%.cpp=$(OBJFOLDER)/%.o)
+ifeq ($(DETECTED_OS),Windows)
+	DIRECTORIES = $(subst $(SOURCE_FOLDER),$(OBJECT_FOLDER),$(shell wsl find $(SOURCE_FOLDER) -type d))
+	OBJECT_FILES = $(shell wsl find $(OBJECT_FOLDER) -name *.o)
+else
+	DIRECTORIES = $(subst $(SOURCE_FOLDER),$(OBJECT_FOLDER),$(shell find $(SOURCE_FOLDER) -type d))
+	OBJECT_FILES = $(shell find $(OBJECT_FOLDER) -name *.o)
+endif
 
-ENDCOLOR    = \033[m
+SOURCES     = $(wildcard $(SOURCE_FOLDER)/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/**/*.cpp)
+OBJECTS     = $(SOURCES:$(SOURCE_FOLDER)/%.cpp=$(OBJECT_FOLDER)/%.o)
 
-REDCOLOR	= \033[0;31m
-GREENCOLOR  = \033[0;32m
-YELLOWCOLOR = \033[0;33m
-BLUECOLOR	= \033[0;34m
-PURPLECOLOR = \033[0;35m
-CYANCOLOR	= \033[0;36m
-GREYCOLOR 	= \033[0;37m
 
-LREDCOLOR	 = \033[1;31m
-LGREENCOLOR	 = \033[1;32m
-LYELLOWCOLOR = \033[1;33m
-LBLUECOLOR   = \033[1;34m
-LPURPLECOLOR = \033[1;35m
-LCYANCOLOR	 = \033[1;36m
-LGREYCOLOR	 = \033[1;37m
+all: $(OBJECTS)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compilation done$(ENDCOLOR)\\n"
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Linking $(COLOR_END)$(LYELLOWCOLOR)$^$(COLOR_END)\\n"
+	@$(CXX) $^ -o $(EXE_FOLDER)/$(EXE_NAME) $(LIBRARIES)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Linking done$(COLOR_END)\\n"
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Executable created at path: $(COLOR_END)$(COLOR_RED_LIGHT)$(EXE_FOLDER)/$(EXE_NAME)$(COLOR_END)\\n"
 
-OKSTRING   = $(LGREENCOLOR)[SUCCES]$(ENDCOLOR)
-WARSTRING  = $(LYELLOWCOLOR)[WARNING]$(ENDCOLOR)
-ERRSTRING  = $(LREDCOLOR)[ERROR]$(ENDCOLOR)
-
-all: $(OBJ)
-	@printf "$(LGREENCOLOR)Compilation done$(ENDCOLOR)\\n"
-	@printf "$(LGREENCOLOR)Linking $(ENDCOLOR)$(LYELLOWCOLOR)$^$(ENDCOLOR)\\n"
-	@$(CXX) $^ -o $(EXEFOLDER)/$(EXENAME) $(LIBRARIES)
-	@printf "$(LGREENCOLOR)Linking done$(ENDCOLOR)\\n"
-	@printf "$(LGREENCOLOR)Executable created at path: $(ENDCOLOR)$(LREDCOLOR)$(EXEFOLDER)/$(EXENAME)$(ENDCOLOR)\\n"
-
-$(OBJFOLDER)/%.o: $(SRCFOLDER)/%.cpp
-	@mkdir -p $(DIRECTORIES)
-	@printf "$(LGREENCOLOR)Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)\\n"
-	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCFOLDER)
+$(OBJECT_FOLDER)/%.o: $(SOURCE_FOLDER)/%.cpp
+	@$(COMMAND_MKDIR) -p $(DIRECTORIES)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compiling:  $(COLOR_END)$(COLOR_CYAN_LIGHT)$<$(COLOR_END)\\n"
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCLUDE_FOLDER)
 
 
 clean:
-	@rm -rf $(OBJFOLDER)
+	@$(COMMAND_RM) -rf $(OBJECT_FOLDER)
