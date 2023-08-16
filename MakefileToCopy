@@ -48,6 +48,12 @@ else
 	COMMAND_AR = ar
 endif
 
+ifeq ($(DETECTED_OS),Windows)
+	COMMAND_CP = wsl cp
+else
+	COMMAND_CP = cp
+endif
+
 COLOR_RED	 = \033[0;31m
 COLOR_GREEN  = \033[0;32m
 COLOR_YELLOW = \033[0;33m
@@ -66,6 +72,11 @@ COLOR_GREY_LIGHT   = \033[1;37m
 
 COLOR_END = \033[m
 
+STRING_OK      = $(COLOR_GREEN_LIGHT)[SUCCES]$(COLOR_END)
+STRING_WARNING = $(COLOR_YELLOW_LIGHT)[WARNING]$(COLOR_END)
+STRING_ERROR   = $(COLOR_RED_LIGHT)[ERROR]$(COLOR_END)
+
+
 #Compilation
 CXX        = g++
 CXXFLAGS   = -g -std=c++2a -Wextra -Wall -pedantic
@@ -80,25 +91,23 @@ endif
 
 
 #List of all .cpp files to compile
-SOURCE_FILES     = $(wildcard $(SOURCE_FOLDER)/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/**/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/**/**/*.cpp)
+SOURCES     = $(wildcard $(SOURCE_FOLDER)/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/**/*.cpp) $(wildcard $(SOURCE_FOLDER)/**/**/**/*.cpp)
 
 #List of targets for the compilation (a .o for each .cpp file)
-OBJECT_FILES     = $(SOURCE_FILES:$(SOURCE_FOLDER)/%.cpp=$(OBJECT_FOLDER)/%.o)
+OBJECTS     = $(SOURCES:$(SOURCE_FOLDER)/%.cpp=$(OBJECT_FOLDER)/%.o)
 
 #Paths
 
-SOURCE_FOLDER  = ./Sources
-INCLUDE_FOLDER = ./Includes
-OBJECT_FOLDER  = ./Obj
-LIBRARY_FOLDER = ./Bin
-LIBRARY_NAME   = GulgInput
+SOURCE_FOLDER  = Sources
+INCLUDE_FOLDER = Includes
+OBJECT_FOLDER  = Obj
+BIN_FOLDER     = Bin
 
 ifeq ($(DETECTED_OS),Windows)
 	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| wsl tr A-Z a-z)
 else
 	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| tr A-Z a-z)
 endif
-
 
 #Link
 STATIC_LIBRARY_FOLDER  = Static
@@ -113,17 +122,17 @@ LIBRARIES_TO_LINK     = $(GULG_LIBRARIES_TO_LINK) $(GULG_LIBRARIES_TO_LINK_FOLDE
 
 #Gulg libraries
 
-GULG_LIBRARIES_TO_LINK 		   = -L $(GULG_LIBRARIES_TO_LINK_FOLDER)
+GULG_LIBRARIES_TO_LINK 		   = -L $(GULG_LIBRARIES_TO_LINK_FOLDER)/GulgECS/Static -L $(GULG_LIBRARIES_TO_LINK_FOLDER)/GulgGraphics/Static -L $(GULG_LIBRARIES_TO_LINK_FOLDER)/GulgInput/Static -lgulginput -lgulggraphics -lgulgecs
 
 #Folder where we will create a symbolink link to INCLUDE_FOLDER for other libraries
 GULG_LIBRARIES_INCLUDES_FOLDER = ../GulgLibraries/Includes
 
-#Folder where we will create a symbolink link to LIBFOLDER for other libraries
+#Folder where we will create a symbolink link to LIBRARY_FOLDER for other libraries
 GULG_LIBRARIES_TO_LINK_FOLDER  = ../GulgLibraries/Libraries
 
 #External libraries
 
-EXTERNAL_LIBRARIES_FOLDER 			  = ../ExternalLibraries/
+EXTERNAL_LIBRARIES_FOLDER 			  = ../ExternalLibraries
 EXTERNAL_LIBRARIES_FOLDERS_TO_INCLUDE = $(EXTERNAL_LIBRARIES_FOLDER)/$(SFML_INCLUDE_FOLDER)
 EXTERNAL_LIBRARIES_TO_LINK    		  = $(SFML_LINK)
 
@@ -131,28 +140,45 @@ EXTERNAL_LIBRARIES_TO_LINK    		  = $(SFML_LINK)
 
 ifeq ($(DETECTED_OS),Windows)
 	SFML_LINK_FOLDER 		       = SFML/lib/Windows
-	SFML_NEEDED_LIBRARIES_TO_LINK  = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
+	SFML_NEEDED_LIBRARIES_TO_LINK  =
+	SFML_STATIC_LIBRARIES_TO_LINK  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
 	SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d-2 -lsfml-window-d-2 -lsfml-system-d-2
 else
-	SFML_LINK_FOLDER 		      = SFML/lib/Linux
-	SFML_NEEDED_LIBRARIES_TO_LINK = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
+	SFML_LINK_FOLDER 		       = SFML/lib/Linux
+	SFML_NEEDED_LIBRARIES_TO_LINK  = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev
+	SFML_STATIC_LIBRARIES_TO_LINK  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
 	SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d -lsfml-window-d -lsfml-system-d
 endif
 
 SFML_INCLUDE_FOLDER 	      = SFML/include
-SFML_STATIC_LIBRARIES_TO_LINK 		  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d
-SFML_LINK 			          = -L $(EXTERNAL_LIBRARIES_FOLDERS_TO_INCLUDE)/$(SFML_LINK_FOLDER) $(SFML_STATIC_LIBRARIES_TO_LINK) $(SFML_NEEDED_LIBRARIES_TO_LINK)
+SFML_LINK 			          = -L $(EXTERNAL_LIBRARIES_FOLDER)/$(SFML_LINK_FOLDER) $(SFML_STATIC_LIBRARIES_TO_LINK) $(SFML_NEEDED_LIBRARIES_TO_LINK)
 
+
+#---------------------------------------------#
+#All
+
+ifeq ($(DETECTED_OS),Windows)
+	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| wsl tr A-Z a-z)
+else
+	LOWER_LIBRARY_NAME = $(shell echo $(LIBRARY_NAME)| tr A-Z a-z)
+endif
+
+
+#Link
+STATIC_LIBRARY_FOLDER  = Static
+DYNAMIC_LIBRARY_FOLDER = Dynamic
+STATIC_LIBRARY_NAME    = lib$(LOWER_LIBRARY_NAME).a
+DYNAMIC_LIBARY_NAME    = lib$(LOWER_LIBRARY_NAME).so
 
 all: compile staticlib exportLib
 	@$(COMMAND_PRINTF) "$(COLOR_PURPLE_LIGHT)$(LIBRARY_NAME) successfully make$(COLOR_END)\\n"
 
-compile: $(OBJECT_FILES)
+compile: $(OBJECTS)
 	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compilation done$(COLOR_END)\\n"
 
 $(OBJECT_FOLDER)/%.o: $(SOURCE_FOLDER)/%.cpp
 	@$(COMMAND_MKDIR) -p $(OBJECT_FOLDERS)
-	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compiling:  $(COLOR_END)$(LCYANCOLOR)$<$(COLOR_END)\\n"
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compiling:  $(COLOR_END)$(COLOR_CYAN_LIGHT)$<$(COLOR_END)\\n"
 	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCLUDE_FOLDER) -I $(GULG_LIBRARIES_INCLUDES_FOLDER) -I $(EXTERNAL_LIBRARIES_FOLDERS_TO_INCLUDE)
 	
 
@@ -188,3 +214,33 @@ clean:
 	@$(COMMAND_RM) -rf $(GULG_LIBRARIES_TO_LINK_FOLDER)/$(LIBRARY_NAME)
 	@$(COMMAND_RM) -rf $(OBJECT_FOLDER)
 	@$(COMMAND_RM) -rf $(LIBRARY_FOLDER)
+	@$(COMMAND_RM) -rf $(BIN_FOLDER)
+
+#---------------------------------------------#
+#lib
+
+all: $(OBJECTS)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compilation done$(COLOR_END)\\n"
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Linking $(COLOR_END)$(COLOR_YELLOW_LIGHT)$(OBJECTS)$(COLOR_END)\\n"
+	@$(COMMAND_MKDIR) -p $(EXE_FOLDER)
+	$(CXX) $(OBJECTS) -o $(EXE_FOLDER)/$(EXE_NAME) $(GULG_LIBRARIES_TO_LINK) $(EXTERNAL_LIBRARIES_TO_LINK)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Linking done$(COLOR_END)\\n"
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Executable created at path: $(COLOR_END)$(COLOR_RED_LIGHT)$(EXE_FOLDER)/$(EXE_NAME)$(COLOR_END)\\n"
+	@$(COMMAND_CP) $(EXE_FOLDER)/$(EXE_NAME) ../
+
+copyExeToParent:
+	@$(COMMAND_CP) $(EXE_FOLDER)/$(EXE_NAME) ../
+
+$(OBJECT_FOLDER)/%.o: $(SOURCE_FOLDER)/%.cpp
+	@$(COMMAND_MKDIR) -p $(OBJECT_FOLDERS)
+	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Compiling:  $(COLOR_END)$(COLOR_CYAN_LIGHT)$<$(COLOR_END)\\n"
+	@-$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@ -I $(INCLUDE_FOLDER) -I $(GULG_LIBRARIES_INCLUDES_FOLDER) -I $(EXTERNAL_LIBRARIES_FOLDERS_TO_INCLUDE)
+
+clean:
+	@$(COMMAND_RM) -rf $(OBJECT_FOLDER)
+	@$(COMMAND_RM) -rf $(EXE_FOLDER)
+	@$(COMMAND_RM) -rf $(BIN_FOLDER)
+
+
+#---------------------------------------------#
+#exe

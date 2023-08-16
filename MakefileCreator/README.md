@@ -1,0 +1,1 @@
+This program auto-create makefiles for sub project, with the main makefile.
