@@ -6,6 +6,7 @@
 #include <cstring>
 #include <map>
 #include <limits>
+#include <algorithm>
 
 std::map<std::string, std::string> getTextToCopy(std::ifstream &stream) {
 
@@ -68,7 +69,7 @@ std::string replaceInFile(const std::string &toReplace, const std::string &toSea
 	return result;
 }
 
-std::string replaceCommandForLinux(std::string &toReplace) {
+std::string replaceCommandForLinux(const std::string &toReplace) {
 
 	std::string result{toReplace};
 	result = replaceInFile(result, "$(COMMAND_CLEAR)", "clear");
@@ -84,7 +85,7 @@ std::string replaceCommandForLinux(std::string &toReplace) {
 	return result;
 }
 
-std::string replaceCommandForWindows(std::string &toReplace) {
+std::string replaceCommandForWindows(const std::string &toReplace) {
 
 	std::string result{toReplace};
 	result = replaceInFile(result, "$(COMMAND_CLEAR)", "cls");
@@ -100,7 +101,7 @@ std::string replaceCommandForWindows(std::string &toReplace) {
 	return result;
 }
 
-std::string replaceOSDifference(std::string &toReplace, std::string osType) {
+std::string replaceOSDifference(const std::string &toReplace, std::string osType) {
 
 	std::string result{toReplace};
 
@@ -133,7 +134,7 @@ std::string replaceOSDifference(std::string &toReplace, std::string osType) {
 }
 
 
-std::string replaceForOS(std::string &toReplace) {
+std::string replaceForOS(const std::string &toReplace) {
 
 	std::string result{toReplace};
 
@@ -151,15 +152,82 @@ std::string replaceForOS(std::string &toReplace) {
 	return result;
 }
 
+std::string addLibraries(const std::vector<std::string> libraries, const std::string &text) {
+
+	std::string result{text};
+
+	for(const std::string &currentLibrary: libraries) {
+
+		if(currentLibrary.find("Gulg") != std::string::npos) {
+
+			//Not already added include
+			size_t foundVariable = result.find("GENERATED_LIBRARIES_TO_INCLUDE =");
+			if(foundVariable == std::string::npos) { std::cout << "Can't find LIBRARIES_TO_INCLUDE = gulg" << std::endl;}
+			result.replace(foundVariable + 32, 0, " -I ../GulgLibraries/Includes");
+
+			//Link
+
+			std::string currentLibraryAsLowerCase = currentLibrary;
+			for(size_t i{0}; i < currentLibraryAsLowerCase.size(); i++) { currentLibraryAsLowerCase[i] = std::tolower(currentLibraryAsLowerCase[i]); }
+			foundVariable = result.find("GENERATED_LIBRARIES_TO_LINK =");
+			if(foundVariable == std::string::npos) { std::cout << "Can't find LIBRARIES_TO_LINK = gulg" << std::endl;}
+			result.replace(foundVariable + 29, 0, " -L ../GulgLibraries/Includes/" + currentLibrary + "/Statics -l" + currentLibraryAsLowerCase);
+		}
+
+		if(currentLibrary.find("SFML") != std::string::npos) {
+
+			//Not already added include
+
+			size_t foundVariable = result.find("GENERATED_LIBRARIES_TO_INCLUDE =");
+			if(foundVariable == std::string::npos) { std::cout << "Can't find LIBRARIES_TO_INCLUDE = sfml" << std::endl;}
+			result.replace(foundVariable + 32, 0, " -I $(EXTERNAL_LIBRARIES_FOLDER)/SFML/include");
+			
+
+			//Link
+
+			foundVariable = result.find("GENERATED_LIBRARIES_TO_LINK =");
+			if(foundVariable == std::string::npos) { std::cout << "Can't find LIBRARIES_TO_LINK = sfml" << std::endl;}
+			result.replace(foundVariable + 29, 0, " $(SFML_LINK)");
+
+
+			const std::string sfmlLink = "\n"
+"#SFML\n"
+"\n"
+"#OS-DIFFERENCE#\n"
+"#Windows\n"
+"SFML_LINK_FOLDER 		        = SFML/lib/Windows\n"
+"SFML_NEEDED_LIBRARIES_TO_LINK  =\n"
+"SFML_STATIC_LIBRARIES_TO_LINK  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d\n"
+"SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d-2 -lsfml-window-d-2 -lsfml-system-d-2\n"
+"#Linux\n"
+"SFML_LINK_FOLDER 		        = SFML/lib/Linux\n"
+"SFML_NEEDED_LIBRARIES_TO_LINK  = -lpthread -lGL -lX11 -lXrandr -lfreetype -lGLEW -lopenal -ludev\n"
+"SFML_STATIC_LIBRARIES_TO_LINK  = -lsfml-graphics-s-d -lsfml-window-s-d -lsfml-system-s-d\n"
+"SFML_DYNAMIC_LIBRARIES_TO_LINK = -lsfml-graphics-d -lsfml-window-d -lsfml-system-d\n"
+"#OS-DIFFERENCE-END#\n"
+"\n"
+"SFML_LINK = -L $(EXTERNAL_LIBRARIES_FOLDER)/$(SFML_LINK_FOLDER) $(SFML_STATIC_LIBRARIES_TO_LINK) $(SFML_NEEDED_LIBRARIES_TO_LINK)\n"
+"\n";
+
+			//std::cout << result << std::endl;
+			foundVariable = result.find("GENERATED_LIBRARIES_TO_INCLUDE =");
+			if(foundVariable == std::string::npos) { std::cout << "Can't find LIBRARIES_TO_INCLUDE = sdfsdf" << std::endl;}
+			result.replace(foundVariable, 0, sfmlLink);
+		}
+	}
+
+	return result;
+}
+
 
 
 int main(int argc, char** argv) {
 
 	//Check number of arguments
 
-	if(argc != 3) { 
+	if(argc < 3) { 
 
-		std::cout << "ERROR: received " << argc - 1 << " instead of 2 arguments." << std::endl;  
+		std::cout << "ERROR: received " << argc - 1 << ", need at least of 2 arguments." << std::endl;  
 		return -1;
 	}
 
@@ -216,6 +284,13 @@ int main(int argc, char** argv) {
 
 	if(makefileForLibrary) { makefileText = addTextForLibrary(std::string{argv[1]}, textToCopy["All"], textToCopy["lib"]); }
 	else                   { makefileText = addTextForExecutable(std::string{argv[1]}, textToCopy["All"], textToCopy["exe"]); }
+
+	//Add asked libraries
+
+	std::vector<std::string> askdedLibraries;
+	for(int i{3}; i < argc; i++) { askdedLibraries.emplace_back(argv[i]); }
+
+	makefileText = addLibraries(askdedLibraries, makefileText);
 
 	//replace commands, depending of the OS
 

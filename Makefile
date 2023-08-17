@@ -50,10 +50,10 @@ compileMakefileCreator:
 
 generateMakefiles:
 	@MakefileCreator/MakefileCreator GulgECS lib
-	@MakefileCreator/MakefileCreator GulgGraphics lib
-	@MakefileCreator/MakefileCreator GulgInput lib
+	@MakefileCreator/MakefileCreator GulgGraphics lib SFML GulgECS
+	@MakefileCreator/MakefileCreator GulgInput lib SFML GulgECS
 	@MakefileCreator/MakefileCreator ListOfComponents exe
-	@MakefileCreator/MakefileCreator FortressWar exe
+	@MakefileCreator/MakefileCreator FortressWar exe SFML GulgECS GulgGraphics GulgInput
 
 compileListOfComponents:
 	@-$(CXX) $(CXXFLAGS) -fPIC ListOfComponents/Sources/main.cpp -o ListOfComponents/ListOfComponents
