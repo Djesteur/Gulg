@@ -99,8 +99,8 @@ exportLib:
 	@mklink /D "$(realpath $(GULG_LIBRARIES_INCLUDES_FOLDER)/$(LIBRARY_NAME))" "$(realpath $(INCLUDE_FOLDER)/$(LIBRARY_NAME))"
 	@mklink /D "$(realpath $(GULG_LIBRARIES_TO_LINK_FOLDER)/$(LIBRARY_NAME))" "$(realpath $(LIBRARY_FOLDER))"
 #Linux
-	@ln -sf "$(realpath $(INCLUDE_FOLDER)/$(LIBNAME))" $(GULG_LIBRARIES_INCLUDES_FOLDER)
-	@ln -sf "$(realpath $(LIBRARY_FOLDER))/$(LIBRARY_NAME)" $(GULG_LIBRARIES_TO_LINK_FOLDER)
+	@ln -sf "$(realpath $(INCLUDE_FOLDER)/$(LIBRARY_NAME))" $(GULG_LIBRARIES_INCLUDES_FOLDER)
+	@ln -sf "$(realpath $(LIBRARY_FOLDER))" $(GULG_LIBRARIES_TO_LINK_FOLDER)
 #OS-DIFFERENCE-END#
 
 	@$(COMMAND_PRINTF) "$(COLOR_GREEN_LIGHT)Library successfully exported$(COLOR_END)\\n"

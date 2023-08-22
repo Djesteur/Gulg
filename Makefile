@@ -82,7 +82,6 @@ clean: $(FOLDERS_TO_CLEAN)
 	@$(MAKE) clean -C GulgECS --no-print-directory
 	@$(MAKE) clean -C GulgGraphics --no-print-directory
 	@$(MAKE) clean -C GulgInput --no-print-directory
-	@$(MAKE) clean -C ListOfComponents --no-print-directory
 	@$(MAKE) clean -C FortressWar --no-print-directory
 	@$(COMMAND_RM) -rf MakefileCreator/MakefileCreator
 	@$(COMMAND_RM) -rf GulgLibraries
