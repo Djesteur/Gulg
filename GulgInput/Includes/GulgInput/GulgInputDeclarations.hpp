@@ -1,0 +1,8 @@
+#ifndef GULG_INPUT_DECLARATIONS_HPP
+#define GULG_INPUT_DECLARATIONS_HPP
+
+#ifndef SFML_STATIC
+#define SFML_STATIC
+#endif
+
+#endif

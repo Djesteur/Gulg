@@ -1,4 +1,8 @@
+#define SFML_STATIC
+
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 #include "GulgECS/GulgEngine.hpp"
 #include "GulgECS/GulgDeclarations.hpp"
@@ -90,7 +94,6 @@ int main() {
 
         graphicSystem->update(0);
     }
-
 
 	return 0;
 }

@@ -8,6 +8,7 @@
 
 #include <SFML/Window.hpp>
 
+#include "GulgInput/GulgInputDeclarations.hpp"
 #include "GulgInput/Action.hpp"
 #include "GulgInput/Event.hpp"
 

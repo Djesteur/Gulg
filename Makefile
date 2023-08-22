@@ -51,7 +51,7 @@ compileMakefileCreator:
 generateMakefiles:
 	@MakefileCreator/MakefileCreator GulgECS lib
 	@MakefileCreator/MakefileCreator GulgGraphics lib SFML GulgECS
-	@MakefileCreator/MakefileCreator GulgInput lib SFML GulgECS
+	@MakefileCreator/MakefileCreator GulgInput lib SFML
 	@MakefileCreator/MakefileCreator ListOfComponents exe
 	@MakefileCreator/MakefileCreator FortressWar exe SFML GulgECS GulgGraphics GulgInput
 

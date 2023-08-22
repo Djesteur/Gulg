@@ -1,6 +1,10 @@
 #ifndef GULG_DECLARATIONS_HPP
 #define GULG_DECLARATIONS_HPP
 
+#ifndef SFML_STATIC
+#define SFML_STATIC
+#endif
+
 #include <cstdint>
 #include <concepts>
 

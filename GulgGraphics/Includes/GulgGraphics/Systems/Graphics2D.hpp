@@ -8,6 +8,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "GulgGraphics/GulgGraphicsDeclarations.hpp"
 #include "GulgGraphics/Components/Sprite.hpp"
 
 namespace Gg {
