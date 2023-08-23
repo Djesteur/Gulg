@@ -1,5 +1,7 @@
 Obj
 Bin
 GulgLibraries
-FortressWarExe
-FortressWar
+./FortressWarexe
+./FortressWar
+../FortressWarexe
+../FortressWar.exe

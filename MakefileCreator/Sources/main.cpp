@@ -242,6 +242,14 @@ std::string addLibraries(const std::vector<std::string> libraries, const std::st
 			if(foundVariable == std::string::npos) { std::cout << "Can't find LIBRARIES_TO_INCLUDE = sdfsdf" << std::endl;}
 			result.replace(foundVariable, 0, sfmlLink);
 		}
+
+		if(currentLibrary.find("glm") != std::string::npos) {
+
+			//Not already added include
+			size_t foundVariable = result.find("GENERATED_LIBRARIES_TO_INCLUDE =");
+			if(foundVariable == std::string::npos) { std::cout << "Can't find LIBRARIES_TO_INCLUDE = gulg" << std::endl;}
+			result.replace(foundVariable + 32, 0, " -I $(EXTERNAL_LIBRARIES_FOLDER)/glm/include");
+		}
 	}
 
 	return result;

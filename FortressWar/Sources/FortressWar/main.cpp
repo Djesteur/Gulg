@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include <glm/vec2.hpp>
+
 #include "GulgECS/GulgEngine.hpp"
 #include "GulgECS/GulgDeclarations.hpp"
 #include "GulgECS/ComponentTypes.hpp"
@@ -49,7 +51,7 @@ int main() {
 	for(Tile &currentTile: tileMap) {
 
 		Gg::Entity currentTileEntity{engine.createEntity()};
-		engine.createComponent<Gg::Component::Sprite>(currentTileEntity, sf::Vector2f{currentTile.tilePositionX*tileTextureSize.x*1.f, currentTile.tilePositionY*tileTextureSize.y*1.f}, currentTile.typeTexturePath);
+		engine.createComponent<Gg::Component::Sprite>(currentTileEntity, glm::vec2{currentTile.tilePositionX*tileTextureSize.x*1.f, currentTile.tilePositionY*tileTextureSize.y*1.f}, currentTile.typeTexturePath);
 		engine.addEntityToSystem<Gg::System::Graphics2D>(currentTileEntity);
 	}
 

@@ -38,9 +38,9 @@ STRING_ERROR   = $(COLOR_RED_LIGHT)[ERROR]$(COLOR_END)
 CXX        = g++
 CXXFLAGS   = -g -std=c++2a -Wextra -Wall -pedantic
 
-.PHONY: all generate clean totalClean compileMakefileCreator generateMakefiles compileListOfComponents runListOfComponents gulgECS gulgGraphics gulgInputs fortressWar documentation
+.PHONY: all generate clean totalClean compileMakefileCreator generateMakefiles compileListOfComponents runListOfComponents gulgECS gulgMath gulgGraphics gulgInputs fortressWar documentation
 
-all: gulgECS gulgGraphics gulgInputs fortressWar
+all: gulgECS gulgMath gulgGraphics gulgInputs fortressWar
 
 generate: compileMakefileCreator generateMakefiles compileListOfComponents
 
@@ -50,10 +50,10 @@ compileMakefileCreator:
 
 generateMakefiles:
 	@MakefileCreator/MakefileCreator GulgECS lib
-	@MakefileCreator/MakefileCreator GulgGraphics lib SFML GulgECS
+	@MakefileCreator/MakefileCreator GulgGraphics lib SFML glm GulgECS
 	@MakefileCreator/MakefileCreator GulgInput lib SFML
 	@MakefileCreator/MakefileCreator ListOfComponents exe
-	@MakefileCreator/MakefileCreator FortressWar exe SFML GulgECS GulgGraphics GulgInput
+	@MakefileCreator/MakefileCreator FortressWar exe SFML glm GulgECS GulgGraphics GulgInput
 
 compileListOfComponents:
 	@-$(CXX) $(CXXFLAGS) -fPIC ListOfComponents/Sources/main.cpp -o ListOfComponents/ListOfComponents
@@ -88,7 +88,7 @@ clean: $(FOLDERS_TO_CLEAN)
 	@$(COMMAND_RM) -rf Documentation/html
 
 
-totalClean: clean
+totalclean: clean
 	@$(COMMAND_RM) GulgECS/Makefile
 	@$(COMMAND_RM) GulgGraphics/Makefile
 	@$(COMMAND_RM) GulgInput/Makefile
