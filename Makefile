@@ -49,7 +49,7 @@ compileMakefileCreator:
 	@-$(CXX) $(CXXFLAGS) -fPIC MakefileCreator/Sources/main.cpp -o MakefileCreator/MakefileCreator
 
 generateMakefiles:
-	@MakefileCreator/MakefileCreator GulgECS lib
+	@MakefileCreator/MakefileCreator GulgECS lib glm
 	@MakefileCreator/MakefileCreator GulgGraphics lib SFML glm GulgECS
 	@MakefileCreator/MakefileCreator GulgInput lib SFML
 	@MakefileCreator/MakefileCreator ListOfComponents exe
