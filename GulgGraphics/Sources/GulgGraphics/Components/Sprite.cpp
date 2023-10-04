@@ -7,12 +7,12 @@ namespace Component {
 Sprite::Sprite() {}
 
 
-Sprite::Sprite(sf::Vector2f position, std::string texturePath) {
+Sprite::Sprite(glm::vec2 position, std::string texturePath) {
 
 	m_texture.loadFromFile(texturePath);
 
 	m_sprite.setTexture(m_texture);
-	m_sprite.setPosition(position);
+	m_sprite.setPosition(position.x, position.y);
 }
 
 

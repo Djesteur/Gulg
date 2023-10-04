@@ -136,15 +136,10 @@ void generateGround(std::vector<Tile> &generatedMap, const GenerationDatas &data
 
 }
 
-sf::Vector2f normalize(const sf::Vector2f &vector) {
 
-	if(vector.x == 0.f && vector.x == 0.f) { return vector; }
-	return vector/sqrtf(vector.x*vector.x + vector.y*vector.y);
-}
+glm::vec2 rotateAround(const glm::vec2 &pivot, const glm::vec2 &pointToRotate, const float angle) {
 
-sf::Vector2f rotateAround(const sf::Vector2f &pivot, const sf::Vector2f &pointToRotate, const float angle) {
-
-	sf::Vector2f tmp{pointToRotate - pivot}, result{0.f, 0.f};
+	glm::vec2 tmp{pointToRotate - pivot}, result{0.f, 0.f};
 	result.x = tmp.x*cos(angle) - tmp.y*sin(angle);
 	result.y = tmp.x*sin(angle) + tmp.y*cos(angle);
 
@@ -171,13 +166,13 @@ std::vector<RiverSegment> generateRiverPath(const GenerationDatas &datas) {
 	std::uniform_real_distribution<float> beginningPointDistribution(0.f, 1.f);
 	const float choosenPoint = beginningPointDistribution(engine);
 
-	sf::Vector2f previousDirection{0.f, 0.f};
-	sf::Vector2f beginCurrentSegment{0.f, 0.f};
+	glm::vec2 previousDirection{0.f, 0.f};
+	glm::vec2 beginCurrentSegment{0.f, 0.f};
 
-	if(choosenSide == 0) { beginCurrentSegment = sf::Vector2f{0.f, choosenPoint}; previousDirection = normalize(sf::Vector2f{1.f, 1.f - choosenPoint} - beginCurrentSegment); }
-	if(choosenSide == 1) { beginCurrentSegment = sf::Vector2f{1.f, choosenPoint}; previousDirection = normalize(sf::Vector2f{0.f, 1.f - choosenPoint} - beginCurrentSegment); } 
-	if(choosenSide == 2) { beginCurrentSegment = sf::Vector2f{choosenPoint, 0.f}; previousDirection = normalize(sf::Vector2f{1.f - choosenPoint, 1.f} - beginCurrentSegment); } 
-	if(choosenSide == 3) { beginCurrentSegment = sf::Vector2f{choosenPoint, 1.f}; previousDirection = normalize(sf::Vector2f{1.f - choosenPoint, 0.f} - beginCurrentSegment); }
+	if(choosenSide == 0) { beginCurrentSegment = glm::vec2{0.f, choosenPoint}; previousDirection = glm::normalize(glm::vec2{1.f, 1.f - choosenPoint} - beginCurrentSegment); }
+	if(choosenSide == 1) { beginCurrentSegment = glm::vec2{1.f, choosenPoint}; previousDirection = glm::normalize(glm::vec2{0.f, 1.f - choosenPoint} - beginCurrentSegment); } 
+	if(choosenSide == 2) { beginCurrentSegment = glm::vec2{choosenPoint, 0.f}; previousDirection = glm::normalize(glm::vec2{1.f - choosenPoint, 1.f} - beginCurrentSegment); } 
+	if(choosenSide == 3) { beginCurrentSegment = glm::vec2{choosenPoint, 1.f}; previousDirection = glm::normalize(glm::vec2{1.f - choosenPoint, 0.f} - beginCurrentSegment); }
 
 
 	beginCurrentSegment.x *= datas.mapSizeX;
@@ -190,7 +185,7 @@ std::vector<RiverSegment> generateRiverPath(const GenerationDatas &datas) {
 
 	while(haveToContinue) {
 
-		sf::Vector2f endCurrentSegment{beginCurrentSegment + previousDirection*static_cast<float>(tilePerSegment)};
+		glm::vec2 endCurrentSegment{beginCurrentSegment + previousDirection*static_cast<float>(tilePerSegment)};
 
 		float segmentLeftAngle{-maxAngle/2.f}, segmentRightAngle{maxAngle/2.f};
 		//Todo: constraint angles
@@ -199,8 +194,8 @@ std::vector<RiverSegment> generateRiverPath(const GenerationDatas &datas) {
 		std::uniform_real_distribution<float> distribution(segmentLeftAngle, segmentRightAngle);
 	    float testAngle = distribution(engine)/2.f;
 
-	    sf::Vector2f beginNextSegment{rotateAround(beginCurrentSegment, endCurrentSegment, testAngle)};
-		previousDirection = normalize(beginNextSegment - beginCurrentSegment);
+	    glm::vec2 beginNextSegment{rotateAround(beginCurrentSegment, endCurrentSegment, testAngle)};
+		previousDirection = glm::normalize(beginNextSegment - beginCurrentSegment);
 
 		RiverSegment newSegment;
 		newSegment.begin = beginCurrentSegment;
@@ -217,10 +212,10 @@ std::vector<RiverSegment> generateRiverPath(const GenerationDatas &datas) {
 	return resultPath;
 }
 
-sf::Vector2f projectionOnSegment(const sf::Vector2f &segmentBegin, const sf::Vector2f &segmentEnd, const sf::Vector2f &point) {
+glm::vec2 projectionOnSegment(const glm::vec2 &segmentBegin, const glm::vec2 &segmentEnd, const glm::vec2 &point) {
 
-	const sf::Vector2f beginToPoint{point - segmentBegin};
-	const sf::Vector2f beginToEnd{segmentEnd - segmentBegin};
+	const glm::vec2 beginToPoint{point - segmentBegin};
+	const glm::vec2 beginToEnd{segmentEnd - segmentBegin};
 
 	const float dotAB{beginToPoint.x*beginToEnd.x + beginToPoint.y*beginToEnd.y};
 	const float dotBB{beginToEnd.x*beginToEnd.x + beginToEnd.y*beginToEnd.y};
@@ -228,17 +223,17 @@ sf::Vector2f projectionOnSegment(const sf::Vector2f &segmentBegin, const sf::Vec
 	return segmentBegin + (dotAB/(dotBB*dotBB))*beginToEnd;
 }
 
-float norm(const sf::Vector2f &vectorToNorm) { return sqrtf(vectorToNorm.x*vectorToNorm.x + vectorToNorm.y*vectorToNorm.y); }
+float norm(const glm::vec2 &vectorToNorm) { return sqrtf(vectorToNorm.x*vectorToNorm.x + vectorToNorm.y*vectorToNorm.y); }
  
 void applyRiverPathOnMap(const std::vector<RiverSegment> path, const float segmentWidth, std::vector<Tile> &generatedMap) {
 
 	for(Tile &currentTile: generatedMap) {
 
-		const sf::Vector2f tileCenter{currentTile.tilePositionX + 0.5f, currentTile.tilePositionY + 0.5f};
+		const glm::vec2 tileCenter{currentTile.tilePositionX + 0.5f, currentTile.tilePositionY + 0.5f};
 
 		for(const RiverSegment &currentSegment: path) {
 
-			const sf::Vector2f projection{projectionOnSegment(currentSegment.begin, currentSegment.end, tileCenter)};
+			const glm::vec2 projection{projectionOnSegment(currentSegment.begin, currentSegment.end, tileCenter)};
 
 			if(norm(tileCenter - projection) <= segmentWidth) { currentTile.type = TileType::Water; }
 		}

@@ -4,9 +4,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include <glm/vec2.hpp>
+#include <glm/gtc/constants.hpp>
+
 #include "GulgECS/GulgEngine.hpp"
 #include "GulgECS/GulgDeclarations.hpp"
 #include "GulgECS/ComponentTypes.hpp"
+
+#include "GulgECS/Components/Orientation.hpp"
 
 #include "GulgGraphics/Systems/Graphics2D.hpp"
 #include "GulgGraphics/Components/Sprite.hpp"
@@ -23,7 +28,21 @@ void testZReleased() { std::cout << "Z has been released !" << std::endl; }
 
 int main() {
 
-	const sf::Vector2u mapSize{200, 100};
+		
+	Gg::Component::Orientation testOrientation{0.f};
+	glm::vec2 resultVector = testOrientation.getOrientationAsNormalizedVector();
+	std::cout << "Orientation 0: " << "(" << resultVector.x << ", " << resultVector.y <<")" << std::endl;
+
+	testOrientation.rotate(glm::half_pi<float>());
+	resultVector = testOrientation.getOrientationAsNormalizedVector();
+	std::cout << "Orientation 0: " << "(" << resultVector.x << ", " << resultVector.y <<")" << std::endl;
+
+	testOrientation.rotate(-glm::pi<float>());
+	resultVector = testOrientation.getOrientationAsNormalizedVector();
+	std::cout << "Orientation 0: " << "(" << resultVector.x << ", " << resultVector.y <<")" << std::endl;
+
+
+	/*const sf::Vector2u mapSize{200, 100};
 	const sf::Vector2u tileTextureSize{32, 32};
 	const sf::VideoMode windowVideoMode{1600, 800};
 
@@ -49,7 +68,7 @@ int main() {
 	for(Tile &currentTile: tileMap) {
 
 		Gg::Entity currentTileEntity{engine.createEntity()};
-		engine.createComponent<Gg::Component::Sprite>(currentTileEntity, sf::Vector2f{currentTile.tilePositionX*tileTextureSize.x*1.f, currentTile.tilePositionY*tileTextureSize.y*1.f}, currentTile.typeTexturePath);
+		engine.createComponent<Gg::Component::Sprite>(currentTileEntity, glm::vec2{currentTile.tilePositionX*tileTextureSize.x*1.f, currentTile.tilePositionY*tileTextureSize.y*1.f}, currentTile.typeTexturePath);
 		engine.addEntityToSystem<Gg::System::Graphics2D>(currentTileEntity);
 	}
 
@@ -93,7 +112,7 @@ int main() {
 		}
 
         graphicSystem->update(0);
-    }
+    }*/
 
 	return 0;
 }

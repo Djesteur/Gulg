@@ -3,9 +3,11 @@
 
 #include <string>
 
-#include "GulgECS/AbstractComponent.hpp"
-
 #include <SFML/Graphics.hpp>
+
+#include <glm/vec2.hpp>
+
+#include "GulgECS/AbstractComponent.hpp"
 
 namespace Gg {
 
@@ -29,7 +31,7 @@ class Sprite: public AbstractComponent, public sf::Drawable {
 		 * @param[in]  position     The position
 		 * @param[in]  texturePath  The texture path
 		 */
-		Sprite(sf::Vector2f position, std::string texturePath);
+		Sprite(glm::vec2 position, std::string texturePath);
 
 		/**
 		 * @brief      Creates a new instance of the object with same properties than original.

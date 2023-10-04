@@ -8,8 +8,9 @@
 #include <iostream>
 #include <chrono>
 
-#include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <glm/vec2.hpp>
+#include <glm/geometric.hpp>
 
 enum class TileType {
 
@@ -32,8 +33,8 @@ struct Tile {
 
 struct RiverSegment {
 
-	sf::Vector2f begin;
-	sf::Vector2f end;
+	glm::vec2 begin;
+	glm::vec2 end;
 };
 
 struct GenerationDatas {
@@ -70,8 +71,8 @@ void addStoneRoad(std::vector<Tile> &generatedMap, const GenerationDatas &datas)
 
 std::vector<Tile> generateMap(const GenerationDatas &datas);
 
-sf::Vector2f projectionOnSegment(const sf::Vector2f &segmentBegin, const sf::Vector2f &segmentEnd, const sf::Vector2f &point);
-float norm(const sf::Vector2f &vectorToNorm);
+glm::vec2 projectionOnSegment(const glm::vec2 &segmentBegin, const glm::vec2 &segmentEnd, const glm::vec2 &point);
+float norm(const glm::vec2 &vectorToNorm);
 void applyRiverPathOnMap(const std::vector<RiverSegment> path, const float segmentWidth, std::vector<Tile> &generatedMap);
 
 #endif

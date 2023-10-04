@@ -13,6 +13,17 @@ struct Shape2D {
 	std::vector<sf::Vector2f> vertices;
 }
 
+struct OBB: Shape2D {
+
+	std::vector<glm::vec2> vertices;
+}
+
+struct Circle: Shape2D {
+
+	float center;
+	float radius;
+}
+
 namespace Component {
 
 /**
